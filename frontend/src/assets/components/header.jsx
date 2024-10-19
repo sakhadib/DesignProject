@@ -34,30 +34,30 @@ function Header() {
     <Box onClick={handleDrawerToggle} sx={{ width: 250 }}>
       <List>
         {/* Navigation Links */}
-        <ListItem button component={Link} to="/product">
-          <ListItemText primary="Product" />
+        <ListItem component={Link} to="/home">
+          <ListItemText primary="Home" />
         </ListItem>
-        <ListItem button component={Link} to="/features">
-          <ListItemText primary="Features" />
+        <ListItem component={Link} to="/problems">
+          <ListItemText primary="Problems" />
         </ListItem>
-        <ListItem button component={Link} to="/marketplace">
-          <ListItemText primary="Marketplace" />
+        <ListItem component={Link} to="/contest">
+          <ListItemText primary="Contest" />
         </ListItem>
-        <ListItem button component={Link} to="/company">
-          <ListItemText primary="Company" />
+        <ListItem component={Link} to="/about">
+          <ListItemText primary="About" />
         </ListItem>
         
         {/* Divider or spacing */}
         <Box sx={{ my: 2 }} />
         
         {/* Log in and Sign up Buttons */}
-        <ListItem button component={Link} to="/login">
-          <Button color="primary" variant="text" fullWidth>
+        <ListItem component="div">
+          <Button color="primary" variant="text" fullWidth component={Link} to="/login">
             Log in
           </Button>
         </ListItem>
-        <ListItem button component={Link} to="/signup">
-          <Button variant="contained" color="primary" fullWidth>
+        <ListItem component="div">
+          <Button variant="contained" color="primary" fullWidth component={Link} to="/signup">
             Sign up
           </Button>
         </ListItem>
@@ -95,16 +95,16 @@ function Header() {
           
           {/* Hide links on mobile */}
           <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">
-            <NavLink to="/product">Product</NavLink>
-            <NavLink to="/features">Features</NavLink>
-            <NavLink to="/marketplace">Marketplace</NavLink>
-            <NavLink to="/company">Company</NavLink>
+            <NavLink to="/home">Home</NavLink>
+            <NavLink to="/problems">Problems</NavLink>
+            <NavLink to="/contest">Contest</NavLink>
+            <NavLink to="/about">About</NavLink>
           </Box>
         </Box>
 
         {/* Desktop Buttons */}
         <Box display={{ xs: 'none', md: 'flex' }} alignItems="center">
-          <Button color="primary" variant="text" className="text-sm font-medium">
+          <Button color="primary" variant="text" className="text-sm font-medium" component={Link} to="/login">
             Log in
           </Button>
           <Button
@@ -112,6 +112,7 @@ function Header() {
             color="primary"
             className="text-sm font-medium"
             style={{ marginLeft: '8px' }}
+            component={Link} to="/signup"
           >
             Sign up
           </Button>

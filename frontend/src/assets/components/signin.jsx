@@ -45,7 +45,7 @@ export default function Component() {
         </Box>
 
         {/* GitHub and Google Sign-In Buttons */}
-        <Box mt={3}>
+        {/* <Box mt={3}>
           <Button
             variant="outlined"
             fullWidth
@@ -81,13 +81,15 @@ export default function Component() {
           >
             Sign In With Google
           </Button>
-        </Box>
+        </Box> */}
 
         {/* Divider */}
-        <Divider>or</Divider>
+        {/* <Divider>or</Divider> */}
 
         {/* Sign In Form */}
-        <Box mt={3}>
+        <Box mt={3}
+          justifyContent={'center'}
+          alignItems={'center'}>
           <TextField
             type="email"
             placeholder="Email Address *"

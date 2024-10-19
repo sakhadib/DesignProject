@@ -29,7 +29,7 @@ export default function SignUpForm() {
       >
         <Box textAlign="center" mb={3}>
           <Typography variant="h4" fontWeight="bold">
-            Laravel
+            MathXplorer
           </Typography>
           <Typography variant="h5" fontWeight="medium">
             Sign up

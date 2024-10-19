@@ -1,15 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
-import SignUp from "../components/signup";
+import Write from "../components/blogwrite";
 
-function Registration() {
+function BlogWrite() {
     return (
         <div>
             <Header />
-            <SignUp />
+            <Write />
         </div>
     );
 }
 
-export default Registration;
+export default BlogWrite;

@@ -1,15 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
-import SignUp from "../components/signup";
+import Bloghome from "../components/bloghome";
 
-function Registration() {
+function BlogHome() {
     return (
         <div>
             <Header />
-            <SignUp />
+            <Bloghome />
         </div>
     );
 }
 
-export default Registration;
+export default BlogHome;
