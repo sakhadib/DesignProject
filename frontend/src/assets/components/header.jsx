@@ -1,0 +1,141 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+
+// Custom styles for the navigation links
+const NavLink = styled(Link)({
+  textDecoration: 'none',
+  color: '#333',
+  fontWeight: '500',
+  margin: '0 12px',
+  '&:hover': {
+    color: '#673ab7',
+  },
+});
+
+function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ width: 250 }}>
+      <List>
+        {/* Navigation Links */}
+        <ListItem button component={Link} to="/product">
+          <ListItemText primary="Product" />
+        </ListItem>
+        <ListItem button component={Link} to="/features">
+          <ListItemText primary="Features" />
+        </ListItem>
+        <ListItem button component={Link} to="/marketplace">
+          <ListItemText primary="Marketplace" />
+        </ListItem>
+        <ListItem button component={Link} to="/company">
+          <ListItemText primary="Company" />
+        </ListItem>
+        
+        {/* Divider or spacing */}
+        <Box sx={{ my: 2 }} />
+        
+        {/* Log in and Sign up Buttons */}
+        <ListItem button component={Link} to="/login">
+          <Button color="primary" variant="text" fullWidth>
+            Log in
+          </Button>
+        </ListItem>
+        <ListItem button component={Link} to="/signup">
+          <Button variant="contained" color="primary" fullWidth>
+            Sign up
+          </Button>
+        </ListItem>
+      </List>
+    </Box>
+  );
+
+  return (
+    <AppBar position="static" color="transparent" elevation={0}>
+      <Toolbar>
+        <Box display="flex" alignItems="center" flexGrow={1}>
+          <NavLink to="/">
+            <svg
+              className="text-purple-600"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 19C5.5 16.5 11 16.5 11 16.5C11 16.5 16.5 16.5 19 19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M3 5C5.5 7.5 11 7.5 11 7.5C11 7.5 16.5 7.5 19 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </NavLink>
+          
+          {/* Hide links on mobile */}
+          <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">
+            <NavLink to="/product">Product</NavLink>
+            <NavLink to="/features">Features</NavLink>
+            <NavLink to="/marketplace">Marketplace</NavLink>
+            <NavLink to="/company">Company</NavLink>
+          </Box>
+        </Box>
+
+        {/* Desktop Buttons */}
+        <Box display={{ xs: 'none', md: 'flex' }} alignItems="center">
+          <Button color="primary" variant="text" className="text-sm font-medium">
+            Log in
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className="text-sm font-medium"
+            style={{ marginLeft: '8px' }}
+          >
+            Sign up
+          </Button>
+        </Box>
+
+        {/* Mobile Menu Icon */}
+        <Box display={{ xs: 'flex', md: 'none' }}>
+          <IconButton color="inherit" edge="end" onClick={handleDrawerToggle}>
+            <MenuIcon />
+          </IconButton>
+        </Box>
+
+        {/* Off-Canvas Drawer */}
+        <Drawer
+          anchor="right"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }} // Improves performance on mobile
+        >
+          {drawer}
+        </Drawer>
+      </Toolbar>
+    </AppBar>
+  );
+}
+
+export default Header;
