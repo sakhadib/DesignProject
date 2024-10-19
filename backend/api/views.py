@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, serializers
 from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer
-from .serializers import AllBlogShowSerializer
+from .serializers import AllBlogShowSerializer, SingleBlogShowSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Blog, Comment, Vote
@@ -105,7 +105,7 @@ class BlogDelete(generics.DestroyAPIView):
         
 class SingleBlogView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
-    serializer_class = BlogSerializer
+    serializer_class = SingleBlogShowSerializer
     permission_classes = [AllowAny]
     
     def get_queryset(self):
