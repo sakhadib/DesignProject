@@ -23,7 +23,47 @@ class BlogSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         blog = Blog.objects.create(**validated_data)
         return blog
+    
+    
+    
+    
+    
+# NOTE This serializer is used to show all the blogs in the frontend
+
+class AllBlogShowSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+    
+    comment_count = serializers.SerializerMethodField()
+    upvote_count = serializers.SerializerMethodField()
+    downvote_count = serializers.SerializerMethodField()
+    
+    def get_comment_count(self, obj):
+        return obj.comments.count()
+    
+    def get_upvote_count(self, obj):
+        return obj.upvotes.filter(vote=True).count()
+    
+    def get_downvote_count(self, obj):
+        return obj.upvotes.filter(vote=False).count()
+    
+    class Meta:
+        model = Blog
+        fields =   ["id", 
+                    "title", 
+                    "author", 
+                    "category",
+                    "comment_count", 
+                    "upvote_count", 
+                    "downvote_count",
+                    "created_at", 
+                    "updated_at",  
+                    "content"]
         
+        
+        
+        
+        
+
         
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:

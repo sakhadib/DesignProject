@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, serializers
 from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer
+from .serializers import AllBlogShowSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Blog, Comment, Vote
@@ -22,11 +23,20 @@ class VoteCreate(generics.CreateAPIView):
         
         if existing_vote:
             # Update the existing vote
-            existing_vote.value = serializer.validated_data['value']
+            existing_vote.vote = serializer.validated_data['vote']
             existing_vote.save()
         else:
             # Create a new vote
             serializer.save(author=user)
+            
+            
+class VoteCount(generics.ListCreateAPIView):
+    serializer_class = VoteSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        blog_id = self.kwargs.get('pk')
+        return Vote.objects.filter(blog=blog_id)
 
 
 class CommentListCreate(generics.ListCreateAPIView):
@@ -73,6 +83,12 @@ class BlogListCreate(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        
+
+class AllBlogShow(generics.ListAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = AllBlogShowSerializer
+    permission_classes = [AllowAny]
         
 
 class BlogDelete(generics.DestroyAPIView):
