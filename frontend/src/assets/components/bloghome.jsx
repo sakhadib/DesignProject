@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, IconButton, Typography, Box, Grid, Card, CardMedia, CardContent, Avatar, Pagination } from '@mui/material';
+import { TextField, Button, IconButton, Typography, Box, Grid, Card, CardMedia, CardContent, Avatar, Pagination, Container } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
 const BlogLayout = () => {
@@ -140,7 +140,8 @@ const blogPosts = [
     };
 
     return (
-        <Box sx={{ minHeight: '100vh', backgroundColor: '#ffffff', color: 'black', p: 4 }}>
+        <Container>
+            <Box sx={{ minHeight: '100vh', backgroundColor: '#ffffff', color: 'black', p: 4 }}>
         <Box component="header" mb={4}>
             <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
             Blog
@@ -245,6 +246,7 @@ const blogPosts = [
             </Box>
         )}
         </Box>
+        </Container>
     );
 };
 
