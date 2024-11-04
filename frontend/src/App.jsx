@@ -5,6 +5,7 @@ import Signup from './assets/pages/Signup';
 import BlogHome from './assets/pages/BlogHome';
 import BlogWrite from './assets/pages/Blogwrite';
 import BlogPostDisplay from './assets/pages/BlogDisplay'; 
+import AllProblems from './assets/pages/allProblem';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
         <Route path="/bloghome" element={<BlogHome />} />
         <Route path="/blogwrite" element={<BlogWrite />} />
         <Route path="/blogpostdisplay" element={<BlogPostDisplay />} />
+        <Route path="/allproblems" element={<AllProblems />} />
+
       </Routes>
     </Router>
   );
