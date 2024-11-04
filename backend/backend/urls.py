@@ -27,3 +27,4 @@ urlpatterns = [
     path('api/authview/', include("rest_framework.urls")),
     path('api/', include("api.urls")), # api fallback
 ]
+ 
