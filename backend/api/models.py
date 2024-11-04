@@ -34,3 +34,39 @@ class Vote(models.Model):
     def __str__(self):
         return f"{self.author} upvoted {self.blog}"
     
+
+
+class Problem(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="problems")
+    category = models.CharField(max_length=100)
+    is_approved = models.BooleanField(default=False)
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
+    
+    
+
+
+class Contest(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    
+    
+    
+    
+class ContestProblem(models.Model):
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="problems")
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="contests")
+    points = models.IntegerField(default=20)
+    
+    def __str__(self):
+        return f"{self.problem} in {self.contest}"
+    
+    

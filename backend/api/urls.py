@@ -19,5 +19,35 @@ urlpatterns = [
 
     # Voting on a Blog
     path('vote/', views.VoteCreate.as_view(), name="vote_create"),                                         # ! POST
-    path('vote/<int:pk>/', views.VoteCount.as_view(), name="upvote_count"),                                # ? GET                                          
+    path('vote/<int:pk>/', views.VoteCount.as_view(), name="upvote_count"),                                # ? GET
+    
+    # Creating a Problem
+    path('problem/', views.ProblemCreate.as_view(), name="problem_create"),                                # ! POST  
+    
+    # Viewing All Problems
+    path('problem/all/', views.AllProblemShow.as_view(), name="all_problem_show"),                         # ? GET  
+    path('problem/<int:pk>/', views.SingleProblemShow.as_view(), name="single_problem"),                   # ? GET 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #Admin
+    path('mathx/problem/<int:pk>/approve/', views.ApproveProblem.as_view(), name="problem_approve"),             # ! POST
+    path('mathx/problem/all', views.AllProblemShowAdmin.as_view(), name="all_problem_show"),                     # ? GET
+    
+    
+    #Contest
+    path('mathx/contest/', views.CreateContest.as_view(), name="contest_create"),                                 # ! POST
+    path('mathx/contest/all/', views.AllContestShow.as_view(), name="all_contest_show"),                          # ? GET
+    path('mathx/addcontestproblem/', views.AddProblemToContest.as_view(), name="add_problem_to_contest")         # ! POST
 ]

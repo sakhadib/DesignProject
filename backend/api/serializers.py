@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Blog, Comment, Vote
+from .models import Blog, Comment, Vote, Problem, Contest, ContestProblem
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -151,3 +151,75 @@ class VoteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         vote = Vote.objects.create(**validated_data)
         return vote
+    
+
+
+
+
+class ProblemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Problem
+        fields = ["id", "title", "description", "author", "category", "answer", "is_approved", "created_at", "updated_at"]
+        extra_kwargs = {
+            "author": {"read_only": True},
+            "is_approved": {"read_only": True},  # Make is_approved read-only
+            "description": {"required": True},
+            "category": {"required": True},
+            "answer": {"required": True}
+        }
+        
+    def create(self, validated_data):
+        problem = Problem.objects.create(**validated_data)
+        return problem
+
+
+
+
+
+class AllProblemShowSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField() 
+    class Meta:
+        model = Problem
+        fields = ["id", "title", "author", "category", "created_at", "updated_at"]
+        
+        
+
+class SingleProblemShowSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField() 
+    class Meta:
+        model = Problem
+        fields = ["id", "title", "author", "description", "category", "created_at", "updated_at"]
+        
+        
+        
+class CreateContestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        fields = ["id", "title", "description", "start_date", "end_date"]
+        extra_kwargs = {
+            "start_date": {"required": True},
+            "end_date": {"required": True},
+            "title": {"required": True},
+            "description": {"required": True}
+        }
+        
+    def create(self, validated_data):
+        contest = Contest.objects.create(**validated_data)
+        return contest
+    
+    
+    
+
+class ContestProblemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContestProblem
+        fields = ["id", "contest", "problem", "points"]
+        extra_kwargs = {
+            "contest": {"required": True},
+            "problem": {"required": True},
+            "points": {"required": True}
+        }
+        
+    def create(self, validated_data):
+        contest_problem = ContestProblem.objects.create(**validated_data)
+        return contest_problem
