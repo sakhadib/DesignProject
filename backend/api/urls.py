@@ -19,6 +19,9 @@ urlpatterns = [
     
     # Commenting on a Blog
     path('comment/', views.CommentListCreate.as_view(), name="comment_list_create"),                       # ! POST
+    
+    # deleting a comment
+    path('comment/delete/<int:pk>/', views.CommentDelete.as_view(), name="comment_delete"),                # ! DELETE
 
     # Voting on a Blog
     path('vote/', views.VoteCreate.as_view(), name="vote_create"),                                         # ! POST
