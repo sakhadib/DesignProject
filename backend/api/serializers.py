@@ -7,7 +7,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "password"]
-        extra_kwargs = {"password": {"write_only": True, "required": True}}
+        extra_kwargs = {"password": {"write_only": True, "required": True},
+                        "email": {"required": True}}
+        
         
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -146,7 +148,9 @@ class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = ["id", "blog", "author", "vote"]
-        extra_kwargs = {"author": {"read_only": True}}
+        extra_kwargs = {"author": {"read_only": True},
+                        "blog": {"required": True},
+                        "vote": {"required": True}}
         
     def create(self, validated_data):
         vote = Vote.objects.create(**validated_data)
