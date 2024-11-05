@@ -29,7 +29,7 @@ export default function SignInComponent() {
 
     try {
       const user = await login(credentials);
-      console.log('Login successful:', user); // Assuming 'login' function handles setting the token
+      // console.log('Login successful:', user); // Assuming 'login' function handles setting the token
       navigate('/home'); // Redirect the user to the dashboard upon successful login
     } catch (error) {
       setError('Failed to login. Please check your credentials and try again.');

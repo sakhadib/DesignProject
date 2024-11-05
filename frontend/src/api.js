@@ -10,18 +10,38 @@ export const attachToken = token => {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
+// Login function that retrieves the access token and attaches it to the requests
 export const login = async (credentials) => {
     try {
         const response = await api.post('/token/', credentials);
-        const { token } = response.data; // Assuming the response includes a JWT token
-        localStorage.setItem('token', token); // Save the token in localStorage
-        attachToken(token); // Attach token to subsequent requests
-        return response.data; // You might return user data or just the token
+        // console.log('Login response:', response.data); // Log the response to confirm format
+
+        const { access, refresh } = response.data; // Destructure access and refresh tokens
+
+        if (access) {
+            // Save access token in localStorage for authentication
+            localStorage.setItem('token', access);
+            attachToken(access); // Attach access token to subsequent requests
+        } else {
+            console.error('Access token is missing in the response');
+        }
+
+        // Optionally, save the refresh token for future use
+        if (refresh) {
+            localStorage.setItem('refresh_token', refresh);
+        }
+
+        return response.data;
     } catch (error) {
         console.error('Login error:', error.response || error);
         throw error;
     }
 };
 
+// Automatically attach token from localStorage if it exists
+const token = localStorage.getItem('token');
+if (token) {
+    attachToken(token);
+}
 
 export default api;
