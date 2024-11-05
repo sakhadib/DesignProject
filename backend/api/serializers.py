@@ -7,13 +7,27 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "password"]
-        extra_kwargs = {"password": {"write_only": True, "required": True}}
+        extra_kwargs = {"password": {"write_only": True, "required": True},
+                        "email": {"required": True}}
+        
         
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
     
-    
+
+
+
+
+
+class getCurrentUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
+        extra_kwargs = {"id": {"read_only": True}}
+        
+
+
     
     
 
@@ -140,13 +154,25 @@ class SingleBlogShowSerializer(serializers.ModelSerializer):
 
         
 
+
+
+class AllCategoryShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = ["category"]
+
+
+
+
     
     
 class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = ["id", "blog", "author", "vote"]
-        extra_kwargs = {"author": {"read_only": True}}
+        extra_kwargs = {"author": {"read_only": True},
+                        "blog": {"required": True},
+                        "vote": {"required": True}}
         
     def create(self, validated_data):
         vote = Vote.objects.create(**validated_data)

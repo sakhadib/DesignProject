@@ -7,6 +7,9 @@ urlpatterns = [
     # Creating A Blog
     path('blog/', views.BlogListCreate.as_view(), name="blog_list_create"),                                # ! POST
     
+    # Viewing All Blog Categories
+    path('blog/categories/', views.AllCategoryShow.as_view(), name="blog_category_list"),                  # ? GET
+    
     # Viewing All Blogs
     path('blog/all/', views.AllBlogShow.as_view(), name="all_blog_show"),                                  # ? GET
     
@@ -28,9 +31,10 @@ urlpatterns = [
     path('problem/all/', views.AllProblemShow.as_view(), name="all_problem_show"),                         # ? GET  
     path('problem/<int:pk>/', views.SingleProblemShow.as_view(), name="single_problem"),                   # ? GET 
     
+    # Getting the current user
+    path('user/', views.CurrentUser.as_view(), name="current_user"),                                        # ? GET
     
-    
-    
+
     
     
     
