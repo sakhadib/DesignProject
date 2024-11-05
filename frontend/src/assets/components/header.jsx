@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
@@ -9,11 +9,12 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import api from '../../api'; // Import your configured axios instance
 
-
-// Custom styles for the navigation links
 const NavLink = styled(Link)({
   textDecoration: 'none',
   color: '#333',
@@ -25,23 +26,47 @@ const NavLink = styled(Link)({
 });
 
 function Header() {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUser = JSON.parse(localStorage.getItem('user')); // Assume user info is saved as 'user' in localStorage
+    setIsAuthenticated(!!token);
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Detect scroll event to adjust header opacity
+  // Function to handle sign-out
+  const handleSignOut = () => {
+    // Remove tokens and user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+
+    // Clear the authorization header from the axios instance
+    delete api.defaults.headers.common['Authorization'];
+
+    // Update state
+    setIsAuthenticated(false);
+    setUser(null);
+
+    // Redirect to sign-in page
+    navigate('/signin');
+  };
+
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -49,47 +74,56 @@ function Header() {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ width: 250 }}>
       <List>
-        {/* Navigation Links */}
         <ListItem component={Link} to="/home">
           <ListItemText primary="Home" />
         </ListItem>
-        <ListItem component={Link} to="/problems">
+        <ListItem component={Link} to="/problem/all">
           <ListItemText primary="Problems" />
         </ListItem>
         <ListItem component={Link} to="/contest">
           <ListItemText primary="Contest" />
         </ListItem>
-        <ListItem component={Link} to="/bloghome">
+        <ListItem component={Link} to="/blog">
           <ListItemText primary="Blogs" />
         </ListItem>
         <ListItem component={Link} to="/about">
           <ListItemText primary="About" />
         </ListItem>
-        
-        {/* Divider or spacing */}
+
         <Box sx={{ my: 2 }} />
-        
-        {/* Log in and Sign up Buttons */}
-        <ListItem component="div">
-          <Button color="primary" variant="text" fullWidth component={Link} to="/signin">
-            Sign in
-          </Button>
-        </ListItem>
-        <ListItem component="div">
-          <Button variant="contained" color="primary" fullWidth component={Link} to="/signup">
-            Sign up
-          </Button>
-        </ListItem>
+
+        {!isAuthenticated ? (
+          <>
+            <ListItem component="div">
+              <Button color="primary" variant="text" fullWidth component={Link} to="/signin">
+                Sign in
+              </Button>
+            </ListItem>
+            <ListItem component="div">
+              <Button variant="contained" color="primary" fullWidth component={Link} to="/signup">
+                Sign up
+              </Button>
+            </ListItem>
+          </>
+        ) : (
+          <>
+            <ListItem component="div">
+              <Button variant="contained" color="primary" fullWidth onClick={handleSignOut}>
+                Sign out
+              </Button>
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
 
   return (
-    <AppBar 
-      position="sticky" 
+    <AppBar
+      position="sticky"
       color="transparent"
-      sx={{ 
-        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.9)' : 'white', 
+      sx={{
+        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.9)' : 'white',
         transition: 'background-color 0.3s ease',
         boxShadow: isScrolled ? '0px 4px 6px rgba(0, 0, 0, 0.1)' : 'none',
       }}
@@ -119,46 +153,65 @@ function Header() {
               />
             </svg>
           </NavLink>
-          
-          {/* Hide links on mobile */}
+
           <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">
             <NavLink to="/home">Home</NavLink>
-            <NavLink to="/problems">Problems</NavLink>
+            <NavLink to="/problem/all">Problems</NavLink>
             <NavLink to="/contest">Contest</NavLink>
-            <NavLink to="/bloghome">Blogs</NavLink>
+            <NavLink to="/blog">Blogs</NavLink>
             <NavLink to="/about">About</NavLink>
           </Box>
         </Box>
 
-        {/* Desktop Buttons */}
         <Box display={{ xs: 'none', md: 'flex' }} alignItems="center">
-          <Button color="primary" variant="text" className="text-sm font-medium" component={Link} to="/signin">
-            Sign in
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            className="text-sm font-medium"
-            style={{ marginLeft: '8px' }}
-            component={Link} to="/signup"
-          >
-            Sign up
-          </Button>
+          {!isAuthenticated ? (
+            <>
+              <Button color="primary" variant="text" className="text-sm font-medium" component={Link} to="/signin">
+                Sign in
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className="text-sm font-medium"
+                style={{ marginLeft: '8px' }}
+                component={Link} to="/signup"
+              >
+                Sign up
+              </Button>
+            </>
+          ) : (
+            <>
+              <Avatar
+                alt={user?.username}
+                src={user?.profileImage || ''}
+                sx={{ width: 32, height: 32, marginRight: 1 }}
+              >
+                {user?.username ? user.username[0].toUpperCase() : ''}
+              </Avatar>
+              <Typography variant="body1" sx={{ marginRight: 2 }}>{user?.username}</Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                className="text-sm font-medium"
+                onClick={handleSignOut}
+              >
+                Sign out
+              </Button>
+            </>
+          )}
         </Box>
 
-        {/* Mobile Menu Icon */}
         <Box display={{ xs: 'flex', md: 'none' }}>
           <IconButton color="inherit" edge="end" onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
         </Box>
 
-        {/* Off-Canvas Drawer */}
         <Drawer
           anchor="right"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }} // Improves performance on mobile
+          ModalProps={{ keepMounted: true }}
         >
           {drawer}
         </Drawer>
