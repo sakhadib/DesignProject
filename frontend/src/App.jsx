@@ -6,6 +6,8 @@ import BlogHome from './assets/pages/BlogHome';
 import BlogWrite from './assets/pages/Blogwrite';
 import BlogPostDisplay from './assets/pages/BlogDisplay'; 
 import AllProblems from './assets/pages/allProblem';
+import Individualproblem from './assets/pages/individualproblem';
+
 
 function App() {
   return (
@@ -18,7 +20,9 @@ function App() {
         <Route path="/blogwrite" element={<BlogWrite />} />
         <Route path="/blogpostdisplay" element={<BlogPostDisplay />} />
         <Route path="/allproblems" element={<AllProblems />} />
+        <Route path="/individualproblem/:id" element={<Individualproblem />} />
 
+        
       </Routes>
     </Router>
   );
