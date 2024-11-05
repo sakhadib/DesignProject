@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -17,65 +17,10 @@ import {
   Stack
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-
-const problems = [
-  {
-        id: 1,
-        title: "Test Problem 1",
-        author: "avro",
-        category: "simpleMath",
-        created_at: "2024-11-03T09:54:52.681262Z",
-        updated_at: "2024-11-03T12:43:31.880479Z"
-      },
-      
-      {
-        id: 2,
-        title: "Advanced Algebra",
-        author: "mathwhiz",
-        category: "algebra",
-        created_at: "2024-11-04T10:00:00.000000Z",
-        updated_at: "2024-11-04T11:30:00.000000Z"
-      },
-    
-      {
-        id: 3,
-        title: "Geometry Basics",
-        author: "shapemaster",
-        category: "geometry",
-        created_at: "2024-11-05T14:30:00.000000Z",
-        updated_at: "2024-11-05T15:45:00.000000Z"
-      },
-    
-      {
-        id: 4,
-        title: "Test Problem 2",
-        author: "avro",
-        category: "simpleMath",
-        created_at: "2024-11-03T09:54:52.681262Z",
-        updated_at: "2024-11-03T12:43:31.880479Z"
-      },
-    
-      {
-        id: 5,
-        title: "Test Problem 3",
-        author: "avro",
-        category: "simpleMath",
-        created_at: "2024-11-03T09:54:52.681262Z",
-        updated_at: "2024-11-03T12:43:31.880479Z"
-      },
-    
-      {
-        id: 6,
-        title: "Test Problem 4",
-        author: "shapemaster",
-        category: "geometry",
-        created_at: "2024-11-05T14:30:00.000000Z",
-        updated_at: "2024-11-05T15:45:00.000000Z"
-      }
-];
+import { useNavigate } from 'react-router-dom';
 
 const AllProblems = () => {
+  const [problems, setProblems] = useState([]); // State to hold fetched problems
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [order, setOrder] = useState('asc');
@@ -83,7 +28,15 @@ const AllProblems = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+
+  // Fetch problems from API on component mount
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/problem/all/')
+      .then(response => response.json())
+      .then(data => setProblems(data))
+      .catch(error => console.error('Error fetching problems:', error));
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -121,7 +74,7 @@ const AllProblems = () => {
         if (a[orderBy] > b[orderBy]) return order === 'asc' ? 1 : -1;
         return 0;
       });
-  }, [searchTerm, selectedCategory, order, orderBy]);
+  }, [problems, searchTerm, selectedCategory, order, orderBy]);
 
   const TableHeader = ({ label, property }) => (
     <TableCell>
@@ -190,8 +143,8 @@ const AllProblems = () => {
                   <TableRow 
                     key={problem.id} 
                     hover 
-                    onClick={() => navigate(`/individualproblem/${problem.id}`)} // Redirect on row click
-                    style={{ cursor: 'pointer' }} // Make it look clickable
+                    onClick={() => navigate(`/problem/${problem.id}`)} 
+                    style={{ cursor: 'pointer' }}
                   >
                     <TableCell>{problem.id}</TableCell>
                     <TableCell>{problem.title}</TableCell>
