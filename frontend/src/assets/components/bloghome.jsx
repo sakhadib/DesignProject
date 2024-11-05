@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, IconButton, Typography, Box, Grid, Card, CardContent, Avatar, Pagination, Container } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
+import { useTheme, useMediaQuery } from '@mui/material';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const BlogLayout = () => {
-    const navigate = useNavigate(); // Initialize navigate here
-    const categories = ['All categories', 'Company', 'Product', 'Design', 'Engineering'];
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // State to store blog posts fetched from the backend
+    const [categories, setCategories] = useState(['All categories']);
     const [blogPosts, setBlogPosts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All categories');
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const postsPerPage = 10;
+
+    // Check if user is signed in
+    const token = Cookies.get('token') || localStorage.getItem('token');
+    const isSignedIn = Boolean(token);
+    // console.log("Is user signed in:", isSignedIn, "Token:", token); // Debugging log
 
     // Fetch blog posts from the backend when the component mounts
     useEffect(() => {
@@ -29,21 +41,39 @@ const BlogLayout = () => {
         fetchBlogPosts();
     }, []);
 
+    // Fetch blog categories from the backend
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/blog/categories/');
+                const fetchedCategories = response.data.map((item) => item.category);
+                setCategories(['All categories', ...fetchedCategories]);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
-        setCurrentPage(1); // Reset to the first page when the category changes
+        setCurrentPage(1);
     };
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
-        setCurrentPage(1); // Reset to the first page when a new search is performed
+        setCurrentPage(1);
     };
 
     const handleBlogClick = (id) => {
-        navigate(`/blog/${id}`); // Navigate to the display page with the selected blog's ID
+        navigate(`/blog/${id}`);
     };
 
-    // Filter blog posts based on the selected category and search query
+    const handleWriteBlogClick = () => {
+        navigate('/blog/write');
+    };
+
     const filteredPosts = blogPosts.filter(post => {
         const matchesCategory = selectedCategory === 'All categories' || post.category === selectedCategory;
         const matchesSearch = 
@@ -64,16 +94,29 @@ const BlogLayout = () => {
 
     return (
         <Container>
-            <Box sx={{ minHeight: '100vh', backgroundColor: '#ffffff', color: 'black', p: 4 }}>
-                <Box component="header" mb={4}>
+            <Box sx={{ backgroundColor: '#ffffff', color: 'black', p: 4 }}>
+                <Box component="header" mb={4} display="flex" justifyContent="space-between" alignItems="center">
                     <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
                         Blog
                     </Typography>
-                    <Typography color="textSecondary">Stay in the loop with the latest about our products</Typography>
+                    {isSignedIn && ( // Show button only if user is signed in
+                        isMobile ? (
+                            <IconButton onClick={handleWriteBlogClick} color="primary" sx={{ backgroundColor: '#f0f0f0' }}>
+                                <AddIcon />
+                            </IconButton>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleWriteBlogClick}
+                            >
+                                Write Blog
+                            </Button>
+                        )
+                    )}
                 </Box>
 
                 <Box component="nav" display="flex" flexDirection="column" mb={4}>
-                    {/* Search Bar */}
                     <Box display="flex" alignItems="center" gap={1} mb={2} width="100%">
                         <TextField
                             variant="outlined"
@@ -93,7 +136,6 @@ const BlogLayout = () => {
                         />
                     </Box>
 
-                    {/* Horizontally Scrollable Category Chips */}
                     <Box
                         component="nav"
                         display="flex"
@@ -122,8 +164,8 @@ const BlogLayout = () => {
                     {currentPosts.map((post, index) => (
                         <Grid item xs={12} md={6} key={index}>
                             <Card
-                                onClick={() => handleBlogClick(post.id)} // Add onClick handler
-                                sx={{ cursor: 'pointer', backgroundColor: '#f9f9f9' }} // Add pointer cursor
+                                onClick={() => handleBlogClick(post.id)}
+                                sx={{ cursor: 'pointer', backgroundColor: '#f9f9f9' }}
                             >
                                 <CardContent>
                                     <Typography variant="subtitle2" color="textSecondary">
@@ -132,9 +174,12 @@ const BlogLayout = () => {
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                                         {post.title}
                                     </Typography>
-                                    <Typography variant="body2" color="textSecondary" paragraph>
-                                        {post.content.slice(0, 100)}... {/* Display a summary */}
-                                    </Typography>
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                    >
+                                        {post.content.slice(0, 100) + '...'}
+                                    </ReactMarkdown>
                                     <Box display="flex" alignItems="center">
                                         <Avatar alt={post.author} src={`/placeholder.svg?text=${post.author.charAt(0)}`} />
                                         <Box ml={2}>
@@ -148,7 +193,6 @@ const BlogLayout = () => {
                     ))}
                 </Grid>
 
-                {/* Pagination Component */}
                 {totalPages > 1 && (
                     <Box display="flex" justifyContent="center" mt={4}>
                         <Pagination

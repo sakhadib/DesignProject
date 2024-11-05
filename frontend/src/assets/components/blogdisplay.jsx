@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Container, Box, Card, CardContent, Avatar, Chip, Button, TextField, List, ListItem, ListItemText, ListItemAvatar, Divider, IconButton } from '@mui/material';
-import { ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, Comment as CommentIcon } from '@mui/icons-material';
+import { ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, Comment as CommentIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import axios from '../../api';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import '@fontsource/raleway/700.css';
 import '@fontsource/raleway/200.css';
 import Cookies from 'js-cookie';
@@ -69,17 +72,24 @@ const BlogPostPage = () => {
         }
     };
 
+    const handleDeleteComment = async (commentId) => {
+        try {
+            await axios.delete(`http://127.0.0.1:8000/api/comment/delete/${commentId}/`);
+            setLocalComments(localComments.filter(comment => comment.id !== commentId)); // Remove comment from local state
+        } catch (error) {
+            console.error("Error deleting the comment:", error);
+        }
+    };
+
     const handleVote = async (voteType) => {
         if (userVote === voteType) return; // Prevent voting multiple times for the same type
 
         try {
-            // Submit vote to backend
             await axios.post('http://127.0.0.1:8000/api/vote/', {
                 blog: id,
                 vote: voteType
             });
 
-            // Update counts based on vote type and previous vote
             if (voteType) { // Upvote
                 setBlogPost((prev) => ({
                     ...prev,
@@ -119,7 +129,12 @@ const BlogPostPage = () => {
                     <Chip label={`Category: ${blogPost.category}`} />
                 </Box>
                 <Box sx={{ fontSize: '20px', mb: 4 }}>
-                    <ReactMarkdown>{blogPost.content}</ReactMarkdown>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                    >
+                        {blogPost.content}
+                    </ReactMarkdown>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                     <IconButton color={userVote === true ? "primary" : "default"} onClick={() => handleVote(true)}>
@@ -159,7 +174,16 @@ const BlogPostPage = () => {
                                     <Avatar>{comment.author[0].toUpperCase()}</Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
-                                    primary={comment.author}
+                                    primary={
+                                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                                            <Typography variant="body2" color="text.primary">{comment.author}</Typography>
+                                            {comment.author === username && (
+                                                <IconButton onClick={() => handleDeleteComment(comment.id)} color="error">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
+                                        </Box>
+                                    }
                                     secondary={
                                         <>
                                             <Typography component="span" variant="body2" color="text.primary">{comment.content}</Typography>
