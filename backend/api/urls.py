@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     # Creating A Blog
     path('blog/', views.BlogListCreate.as_view(), name="blog_list_create"),                                # ! POST
+    path('blog/categories/', views.AllCategoryShow.as_view(), name="blog_category_list"),                  # ? GET
     
     # Viewing All Blogs
     path('blog/all/', views.AllBlogShow.as_view(), name="all_blog_show"),                                  # ? GET

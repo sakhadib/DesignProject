@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer
 from .serializers import AllBlogShowSerializer, SingleBlogShowSerializer, ProblemSerializer
 from .serializers import AllProblemShowSerializer, SingleProblemShowSerializer
-from .serializers import CreateContestSerializer, ContestProblemSerializer
+from .serializers import CreateContestSerializer, ContestProblemSerializer, AllCategoryShowSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
 from .models import Blog, Comment, Vote, Problem, Contest, ContestProblem
@@ -263,6 +263,17 @@ class SingleBlogView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+# * Any USER
+class AllCategoryShow(generics.ListAPIView):
+    serializer_class = AllCategoryShowSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        return Blog.objects.values('category').distinct()
+
+
+
+
 
 # * Any USER
 class UserCreate(generics.CreateAPIView):
@@ -271,4 +282,7 @@ class UserCreate(generics.CreateAPIView):
     permission_classes = [AllowAny]
     
     
+
+
+
 

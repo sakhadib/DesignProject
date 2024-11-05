@@ -142,6 +142,16 @@ class SingleBlogShowSerializer(serializers.ModelSerializer):
 
         
 
+
+
+class AllCategoryShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = ["category"]
+
+
+
+
     
     
 class VoteSerializer(serializers.ModelSerializer):
