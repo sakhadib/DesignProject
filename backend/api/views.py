@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer
 from .serializers import AllBlogShowSerializer, SingleBlogShowSerializer, ProblemSerializer
-from .serializers import AllProblemShowSerializer, SingleProblemShowSerializer
+from .serializers import AllProblemShowSerializer, SingleProblemShowSerializer, getCurrentUserSerializer
 from .serializers import CreateContestSerializer, ContestProblemSerializer, AllCategoryShowSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
@@ -284,5 +284,14 @@ class UserCreate(generics.CreateAPIView):
     
 
 
+
+# * Authorised USER
+class CurrentUser(generics.ListAPIView):
+    serializer_class = getCurrentUserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(username=user)
 
 
