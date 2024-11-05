@@ -207,6 +207,8 @@ class CommentDelete(generics.DestroyAPIView):
         return Comment.objects.filter(author=user)
     
     def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            return Response({"error": "You do not have permission to delete this comment."}, status=status.HTTP_403_FORBIDDEN)
         instance.delete()
 
 
