@@ -167,11 +167,12 @@ class AllCategoryShowSerializer(serializers.ModelSerializer):
     
     
 class VoteSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+
     class Meta:
         model = Vote
         fields = ["id", "blog", "author", "vote"]
-        extra_kwargs = {"author": {"read_only": True},
-                        "blog": {"required": True},
+        extra_kwargs = {"blog": {"required": True},
                         "vote": {"required": True}}
         
     def create(self, validated_data):
