@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer
+from .serializers import UserSerializer, BlogSerializer, CommentSerializer, VoteSerializer, voteBackSerializer
 from .serializers import AllBlogShowSerializer, SingleBlogShowSerializer, ProblemSerializer
 from .serializers import AllProblemShowSerializer, SingleProblemShowSerializer, getCurrentUserSerializer
 from .serializers import CreateContestSerializer, ContestProblemSerializer, AllCategoryShowSerializer
@@ -157,8 +157,8 @@ class VoteCreate(generics.CreateAPIView):
 
 # * Authorised USER         
 class VoteCount(generics.ListCreateAPIView):
-    serializer_class = VoteSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = voteBackSerializer
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         blog_id = self.kwargs.get('pk')
