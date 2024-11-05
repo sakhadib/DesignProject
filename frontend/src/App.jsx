@@ -17,12 +17,12 @@ function App() {
         <Route path="/" element={<Navigate to="/signup" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
-        <Route path="/bloghome" element={<BlogHome />} />
-        <Route path="/blogwrite" element={<BlogWrite />} />
-        <Route path="/blogpostdisplay" element={<BlogPostDisplay />} />
+        <Route path="/blog" element={<BlogHome />} />
+        <Route path="/blog/write" element={<BlogWrite />} />
+        <Route path="/blog/:id" element={<BlogPostDisplay />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/allproblems" element={<AllProblems />} />
-        <Route path="/individualproblem/:id" element={<Individualproblem />} />
+        <Route path="/problem/all" element={<AllProblems />} />
+        <Route path="/problem/:id" element={<Individualproblem />} />
       </Routes>
     </Router>
   );
