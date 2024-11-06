@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import api from '../../api'; // Import your configured axios instance
+import logo from '../img/logo.png'; // Import the new logo image
 
 const NavLink = styled(Link)({
   textDecoration: 'none',
@@ -34,7 +35,7 @@ function Header() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const storedUser = JSON.parse(localStorage.getItem('user')); // Assume user info is saved as 'user' in localStorage
+    const storedUser = JSON.parse(localStorage.getItem('user'));
     setIsAuthenticated(!!token);
     if (storedUser) {
       setUser(storedUser);
@@ -45,21 +46,13 @@ function Header() {
     setMobileOpen(!mobileOpen);
   };
 
-  // Function to handle sign-out
   const handleSignOut = () => {
-    // Remove tokens and user data from localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
-
-    // Clear the authorization header from the axios instance
     delete api.defaults.headers.common['Authorization'];
-
-    // Update state
     setIsAuthenticated(false);
     setUser(null);
-
-    // Redirect to sign-in page
     navigate('/signin');
   };
 
@@ -121,9 +114,8 @@ function Header() {
   return (
     <AppBar
       position="sticky"
-      color="transparent"
       sx={{
-        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.9)' : 'white',
+        backgroundColor: isScrolled ? '#FEF9F2' : '#FEF9F2',
         transition: 'background-color 0.3s ease',
         boxShadow: isScrolled ? '0px 4px 6px rgba(0, 0, 0, 0.1)' : 'none',
       }}
@@ -131,27 +123,7 @@ function Header() {
       <Toolbar>
         <Box display="flex" alignItems="center" flexGrow={1}>
           <NavLink to="/">
-            <svg
-              className="text-purple-600"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 19C5.5 16.5 11 16.5 11 16.5C11 16.5 16.5 16.5 19 19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M3 5C5.5 7.5 11 7.5 11 7.5C11 7.5 16.5 7.5 19 5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <img src={logo} alt="Logo" width="50" height="50" /> {/* Updated logo */}
           </NavLink>
 
           <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">

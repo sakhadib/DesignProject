@@ -2,14 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import BlogDisp from "../components/blogdisplay";
-import CommentBox from "../components/comment"; 
+import Footer from "../components/footer";
 
 function Blogdisplay() {
     return (
         <div>
             <Header />
             <BlogDisp/>
-            {/* <CommentBox/> */}
+            <Footer />
         </div>
     );
 }

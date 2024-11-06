@@ -4,17 +4,42 @@ import MDEditor from '@uiw/react-md-editor';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeMathjax from 'rehype-mathjax';
-
+import axios from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 export default function BlogWriter() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting blog post:', { title, content });
-    setTitle('');
-    setContent('');
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/blog/', {
+        title,
+        content,
+        category,
+      });
+      console.log('Blog post submitted:', response.data);
+
+      // Clear the form and error state
+      setTitle('');
+      setContent('');
+      setCategory('');
+      setError(null);
+
+      // Redirect to the newly created blog page
+      navigate(`/blog/${response.data.id}`);
+    } catch (err) {
+      if (err.response && err.response.data) {
+        setError(err.response.data); // Set the error response from the server
+      } else {
+        console.error('Error submitting blog post:', err);
+      }
+    }
   };
 
   return (
@@ -33,6 +58,18 @@ export default function BlogWriter() {
                 onChange={(e) => setTitle(e.target.value)}
                 margin="normal"
                 required
+                error={!!error?.title}
+                helperText={error?.title ? error.title[0] : ''}
+              />
+              <TextField
+                fullWidth
+                label="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                margin="normal"
+                required
+                error={!!error?.category}
+                helperText={error?.category ? error.category[0] : ''}
               />
               <Box sx={{ my: 2 }}>
                 <Typography variant="h6" gutterBottom>
@@ -44,6 +81,11 @@ export default function BlogWriter() {
                   preview="edit"
                   height={400}
                 />
+                {error?.content && (
+                  <Typography color="error" variant="body2">
+                    {error.content[0]}
+                  </Typography>
+                )}
               </Box>
               <Button 
                 type="submit" 
