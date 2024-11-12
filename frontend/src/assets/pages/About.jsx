@@ -8,7 +8,7 @@ function About() {
     return (
         <div>
             <Header />
-            <Write />
+            <About/>
             <Footer/>
         </div>
     );
