@@ -10,6 +10,7 @@ import AllProblems from './assets/pages/allProblem';
 import Individualproblem from './assets/pages/IndividualProblem';
 import ProtectedRoute from './assets/components/protectedroute';
 import AddProblem from './assets/pages/AddProblem';
+import About from './assets/components/About';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/problem/all" element={<AllProblems />} />
         <Route path="/problem/:id" element={<Individualproblem />} />
         <Route path="/problem/add" element={<AddProblem />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </Router>
   );
