@@ -1,17 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
 import Header from "../components/header";
-import About from "../components/About";
 import Footer from "../components/footer";
+import About from "../components/About"; // Assuming this imports another 'About' component for use inside this file
 
-function About() {
+function AboutPage() { // Rename this function to avoid conflicts
     return (
         <div>
             <Header />
-            <About/>
-            <Footer/>
+            <About />  {/* Assuming this renders another About component */}
+            <Footer />
         </div>
     );
 }
 
-export default About;
+export default AboutPage;

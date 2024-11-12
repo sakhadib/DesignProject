@@ -11,7 +11,7 @@ import innovation from '../img/innovation.png';
 import growth from '../img/growth.png';
 
 
-export default function About() {
+export default function AboutSection() {
   const teamMembers = [
     {
       name: "Tahsin Islam",
@@ -221,7 +221,7 @@ export default function About() {
 
       {/* Team Section */}
       <Box>
-        <Typography variant="h3" component="h2" sx={{ color: 'primary.main', mb: 4, textAlign: 'center' }}>
+        <Typography variant="h3" component="h2" sx={{ color: '#0D1E4C', mb: 4, textAlign: 'center' }}>
           MAKERS OF MathXplorer
         </Typography>
         <Grid container spacing={4}>
