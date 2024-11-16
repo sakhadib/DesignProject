@@ -9,7 +9,9 @@ import Home from './assets/pages/Home';
 import AllProblems from './assets/pages/allProblem';
 import Individualproblem from './assets/pages/IndividualProblem';
 import ProtectedRoute from './assets/components/protectedroute';
-import AddProblem from './assets/pages/AddProblem';
+import AddProblem from './assets/pages/addProblem';
+import AboutPage from './assets/pages/about';
+
 
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
         <Route path="/problem/all" element={<AllProblems />} />
         <Route path="/problem/:id" element={<Individualproblem />} />
         <Route path="/problem/add" element={<AddProblem />} />
+        <Route path="/about" element={<AboutPage />} />
       </Routes>
     </Router>
   );
