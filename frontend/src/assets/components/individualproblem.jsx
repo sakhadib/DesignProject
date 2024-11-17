@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Typography, Paper, TextField, Button, Box, Chip, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Divider } from '@mui/material';
+import { Container, Typography, Paper, TextField, Button, Box, Chip, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Divider, Dialog } from '@mui/material';
 import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import SplitPane from 'react-split';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -20,6 +21,7 @@ const StyledChip = styled(Chip)(({ theme }) => ({
 const ProblemDetail = () => {
   const [problem, setProblem] = useState(null); // State to hold the fetched problem
   const [answer, setAnswer] = useState('');
+  const [openSplitView, setOpenSplitView] = useState(false); // State to manage split view
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -42,6 +44,7 @@ const ProblemDetail = () => {
 
   return (
     <Container maxWidth="lg">
+      {/** Main Content */}
       <Grid container spacing={3}>
         {/* Problem Content */}
         <Grid item xs={12} md={8}>
@@ -85,9 +88,9 @@ const ProblemDetail = () => {
                   placeholder="Enter your answer here..."
                   margin="normal"
                 />
-                <Button 
-                  type="submit" 
-                  variant="contained" 
+                <Button
+                  type="submit"
+                  variant="contained"
                   color="primary"
                   fullWidth
                   size="large"
@@ -134,6 +137,76 @@ const ProblemDetail = () => {
           </StyledPaper>
         </Grid>
       </Grid>
+
+      {/** Help Button */}
+      <Button
+        variant="contained"
+        color="primary"
+        style={{
+          position: 'fixed',
+          bottom: '16px',
+          right: '16px',
+          zIndex: 10,
+        }}
+        onClick={() => setOpenSplitView(true)}
+      >
+        Help
+      </Button>
+
+      {/** Split View Dialog */}
+      <Dialog
+        fullScreen
+        open={openSplitView}
+        onClose={() => setOpenSplitView(false)}
+      >
+        <Box style={{ height: '100vh', position: 'relative' }}>
+          <Button
+            onClick={() => setOpenSplitView(false)}
+            style={{
+              position: 'absolute',
+              right: '8px',
+              top: '8px',
+              zIndex: 1,
+            }}
+          >
+            Close
+          </Button>
+          <SplitPane
+            split="vertical"
+            minSize={200}
+            defaultSize="50%"
+            style={{ height: '100%' }}
+          >
+            <Box
+              style={{
+                height: '100%',
+                backgroundColor: '#f0f0f0',
+                overflow: 'auto',
+                padding: '16px',
+              }}
+            >
+              <Typography variant="h5">Problem Details</Typography>
+              <ReactMarkdown
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {problem.description}
+              </ReactMarkdown>
+            </Box>
+            <Box
+              style={{
+                height: '100%',
+                backgroundColor: '#e0e0e0',
+                overflow: 'auto',
+                padding: '16px',
+              }}
+            >
+              <Typography variant="h5">Help Content</Typography>
+              <p>Here you can add hints, references, or other helpful information related to the problem.</p>
+            </Box>
+          </SplitPane>
+        </Box>
+      </Dialog>
     </Container>
   );
 };
