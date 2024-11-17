@@ -1,214 +1,268 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Typography, Paper, TextField, Button, Box, Chip, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Divider, Dialog } from '@mui/material';
-import { styled } from '@mui/system';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
-import SplitPane from 'react-split';
+import React, { useState } from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from '@mui/material/IconButton';
+import { toggleButtonClasses } from '@mui/material';
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginTop: theme.spacing(3),
-}));
-
-const StyledChip = styled(Chip)(({ theme }) => ({
-  marginRight: theme.spacing(1),
-  marginBottom: theme.spacing(1),
-}));
-
-const ProblemDetail = () => {
-  const [problem, setProblem] = useState(null); // State to hold the fetched problem
+const ProblemView = () => {
+  const [open, setOpen] = useState(false);
   const [answer, setAnswer] = useState('');
-  const [openSplitView, setOpenSplitView] = useState(false); // State to manage split view
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [message, setMessage] = useState('');
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50); // Percentage width of left panel
 
-  // Fetch problem details from API on component mount or when ID changes
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/problem/${id}/`)
-      .then(response => response.json())
-      .then(data => setProblem(data))
-      .catch(error => console.error('Error fetching problem:', error));
-  }, [id]);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
     console.log('Submitted answer:', answer);
   };
 
-  if (!problem) {
-    return <Typography variant="h5">Loading problem details...</Typography>;
-  }
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (message.trim()) {
+      console.log('Sent message:', message);
+      setMessage('');
+    }
+  };
+
+  const statistics = [
+    { label: 'Max XP', value: 'N/A' },
+    { label: 'Available XP', value: 'N/A' },
+    { label: 'Attempts', value: 'N/A' },
+    { label: 'Solved', value: 'N/A' },
+    { label: 'First Solve', value: 'N/A' },
+  ];
 
   return (
-    <Container maxWidth="lg">
-      {/** Main Content */}
-      <Grid container spacing={3}>
-        {/* Problem Content */}
-        <Grid item xs={12} md={8}>
-          <StyledPaper elevation={3}>
+    <Box sx={{ padding: 3, maxWidth: 1200, margin: '0 auto' }}>
+      {/* Main content */}
+      <Box sx={{ display: 'flex', gap: 3, marginTop: '100px', marginBottom: '60px' }}>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
             <Typography variant="h4" gutterBottom>
-              {problem.title}
+              Test Problem 1
             </Typography>
-            <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-              Created by {problem.author} - For {problem.category}
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Created by avro - For simpleMath
             </Typography>
-            <Box my={2}>
-              {problem.tags && problem.tags.map((tag) => (
-                <StyledChip key={tag} label={tag} color="primary" variant="outlined" />
-              ))}
-            </Box>
-            <Divider />
-            <Box my={3}>
-              <Typography variant="h5" gutterBottom>
-                Problem Statement
-              </Typography>
-              <ReactMarkdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-              >
-                {problem.description}
-              </ReactMarkdown>
-            </Box>
-            <Divider />
-            <Box my={3}>
-              <Typography variant="h5" gutterBottom>
-                Submit Answer
-              </Typography>
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Enter your answer here..."
-                  margin="normal"
-                />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  size="large"
-                >
-                  Submit
-                </Button>
-              </form>
-            </Box>
-          </StyledPaper>
-        </Grid>
 
-        {/* Statistics Sidebar */}
-        <Grid item xs={12} md={4}>
-          <StyledPaper elevation={3}>
+            <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
+              Problem Statement
+            </Typography>
+            <Typography paragraph>
+              What is 1 + 1?
+            </Typography>
+
+            <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
+              Submit Answer
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                placeholder="Enter your answer here..."
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                sx={{ bgcolor: '#1976d2' }}
+              >
+                SUBMIT
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Statistics Card */}
+        <Card sx={{ width: 300 }}>
+          <CardContent>
             <Typography variant="h5" gutterBottom>
               Statistics
             </Typography>
-            <TableContainer>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>Max XP</TableCell>
-                    <TableCell align="right">{problem.statistics?.maxXP || 'N/A'}</TableCell>
+            <Table>
+              <TableBody>
+                {statistics.map((stat) => (
+                  <TableRow key={stat.label}>
+                    <TableCell component="th" scope="row">
+                      {stat.label}
+                    </TableCell>
+                    <TableCell align="right">{stat.value}</TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell>Available XP</TableCell>
-                    <TableCell align="right">{problem.statistics?.availableXP || 'N/A'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Attempts</TableCell>
-                    <TableCell align="right">{problem.statistics?.attempts || 'N/A'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Solved</TableCell>
-                    <TableCell align="right">{problem.statistics?.solved || 'N/A'}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>First Solve</TableCell>
-                    <TableCell align="right">{problem.statistics?.firstSolve || 'N/A'}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </StyledPaper>
-        </Grid>
-      </Grid>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </Box>
 
-      {/** Help Button */}
+      {/* Help Button */}
       <Button
         variant="contained"
         color="primary"
-        style={{
+        onClick={handleOpen}
+        sx={{
           position: 'fixed',
-          bottom: '16px',
-          right: '16px',
+          bottom: 16,
+          right: 16,
           zIndex: 10,
         }}
-        onClick={() => setOpenSplitView(true)}
       >
-        Help
+        HELP
       </Button>
 
-      {/** Split View Dialog */}
-      <Dialog
-        fullScreen
-        open={openSplitView}
-        onClose={() => setOpenSplitView(false)}
-      >
-        <Box style={{ height: '100vh', position: 'relative' }}>
+      {/* Chat Dialog */}
+      <Dialog fullScreen open={open} onClose={handleClose}>
+        <Box sx={{ height: '100vh', display: 'flex', marginTop: '80px' }}>
           <Button
-            onClick={() => setOpenSplitView(false)}
-            style={{
+            onClick={handleClose}
+            sx={{
               position: 'absolute',
-              right: '8px',
-              top: '8px',
-              zIndex: 1,
+              right: 8,
+              top: 8,
+              zIndex: 1
             }}
           >
             Close
           </Button>
-          <SplitPane
-            split="vertical"
-            minSize={200}
-            defaultSize="50%"
-            style={{ height: '100%' }}
+
+          {/* Left Panel - Problem */}
+          <Box
+            sx={{
+              width: `${leftPanelWidth}%`,
+              backgroundColor: '#f0f0f0',
+              padding: '20px',
+              overflow: 'auto',
+              transition: 'width 0.2s ease'
+            }}
           >
-            <Box
-              style={{
-                height: '100%',
-                backgroundColor: '#f0f0f0',
-                overflow: 'auto',
-                padding: '16px',
+            <Typography variant="h5" gutterBottom>
+              TEST PROBLEM 1
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Problem Statement
+            </Typography>
+            <Typography paragraph>
+              What is 1+1?
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Submit Answer
+            </Typography>
+            <TextField
+              fullWidth
+              placeholder="Write your answer here........"
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ bgcolor: '#1976d2' }}
+            >
+              Submit
+            </Button>
+
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Statistic
+              </Typography>
+              <Table>
+                <TableBody>
+                  {statistics.map((stat) => (
+                    <TableRow key={stat.label}>
+                      <TableCell>{stat.label}</TableCell>
+                      <TableCell align="right">{stat.value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Box>
+
+          {/* Right Panel - Chat */}
+          <Box
+            sx={{
+              width: `${100 - leftPanelWidth}%`,
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '20px',
+              overflow: 'auto'
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                p: 2,
+                borderBottom: 1,
+                borderColor: 'divider'
               }}
             >
-              <Typography variant="h5">Problem Details</Typography>
-              <ReactMarkdown
-                remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+              Welcome to ChatBot
+            </Typography>
+
+            <Box sx={{
+              flex: 1,
+              overflow: 'auto',
+              p: 2
+            }}>
+              <Paper
+                elevation={1}
+                sx={{
+                  p: 2,
+                  bgcolor: '#f5f5f5',
+                  maxWidth: '80%'
+                }}
               >
-                {problem.description}
-              </ReactMarkdown>
+                How can I help you today?
+              </Paper>
             </Box>
+
             <Box
-              style={{
-                height: '100%',
-                backgroundColor: '#e0e0e0',
-                overflow: 'auto',
-                padding: '16px',
+              component="form"
+              onSubmit={handleSendMessage}
+              sx={{
+                p: 2,
+                borderTop: 1,
+                borderColor: 'divider',
+                bgcolor: '#f5f5f5',
+                display: 'flex',
+                gap: 1
               }}
             >
-              <Typography variant="h5">Help Content</Typography>
-              <p>Here you can add hints, references, or other helpful information related to the problem.</p>
+              <TextField
+                fullWidth
+                placeholder="Write here..........."
+                size="small"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <IconButton
+                type="submit"
+                disabled={!message.trim()}
+              >
+                <SendIcon />
+              </IconButton>
             </Box>
-          </SplitPane>
+          </Box>
         </Box>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 
-export default ProblemDetail;
+export default ProblemView;
