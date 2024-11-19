@@ -27,7 +27,7 @@ urlpatterns = [
     path('vote/', views.VoteCreate.as_view(), name="vote_create"),                                         # ! POST
     path('vote/<int:pk>/', views.VoteCount.as_view(), name="upvote_count"),                                # ? GET
     
-    # Creating a Problem
+    # Creating a Problem x
     path('problem/', views.ProblemCreate.as_view(), name="problem_create"),                                # ! POST  
     
     # Viewing All Problems
