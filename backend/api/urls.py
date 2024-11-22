@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import answerSubmission
 
 
 
@@ -33,6 +34,10 @@ urlpatterns = [
     # Viewing All Problems
     path('problem/all/', views.AllProblemShow.as_view(), name="all_problem_show"),                         # ? GET  
     path('problem/<int:pk>/', views.SingleProblemShow.as_view(), name="single_problem"),                   # ? GET 
+    
+    # Answer Submission
+    path('submission/', answerSubmission.CreateSubmission.as_view(), name="submission_create"),           # ! POST
+    
     
     # Getting the current user
     path('user/', views.CurrentUser.as_view(), name="current_user"),                                        # ? GET

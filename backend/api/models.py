@@ -69,4 +69,16 @@ class ContestProblem(models.Model):
     def __str__(self):
         return f"{self.problem} in {self.contest}"
     
+
+
+
+
+class Submission(models.Model):
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="submissions")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="submissions")
+    verdict = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return f"{self.author} submitted {self.problem} with verdict {self.verdict}"
