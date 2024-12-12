@@ -4,7 +4,7 @@ import Header from "../components/header";
 import PrivacyPolicy from "../components/privacy";
 import Footer from "../components/footer";
 
-function PrivacyPolicy() { // Rename this function to avoid conflicts
+function Policy() { // Rename this function to avoid conflicts
     return (
         <div>
             <Header />
@@ -14,4 +14,4 @@ function PrivacyPolicy() { // Rename this function to avoid conflicts
     );
 }
 
-export default PrivacyPolicy;
+export default Policy;

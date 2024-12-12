@@ -11,7 +11,7 @@ import Individualproblem from './assets/pages/IndividualProblem';
 import ProtectedRoute from './assets/components/protectedroute';
 import AddProblem from './assets/pages/addProblem';
 import AboutPage from './assets/pages/about';
-import PrivacyPolicy from './assets/components/privacy';
+import PrivacyPolicy from  './assets/pages/privacy'
 
 
 
