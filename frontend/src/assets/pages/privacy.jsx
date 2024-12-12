@@ -1,8 +1,10 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/header";
-import Footer from "../components/footer";
 import PrivacyPolicy from "../components/privacy";
+import Footer from "../components/footer";
 
-function AboutPage() { // Rename this function to avoid conflicts
+function PrivacyPolicy() { // Rename this function to avoid conflicts
     return (
         <div>
             <Header />
