@@ -74,7 +74,7 @@ const ContestRegistration = () => {
             }}
             variant="outlined"
             sx={{
-              backgroundColor: '#f5f5f5',
+              backgroundColor: '#e6f1ff',
               '& .MuiInputBase-input': {
                 fontFamily: 'monospace',
               },
