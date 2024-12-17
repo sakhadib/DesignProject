@@ -11,6 +11,9 @@ import Individualproblem from './assets/pages/IndividualProblem';
 import ProtectedRoute from './assets/components/protectedroute';
 import AddProblem from './assets/pages/addProblem';
 import AboutPage from './assets/pages/about';
+import PrivacyPolicy from  './assets/pages/privacy';
+// import ListContest from './assets/pages/contestList';
+import RegistrationContest from './assets/pages/contestReg';
 
 
 
@@ -39,6 +42,9 @@ function App() {
         <Route path="/problem/:id" element={<Individualproblem />} />
         <Route path="/problem/add" element={<AddProblem />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/privacy" element={<PrivacyPolicy/>}/>
+        {/* <Route path="/contest/all" element= {<ListContest/>}/> */}
+        <Route path="/contest/registration" element={<RegistrationContest/>} />
       </Routes>
     </Router>
   );
