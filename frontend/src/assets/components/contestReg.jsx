@@ -91,7 +91,7 @@ const ContestRegistration = () => {
                   onChange={(e) => setAcceptTerms(e.target.checked)}
                 />
               }
-              label="I accept"
+              label="I accept all terms and conditions"
             />
           </FormControl>
         </Box>
