@@ -12,8 +12,10 @@ import ProtectedRoute from './assets/components/protectedroute';
 import AddProblem from './assets/pages/addProblem';
 import AboutPage from './assets/pages/about';
 import PrivacyPolicy from  './assets/pages/privacy';
-// import ListContest from './assets/pages/contestList';
+import ListContest from './assets/pages/ContestAll';
 import RegistrationContest from './assets/pages/contestReg';
+import ConAfterReg from './assets/pages/ContestPages';
+
 
 
 
@@ -43,8 +45,10 @@ function App() {
         <Route path="/problem/add" element={<AddProblem />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
-        {/* <Route path="/contest/all" element= {<ListContest/>}/> */}
+        <Route path="/contest/all" element= {<ListContest/>}/>
         <Route path="/contest/registration" element={<RegistrationContest/>} />
+        <Route path="/contest/afterreg" element={<ConAfterReg/>} />
+
       </Routes>
     </Router>
   );
