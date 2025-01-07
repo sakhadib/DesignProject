@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,4 +37,16 @@ Route::group([
     Route::post('me', [AuthController::class, 'me']);
     Route::post('signup', [AuthController::class, 'signup']);
 
+});
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'blog'
+], function ($router) {
+    Route::post('create', [BlogController::class, 'createBlog']);
+    Route::post('delete', [BlogController::class, 'deleteBlog']);
+    Route::post('comment', [CommentController::class, 'createComment']);
+    Route::post('comment/edit', [CommentController::class, 'editComment']);
+    Route::post('comment/delete', [CommentController::class, 'deleteComment']);
 });
