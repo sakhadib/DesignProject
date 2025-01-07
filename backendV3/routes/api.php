@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\VoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,12 +42,33 @@ Route::group([
 
 
 Route::group([
+
     'middleware' => 'api',
     'prefix' => 'blog'
+
 ], function ($router) {
+
+    // Blogs
     Route::post('create', [BlogController::class, 'createBlog']);
     Route::post('delete', [BlogController::class, 'deleteBlog']);
+    Route::post('edit', [BlogController::class, 'editBlog']);
+
+    // Get blogs
+    Route::get('all', [BlogController::class, 'allBlogs']);
+    Route::get('/single/{id}', [BlogController::class, 'singleBlog']);
+
+    // Comments
     Route::post('comment', [CommentController::class, 'createComment']);
     Route::post('comment/edit', [CommentController::class, 'editComment']);
     Route::post('comment/delete', [CommentController::class, 'deleteComment']);
+
+    // Votes
+    Route::post('vote', [VoteController::class, 'createVote']);
+    Route::post('vote/delete', [VoteController::class, 'deleteVote']);
+    Route::get('votes/{blog_id}', [VoteController::class, 'getBlogVotes']);
+    
 });
+
+
+
+
