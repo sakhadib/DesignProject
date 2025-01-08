@@ -43,7 +43,7 @@ Route::group([
 
 Route::group([
 
-    'middleware' => 'api',
+    'middleware' => 'api',cd ..
     'prefix' => 'blog'
 
 ], function ($router) {
