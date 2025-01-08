@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\ProblemController;
+use App\Http\Controllers\SubmissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +85,8 @@ Route::group([
 
     Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
     Route::get('all', [ProblemController::class, 'viewAllProblems']);
+
+    Route::post('submit', [SubmissionController::class, 'submit']);
     
 });
 
