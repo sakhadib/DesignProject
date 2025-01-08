@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\ProblemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +44,7 @@ Route::group([
 
 Route::group([
 
-    'middleware' => 'api',cd ..
+    'middleware' => 'api',
     'prefix' => 'blog'
 
 ], function ($router) {
@@ -71,4 +72,18 @@ Route::group([
 
 
 
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'problem'
+
+], function ($router) {
+
+    Route::post('create', [ProblemController::class, 'createProblem']);
+    Route::post('edit', [ProblemController::class, 'editProblem']);
+
+    Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
+    Route::get('all', [ProblemController::class, 'viewAllProblems']);
+    
+});
 
