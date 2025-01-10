@@ -10,6 +10,7 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\Admin_controller;
+use App\Http\Controllers\NoticeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,5 +103,24 @@ Route::group([
 
     Route::get('status', [Admin_controller::class, 'isThisUserAdmin']);
     Route::post('make', [Admin_controller::class, 'makeAdmin']);
+});
+
+
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'notice'
+
+], function ($router) {
+    
+    Route::post('create', [NoticeController::class, 'createNotice']);
+    Route::post('delete', [NoticeController::class, 'deleteNotice']);
+    Route::post('edit', [NoticeController::class, 'updateNotice']);
+
+    Route::get('all', [NoticeController::class, 'allNotices']);
+    Route::get('top', [NoticeController::class, 'topNotices']);
+    Route::get('single/{id}', [NoticeController::class, 'singleNotice']);
+    
 });
 
