@@ -36,6 +36,12 @@ class Problem extends Model
         $this->save();
     }
 
+    public function unpublish()
+    {
+        $this->status = 'unpublished';
+        $this->save();
+    }
+
     public function getTags()
     {
         return json_decode($this->tags);

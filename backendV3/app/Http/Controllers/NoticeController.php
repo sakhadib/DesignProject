@@ -191,4 +191,41 @@ class NoticeController extends Controller
         ]);
     }
 
+
+    /**
+     * * Get Notices by user_id
+     * 
+     * @param $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function userNotices($user_id){
+
+        $user = User::find($user_id);
+        
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        if(!$user->isAdmin()){
+            return response()->json([
+                'message' => 'This user is not an admin. So he/she cannot have any notices'
+            ], 401);
+        }
+
+        $notices = Notice::where('user_id', $user_id)->get();
+
+        if(count($notices) == 0){
+            return response()->json([
+                'message' => 'No notices found'
+            ], 404);
+        }
+
+        return response()->json([
+            'user' => $user,
+            'notices' => $notices
+        ]);
+    }
+
 }

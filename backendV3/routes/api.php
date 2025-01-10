@@ -102,7 +102,13 @@ Route::group([
 ], function ($router) {
 
     Route::get('status', [Admin_controller::class, 'isThisUserAdmin']);
+
     Route::post('make', [Admin_controller::class, 'makeAdmin']);
+    Route::post('remove', [Admin_controller::class, 'removeAdmin']);
+
+    Route::post('problem/approve', [Admin_controller::class, 'approveProblem']);
+    Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
+    Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
 });
 
 
@@ -121,6 +127,8 @@ Route::group([
     Route::get('all', [NoticeController::class, 'allNotices']);
     Route::get('top', [NoticeController::class, 'topNotices']);
     Route::get('single/{id}', [NoticeController::class, 'singleNotice']);
+
+    Route::get('admin/{id}', [NoticeController::class, 'userNotices']);
     
 });
 
