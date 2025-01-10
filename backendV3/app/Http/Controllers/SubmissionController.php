@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log; // Added for logging
 
+use App\Models\Submission;
+use App\Models\User;
+
 use App\Models\Problem;
 
 class SubmissionController extends Controller
@@ -40,6 +43,9 @@ $problem_statement
 
 Correct Answer:
 $actual_answer
+
+Reason Behind Correct Answer:
+$detailed_answer
 
 User's Answer:
 $user_provided_answer
@@ -95,8 +101,17 @@ EOD;
                     // Ensure the score does not exceed total_points and is not negative
                     $score = max(0, min($score, $total_points));
 
+                    $submission = new Submission();
+                    $submission->problem_id = $request->problem_id;
+                    $submission->user_id = auth()->user()->id;
+                    $submission->answer = $user_provided_answer;
+                    $submission->xp = $score;
+
+                    $submission->save();
+
                     return response()->json([
-                        'score' => $score,
+                        'message' => 'Submission Accepted',
+                        'xp_recieved' => $score,
                     ]);
                 } else {
                     // Log the invalid AI response for debugging

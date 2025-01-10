@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\Admin_controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,5 +89,18 @@ Route::group([
 
     Route::post('submit', [SubmissionController::class, 'submit']);
     
+});
+
+
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'admin'
+
+], function ($router) {
+
+    Route::get('status', [Admin_controller::class, 'isThisUserAdmin']);
+    Route::post('make', [Admin_controller::class, 'makeAdmin']);
 });
 

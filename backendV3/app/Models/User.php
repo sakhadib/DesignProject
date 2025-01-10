@@ -63,4 +63,27 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+
+    /**
+     * Returns boolean value if user is admin
+     * 
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        $admin = Admin::where('user_id', $this->id)->first();
+        return $admin ? true : false;
+    }
+
+
+    /**
+     * Make user an admin
+     */
+    public function makeAdmin(){
+        Admin::create([
+            'user_id' => $this->id
+        ]);
+
+    }
 }
