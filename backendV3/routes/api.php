@@ -11,6 +11,7 @@ use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\Admin_controller;
 use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\ContestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,3 +133,33 @@ Route::group([
     
 });
 
+
+
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'contest'
+    ], routes: function ($router) {
+
+    Route::post('create', [ContestController::class, 'createContest']);
+    Route::post('edit', [ContestController::class, 'editContest']);
+    Route::post('delete', [ContestController::class, 'deleteContest']);
+
+    Route::post('problem/add', [ContestController::class, 'addProblem']);
+    Route::post('problem/remove', [ContestController::class, 'removeProblem']);
+
+    Route::post('join', [ContestController::class, 'joinContest']);
+    Route::post('leave', [ContestController::class, 'leaveContest']);
+
+    Route::get('all/upcoming', [ContestController::class, 'allUpcomingContests']);
+    Route::get('all/active', [ContestController::class, 'allActiveContests']);
+    Route::get('all/ended', [ContestController::class, 'allEndedContests']);
+    Route::get('all/my', [ContestController::class, 'myCreatedContests']);
+    Route::get('all/user/{id}', [ContestController::class, 'userCreatedContests']);
+
+    Route::get('single/{id}', [ContestController::class, 'getSingleContest']);
+
+    Route::get('{id}/participants', [ContestController::class, 'contestParticipants']);
+
+
+});

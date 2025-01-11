@@ -32,6 +32,25 @@ class ContestController extends Controller
             'password' => 'required_if:type,private|string',
         ]);
 
+
+        if (!\DateTime::createFromFormat('Y-m-d H:i:s', $request->start_time) || !\DateTime::createFromFormat('Y-m-d H:i:s', $request->end_time)) {
+            return response()->json([
+            'message' => 'Invalid date format. Please use Y-m-d H:i:s format.',
+            ], 400);
+        }
+
+        if($request->start_time <= now()){
+            return response()->json([
+                'message' => 'Start time must be greater than current time',
+            ], 400);
+        }
+
+        if($request->start_time >= $request->end_time){
+            return response()->json([
+                'message' => 'End time must be greater than start time',
+            ], 400);
+        }
+
         $contest = Contest::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -49,6 +68,10 @@ class ContestController extends Controller
             'contest' => $contest,
         ]);
     }
+
+
+
+
 
     /**
      * * Edit a Contest.
@@ -70,6 +93,12 @@ class ContestController extends Controller
             'visibility' => 'required|in:visible,hidden',
             'password' => 'required_if:type,private|string',
         ]);
+
+        if (!\DateTime::createFromFormat('Y-m-d H:i:s', $request->start_time) || !\DateTime::createFromFormat('Y-m-d H:i:s', $request->end_time)) {
+            return response()->json([
+            'message' => 'Invalid date format. Please use Y-m-d H:i:s format.',
+            ], 400);
+        }
 
         $contest = Contest::where('id', $request->contest_id)
             ->where('created_by', auth()->id())
@@ -97,6 +126,9 @@ class ContestController extends Controller
             'contest' => $contest,
         ]);
     }
+
+
+
 
 
     /**
@@ -129,6 +161,10 @@ class ContestController extends Controller
             'message' => 'Contest deleted successfully',
         ]);
     }
+
+
+
+
 
 
     /**
@@ -186,6 +222,11 @@ class ContestController extends Controller
     }
 
 
+
+
+
+
+
     /**
      * * Remove a problem from a contest.
      * Only the creator of the contest can remove problems from it.
@@ -234,6 +275,11 @@ class ContestController extends Controller
     }
 
 
+
+
+
+    
+
     /**
      * * Register for a contest.
      * Any user can register for a contest.
@@ -241,7 +287,7 @@ class ContestController extends Controller
      * @param Request $request -> contest_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registerContest(Request $request)
+    public function joinContest(Request $request)
     {
         $request->validate([
             'contest_id' => 'required|integer',
@@ -261,6 +307,16 @@ class ContestController extends Controller
             ], 400);
         }
 
+        $ContestParticipant = ContestParticipant::where('contest_id', $request->contest_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($ContestParticipant) {
+            return response()->json([
+                'message' => 'Already registered for contest',
+            ], 400);
+        }
+
         $contestParticipant = ContestParticipant::create([
             'contest_id' => $request->contest_id,
             'user_id' => auth()->id(),
@@ -273,6 +329,11 @@ class ContestController extends Controller
     }
 
 
+
+
+
+
+
     /**
      * * Unregister from a contest.
      * Any user can unregister from a contest.
@@ -280,11 +341,25 @@ class ContestController extends Controller
      * @param Request $request -> contest_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function unregisterContest(Request $request)
+    public function leaveContest(Request $request)
     {
         $request->validate([
             'contest_id' => 'required|integer',
         ]);
+
+        $contest = Contest::where('id', $request->contest_id)->first();
+
+        if (!$contest) {
+            return response()->json([
+                'message' => 'Contest not found',
+            ], 404);
+        }
+
+        if($contest->status == 'active' || $contest->status == 'ended'){
+            return response()->json([
+                'message' => 'Can\'t unregister from active/ended contest',
+            ], 400);
+        }
 
         $contestParticipant = ContestParticipant::where('contest_id', $request->contest_id)
             ->where('user_id', auth()->id())
@@ -292,7 +367,7 @@ class ContestController extends Controller
 
         if (!$contestParticipant) {
             return response()->json([
-                'message' => 'Not registered for contest',
+                'message' => 'Not registered for this contest',
             ], 404);
         }
 
@@ -302,6 +377,11 @@ class ContestController extends Controller
             'message' => 'Unregistered from contest successfully',
         ]);
     }
+
+
+
+
+    
 
 
     /**
@@ -314,20 +394,31 @@ class ContestController extends Controller
         $contests = Contest::where('type', 'public')
             ->where('status', 'upcoming')
             ->orderBy('created_at', 'desc')
-            ->get();
-
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
+            ->withCount(['participants', 'problems'])
+            ->with(['user'])
+            ->get(['id', 'title', 'start_time', 'end_time', 'status', 'type']);
 
         return response()->json([
-            'contests' => $contests,
-        ]);
+            'contests' => $contests->map(function ($contest) {
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'start_time' => $contest->start_time,
+                    'end_time' => $contest->end_time,
+                    'status' => $contest->status,
+                    'number_of_participants' => $contest->participants_count,
+                    'number_of_problems' => $contest->problems_count,
+                    'contest_creator' => $contest->user
+                ];
+            }),
+        ]);   
     }
+    
+
+
+
+
+
 
 
     /**
@@ -340,44 +431,69 @@ class ContestController extends Controller
         $contests = Contest::where('type', 'public')
             ->where('status', 'active')
             ->orderBy('created_at', 'desc')
+            ->with(['user'])
+            ->withCount(['participants', 'problems'])
             ->get();
 
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
+        
 
         return response()->json([
-            'contests' => $contests,
+            'contests' => $contests->map(function ($contest) {
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'start_time' => $contest->start_time,
+                    'end_time' => $contest->end_time,
+                    'status' => $contest->status,
+                    'number_of_participants' => $contest->participants_count,
+                    'number_of_problems' => $contest->problems_count,
+                    'contest_creator' => $contest->user
+                ];
+            }),
         ]);
     }
 
 
+
+
+    
+
+
     /**
      * * Get all public ended contests.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function allEndedContests()
     {
         $contests = Contest::where('type', 'public')
             ->where('status', 'ended')
             ->orderBy('created_at', 'desc')
+            ->with(['user'])
+            ->withCount(['participants', 'problems'])
             ->get();
 
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
 
         return response()->json([
-            'contests' => $contests,
+            'contests' => $contests->map(function ($contest) {
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'start_time' => $contest->start_time,
+                    'end_time' => $contest->end_time,
+                    'status' => $contest->status,
+                    'number_of_participants' => $contest->participants_count,
+                    'number_of_problems' => $contest->problems_count,
+                    'contest_creator' => $contest->user
+                ];
+            }),
         ]);
     }
+
+
+
+
+
 
 
     /**
@@ -387,20 +503,36 @@ class ContestController extends Controller
      */
     public function myCreatedContests()
     {
-        $contests = Contest::where('created_by', auth()->id())->orderBy('created_at', 'desc')->get();
-
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
+        $contests = Contest::where('created_by', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->withCount(['participants', 'problems'])
+            ->get();
+        
+        $me = User::where('id', auth()->id())->first();
 
         return response()->json([
-            'contests' => $contests,
+            'message' => 'My created contests',
+            'contests' => $contests->map(function ($contest) {
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'start_time' => $contest->start_time,
+                    'end_time' => $contest->end_time,
+                    'status' => $contest->status,
+                    'number_of_participants' => $contest->participants_count,
+                    'number_of_problems' => $contest->problems_count,
+                ];
+            }),
+            'total' => $contests->count(),
+            'public' => $contests->where('type', 'public')->count(),
+            'private' => $contests->where('type', 'private')->count(),
+            'me' => $me,
         ]);
     }
+
+
+
+
 
 
     /**
@@ -411,9 +543,19 @@ class ContestController extends Controller
      */
     public function userCreatedContests($user_id)
     {
+        $user = User::where('id', $user_id)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+        
         $contests = Contest::where('created_by', $user_id)
                 ->where('type', 'public')
-                ->orderBy('created_at', 'desc')->get();
+                ->orderBy('created_at', 'desc')
+                ->withCount(['participants', 'problems'])
+                ->get();
 
         if(count($contests) == 0){
             return response()->json([
@@ -421,18 +563,29 @@ class ContestController extends Controller
             ], 404);
         }
 
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
 
         return response()->json([
-            'contests' => $contests,
+            'message' => 'Contests created by this user',
+            'contests' => $contests->map(function ($contest) {
+                return [
+                    'id' => $contest->id,
+                    'title' => $contest->title,
+                    'start_time' => $contest->start_time,
+                    'end_time' => $contest->end_time,
+                    'status' => $contest->status,
+                    'number_of_participants' => $contest->participants_count,
+                    'number_of_problems' => $contest->problems_count,
+                ];
+            }),
+            'public' => $contests->where('type', 'public')->count(),
+            'private' => $contests->where('type', 'private')->count(),
+            'user' => $user,
         ]);
     }
+
+
+
+
 
 
     /**
@@ -443,7 +596,22 @@ class ContestController extends Controller
      */
     public function getSingleContest($contest_id)
     {
-        $contest = Contest::where('id', $contest_id)->first();
+        $contest = Contest::where('id', $contest_id)
+            ->with(['user'])
+            ->withCount(['participants', 'problems'])
+            ->first(['id', 'title', 'description', 'start_time', 'end_time', 'type']);
+
+        $returnable_contest = [
+            'id' => $contest->id,
+            'title' => $contest->title,
+            'description' => $contest->description,
+            'start_time' => $contest->start_time,
+            'end_time' => $contest->end_time,
+            'type' => $contest->type,
+            'number_of_participants' => $contest->participants_count,
+            'number_of_problems' => $contest->problems_count,
+            'contest_creator' => $contest->user,
+        ];
 
         if (!$contest) {
             return response()->json([
@@ -451,18 +619,18 @@ class ContestController extends Controller
             ], 404);
         }
 
-        if ($contest->status == 'upcoming'){
+        if ($contest->status == 'upcoming') {
             return response()->json([
                 'message' => 'Can\'t access upcoming contest',
             ], 400);
         }
 
-        if($contest->type == 'private'){
+        if ($contest->type == 'private') {
             $contestParticipant = ContestParticipant::where('contest_id', $contest_id)
                 ->where('user_id', auth()->id())
                 ->first();
 
-            if(!$contestParticipant){
+            if (!$contestParticipant) {
                 return response()->json([
                     'message' => 'You are not registered for this contest',
                 ], 403);
@@ -471,104 +639,30 @@ class ContestController extends Controller
 
         // now the contest is either active or ended and also if private then the user is registered for it
 
-        $Problems = [];
-        $contestProblems = ContestProblem::where('contest_id', $contest_id)->orderBy('order', 'asc')->get();
-
-        foreach ($contestProblems as $contestProblem) {
-            $problem = Problem::where('id', $contestProblem->problem_id)->first();
-            $Problems[] = [
-                'problem_id' => $problem->id,
-                'title' => $problem->title,
-                'xp' => $problem->xp,
-                'points' => $contestProblem->points,
-                'order' => $contestProblem->order,
-            ];
-        }
+        $contestProblems = ContestProblem::where('contest_id', $contest_id)
+            ->orderBy('order', 'asc')
+            ->with(['problem'])
+            ->get()
+            ->map(function ($contestProblem) {
+                return [
+                    'id' => $contestProblem->problem->id,
+                    'title' => $contestProblem->problem->title,
+                    'xp' => $contestProblem->problem->xp,
+                    'points' => $contestProblem->points,
+                    'order' => $contestProblem->order,
+                    'tags' => json_decode($contestProblem->problem->tags), // Decode tags as JSON
+                ];
+            });
 
         return response()->json([
-            'contest' => $contest,
-            'problems' => $Problems
+            'contest' => $returnable_contest,
+            'problems' => $contestProblems,
         ]);
     }
 
 
 
-    /**
-     * * Get contests of a date or earlier.
-     * 
-     * @param string $date
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function contestsOfDate($date)
-    {
-        $validatedDate = \DateTime::createFromFormat('Y-m-d', $date);
-        if (!$validatedDate || $validatedDate->format('Y-m-d') !== $date) {
-            return response()->json([
-                'message' => 'Invalid date format. Please use Y-m-d format.',
-            ], 400);
-        }
-    
-        $contests = Contest::where('start_time', '<=', $date)->get();
 
-        if(count($contests) == 0){
-            return response()->json([
-                'message' => 'No contests found',
-            ], 404);
-        }
-
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
-    
-        return response()->json([
-            'contests' => $contests,
-        ]);
-    }
-
-
-    /**
-     * * Get contest of a date range.
-     * 
-     * @param string $start_date
-     * @param string $end_date
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function contestsOfDateRange($start_date, $end_date)
-    {
-        $validatedStartDate = \DateTime::createFromFormat('Y-m-d', $start_date);
-        $validatedEndDate = \DateTime::createFromFormat('Y-m-d', $end_date);
-        if (!$validatedStartDate || $validatedStartDate->format('Y-m-d') !== $start_date || !$validatedEndDate || $validatedEndDate->format('Y-m-d') !== $end_date) {
-            return response()->json([
-                'message' => 'Invalid date format. Please use Y-m-d format.',
-            ], 400);
-        }
-    
-        $contests = Contest::where('start_time', '>=', $start_date)
-            ->where('end_time', '<=', $end_date)
-            ->get();
-
-        if(count($contests) == 0){
-            return response()->json([
-                'message' => 'No contests found',
-            ], 404);
-        }
-
-        foreach($contests as $contest){
-            $number_of_participants = ContestParticipant::where('contest_id', $contest->id)->count();
-            $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
-
-            $contest->number_of_participants = $number_of_participants;
-            $contest->number_of_problems = $number_of_problems;
-        }
-    
-        return response()->json([
-            'contests' => $contests,
-        ]);
-    }
 
 
     /**
@@ -587,89 +681,19 @@ class ContestController extends Controller
             ], 404);
         }
 
-        $contestParticipants = ContestParticipant::where('contest_id', $contest_id)->get();
+        $contestParticipants = ContestParticipant::where('contest_id', $contest_id)
+        ->with(['user'])
+        ->get();
 
-        $participants = [];
-        foreach($contestParticipants as $contestParticipant){
-            $user = User::where('id', $contestParticipant->user_id)->first();
-            $participants[] = [
-                'user_id' => $user->id,
-                'name' => $user->username,
-                'registration_time' => $contestParticipant->created_at,
-            ];
-        }
 
         return response()->json([
-            'participants' => $participants,
+            'participants' => $contestParticipants->map(function ($contestParticipant) {
+                return [
+                    'user_id' => $contestParticipant->user->id,
+                    'username' => $contestParticipant->user->username,
+                    'registration_time' => $contestParticipant->created_at,
+                ];
+            }),
         ]);
-    }
-
-
-    /**
-     * * Get all problems of a contest.
-     * 
-     * @param int $contest_id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function contestProblems($contest_id)
-    {
-        $contest = Contest::where('id', $contest_id)->first();
-
-        if (!$contest) {
-            return response()->json([
-                'message' => 'Contest not found',
-            ], 404);
-        }
-
-        $contestProblems = ContestProblem::where('contest_id', $contest_id)
-                                        ->orderBy('order', 'asc')->get();
-
-        $problems = [];
-        foreach($contestProblems as $contestProblem){
-            $problem = Problem::where('id', $contestProblem->problem_id)->first();
-            $problems[] = [
-                'problem_id' => $problem->id,
-                'title' => $problem->title,
-                'points' => $contestProblem->points,
-                'order' => $contestProblem->order,
-            ];
-        }
-
-        return response()->json([
-            'problems' => $problems,
-        ]);
-    }
-
-
-
-    /**
-     * * Get contest status.
-     * 
-     * @param int $contest_id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function contestStatus($contest_id)
-    {
-        $contest = Contest::where('id', $contest_id)->first();
-
-        if (!$contest) {
-            return response()->json([
-                'message' => 'Contest not found',
-            ], 404);
-        }
-
-        return response()->json([
-            'contest' => $contest,
-        ]);
-    }
-
-
-    
-
-
-
-
-    
-
-    
+    }    
 }

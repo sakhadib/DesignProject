@@ -114,30 +114,19 @@ class ProblemController extends Controller
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get();
+        $problems = Problem::where('status', 'published')->get(['title', 'xp', 'tags'])->map(function ($problem) {
+            $problem->tags = json_decode($problem->tags, true);
+            return $problem;
+        });
 
-        $all_problems = [];
-
-        foreach ($problems as $problem) {
-            $prob_title = $problem->title;
-            $prob_xp = $problem->xp;
-            $prob_tags = json_decode($problem->tags, true);
-
-            $all_problems[] = [
-                'title' => $prob_title,
-                'xp' => $prob_xp,
-                'tags' => $prob_tags
-            ];
-        }
-
-        if(count($all_problems) === 0) {
+        if(count($problems) === 0) {
             return response()->json([
                 'message' => 'No problems found'
             ], 404);
         }
 
         return response()->json([
-            'problems' => $all_problems
+            'problems' => $problems
         ]);
     }
 }

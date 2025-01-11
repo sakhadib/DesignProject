@@ -14,12 +14,12 @@ class ContestParticipant extends Model
         'user_id',
     ];
 
-    //constructor
-    public function __construct($contest_id, $user_id)
-    {
-        $this->contest_id = $contest_id;
-        $this->user_id = $user_id;
-    }
+    // //constructor
+    // public function __construct($contest_id, $user_id)
+    // {
+    //     $this->contest_id = $contest_id;
+    //     $this->user_id = $user_id;
+    // }
 
     public function contest()
     {

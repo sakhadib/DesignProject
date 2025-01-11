@@ -26,5 +26,16 @@ class Contest extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+
+    public function problems()
+    {
+        return $this->hasMany(ContestProblem::class);
+    }
+
+    public function participants()
+    {
+        return $this->hasMany(ContestParticipant::class);
+    }
+
     
 }
