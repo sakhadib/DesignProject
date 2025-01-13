@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Blog, Comment, Vote, Problem, Contest, ContestProblem
+from .models import Blog, Comment, Vote, Problem, Contest, ContestProblem, Submission
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -260,3 +260,15 @@ class ContestProblemSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         contest_problem = ContestProblem.objects.create(**validated_data)
         return contest_problem
+    
+    
+    
+
+class SubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submission
+        fields = ["id", "problem", "author", "verdict", "created_at", "updated_at"]
+        extra_kwargs = {
+            "author": {"read_only": True},
+            "verdict": {"read_only": True},  # Ensure verdict is read-only
+        }
