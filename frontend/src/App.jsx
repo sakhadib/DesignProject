@@ -3,12 +3,22 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Signin from './assets/pages/Signin';
 import Signup from './assets/pages/Signup';
 import BlogHome from './assets/pages/BlogHome';
-import BlogWrite from './assets/pages/BlogWrite';
+import BlogWrite from './assets/pages/Blogwrite';
 import BlogPostDisplay from './assets/pages/BlogDisplay'; 
 import Home from './assets/pages/Home';
-import AllProblems from './assets/pages/AllProblem';
+import AllProblems from './assets/pages/allProblem';
 import Individualproblem from './assets/pages/IndividualProblem';
 import ProtectedRoute from './assets/components/protectedroute';
+import AddProblem from './assets/pages/addProblem';
+import AboutPage from './assets/pages/about';
+import PrivacyPolicy from  './assets/pages/privacy';
+import ListContest from './assets/pages/ContestAll';
+import RegistrationContest from './assets/pages/contestReg';
+import ConAfterReg from './assets/pages/ContestPages';
+import AnnouncementsPage from './assets/pages/AnnouncementPage';
+
+
+
 
 function App() {
   return (
@@ -33,6 +43,13 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/problem/all" element={<AllProblems />} />
         <Route path="/problem/:id" element={<Individualproblem />} />
+        <Route path="/problem/add" element={<AddProblem />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/privacy" element={<PrivacyPolicy/>}/>
+        <Route path="/contest/all" element= {<ListContest/>}/>
+        <Route path="/contest/registration" element={<RegistrationContest/>} />
+        <Route path="/contest/afterreg" element={<ConAfterReg/>} />
+        <Route path="/announcement" element={<AnnouncementsPage/>}/>
       </Routes>
     </Router>
   );

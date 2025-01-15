@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import answerSubmission
 
 
 
@@ -27,12 +28,16 @@ urlpatterns = [
     path('vote/', views.VoteCreate.as_view(), name="vote_create"),                                         # ! POST
     path('vote/<int:pk>/', views.VoteCount.as_view(), name="upvote_count"),                                # ? GET
     
-    # Creating a Problem
+    # Creating a Problem x
     path('problem/', views.ProblemCreate.as_view(), name="problem_create"),                                # ! POST  
     
     # Viewing All Problems
     path('problem/all/', views.AllProblemShow.as_view(), name="all_problem_show"),                         # ? GET  
     path('problem/<int:pk>/', views.SingleProblemShow.as_view(), name="single_problem"),                   # ? GET 
+    
+    # Answer Submission
+    path('submission/', answerSubmission.CreateSubmission.as_view(), name="submission_create"),           # ! POST
+    
     
     # Getting the current user
     path('user/', views.CurrentUser.as_view(), name="current_user"),                                        # ? GET
