@@ -161,5 +161,8 @@ Route::group(
 
     Route::get('{id}/participants', [ContestController::class, 'contestParticipants']);
 
+    Route::get('history', [ContestController::class, 'myParticipatedContests']);
+    Route::get('history/user/{id}', [ContestController::class, 'userParticipatedContests']);
+
 
 });

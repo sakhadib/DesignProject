@@ -9,6 +9,7 @@ use App\Models\ContestProblem;
 use App\Models\ContestParticipant;
 use App\Models\Problem;
 use App\Models\User;
+use App\Models\Submission;
 
 class ContestController extends Controller
 {
@@ -696,4 +697,84 @@ class ContestController extends Controller
             }),
         ]);
     }    
+
+
+
+
+
+
+    /**
+     * * Get My Participated Contests.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function myParticipatedContests()
+    {
+        $contests = ContestParticipant::where('user_id', auth()->id())
+            ->with(['contest'])
+            ->get();
+
+        return response()->json([
+            'contests' => $contests->map(function ($contestParticipant) {
+                return [
+                    'id' => $contestParticipant->contest->id,
+                    'title' => $contestParticipant->contest->title,
+                    'start_time' => $contestParticipant->contest->start_time,
+                    'end_time' => $contestParticipant->contest->end_time,
+                    'status' => $contestParticipant->contest->status,
+                    'type' => $contestParticipant->contest->type,
+                    'contest_creator' => [
+                        'id' => $contestParticipant->contest->user->id,
+                        'username' => $contestParticipant->contest->user->username,
+                    ],
+                ];
+            }),
+        ]);
+    }
+
+
+
+
+
+    /**
+     * * Get user X's Participated Contests.
+     * 
+     * @param int $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function userParticipatedContests($user_id)
+    {
+        $user = User::where('id', $user_id)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $contests = ContestParticipant::where('user_id', $user_id)
+            ->with(['contest'])
+            ->get();
+
+        return response()->json([
+            'contests' => $contests->map(function ($contestParticipant) {
+                return [
+                    'id' => $contestParticipant->contest->id,
+                    'title' => $contestParticipant->contest->title,
+                    'start_time' => $contestParticipant->contest->start_time,
+                    'end_time' => $contestParticipant->contest->end_time,
+                    'status' => $contestParticipant->contest->status,
+                    'type' => $contestParticipant->contest->type,
+                    'contest_creator' => [
+                        'id' => $contestParticipant->contest->user->id,
+                        'username' => $contestParticipant->contest->user->username,
+                    ],
+                ];
+            }),
+        ]);
+    }
+
+
+
+    
 }

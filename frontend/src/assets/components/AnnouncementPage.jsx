@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -6,73 +6,43 @@ import {
   Typography,
   Container,
   Box,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const announcements = [
-  {
-    id: 1,
-    title: "ANNOUNCING THE TOP 41 TEAMS FOR THE INTER-UNIVERSITY PROJECT SHOW 2025!",
-    date: "January 12, 2025",
-    content: `🎉 Announcing the Top 41 Teams for the Inter-University Project Show 2025 🎉
-
-As part of the highly anticipated UIU CSE FEST 2025, we are thrilled to unveil the Top 41 Teams advancing to the next phase of the Inter-University Project Show 2025!
-
-After a meticulous review of numerous outstanding submissions, these 41 teams have risen to the top, demonstrating exceptional innovation and technical prowess. Congratulations to the selected teams—your hard work and creativity have earned you a well-deserved place in this prestigious competition!
-
-To those who were not selected, we sincerely appreciate your efforts and encourage you to keep striving for excellence. Every step forward is a step closer to success, and more opportunities await to showcase your talents. Keep pushing the boundaries of innovation!
-
-Important Notice for the Top 41 Teams:
-📧 Please monitor your email inbox for detailed instructions and next steps.
-🚀 Registration for the next phase is now open—don't miss out!
-
-The countdown to January 18, 2025, is on! We're excited to see the groundbreaking ideas and projects these teams will bring to the spotlight.`
-  },
-  {
-    id: 2,
-    title: "UIU CSE FEST 2025: INTRA TABLE TENNIS TOURNAMENT FOR CSE DEPT STUDENTS & ALUMNI",
-    date: "January 12, 2025",
-    content: "🏓 Details about the table tennis tournament...",
-  },
-  {
-    id: 3,
-    title: "UIU CSE FEST 2025: INTRA BADMINTON TOURNAMENT FOR CSE DEPT STUDENTS & ALUMNI",
-    date: "January 12, 2025",
-    content: "🏸 Details about the badminton tournament...",
-  },
-  {
-    id: 4,
-    title: "PAYMENT PROCEDURE AND DEADLINE FOR UIU IUPC 2025 SHORTLISTED TEAMS",
-    date: "January 12, 2025",
-    content: "🎉 Payment procedure and deadline details...",
-  },
-  {
-    id: 5,
-    title: "Check the Demo track & Gear Up for the Ultimate LFR Showdown!",
-    date: "January 12, 2025",
-    content: "Details about the LFR showdown...",
-  },
-  {
-    id: 6,
-    title: "UIU IUPC 2025 - SHORTLISTED TEAMS ANNOUNCEMENT",
-    date: "January 11, 2025",
-    content: "Shortlisted teams announcement details...",
-  },
-  {
-    id: 7,
-    title: "SLOT DISTRIBUTION FOR UIU IUPC 2025",
-    date: "January 10, 2025",
-    content: "Slot distribution details...",
-  },
-  {
-    id: 8,
-    title: "UIU CSE FEST 2025 - SCAVENGER HUNT ANNOUNCEMENT 🏃✨⚡",
-    date: "January 10, 2025",
-    content: "Scavenger hunt announcement details...",
-  }
-];
-
 export default function AnnouncementsPage() {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch announcements from API
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/notice/all/');
+        if (!response.ok) {
+          throw new Error('Failed to fetch announcements');
+        }
+        const data = await response.json();
+        setAnnouncements(
+          data.notices.map((notice) => ({
+            id: notice.id,
+            title: notice.title,
+            content: notice.content,
+            date: new Date(notice.created_at).toLocaleDateString(), // Format the date
+          }))
+        );
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
@@ -81,10 +51,10 @@ export default function AnnouncementsPage() {
           sx={{ 
             color: 'text.secondary',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em'
+            letterSpacing: '0.1em',
           }}
         >
-          UIU CSE FEST 2025
+          MathXplorer
         </Typography>
         <Typography 
           variant="h3" 
@@ -92,76 +62,99 @@ export default function AnnouncementsPage() {
           sx={{ 
             fontWeight: 900,
             textTransform: 'uppercase',
-            mb: 4 
+            mb: 4,
           }}
         >
           ANNOUNCEMENTS
         </Typography>
       </Box>
 
-      {announcements.map((announcement) => (
-        <Accordion 
-          key={announcement.id}
-          sx={{
-            mb: 1,
-            '&:before': {
-              display: 'none',
-            },
-            boxShadow: 'none',
-            border: '1px solid',
-            borderColor: 'divider',
-            '&:first-of-type': {
-              borderTopLeftRadius: '4px',
-              borderTopRightRadius: '4px',
-            },
-            '&:last-of-type': {
-              borderBottomLeftRadius: '4px',
-              borderBottomRightRadius: '4px',
-            },
-          }}
+      {loading && (
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {!loading && !error && announcements.length === 0 && (
+        <Typography 
+          variant="body1" 
+          sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}
         >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+          No announcements available.
+        </Typography>
+      )}
+
+      {!loading &&
+        !error &&
+        announcements.map((announcement) => (
+          <Accordion 
+            key={announcement.id}
             sx={{
-              '& .MuiAccordionSummary-content': {
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
+              mb: 1,
+              '&:before': {
+                display: 'none',
+              },
+              boxShadow: 'none',
+              border: '1px solid',
+              borderColor: 'divider',
+              '&:first-of-type': {
+                borderTopLeftRadius: '4px',
+                borderTopRightRadius: '4px',
+              },
+              '&:last-of-type': {
+                borderBottomLeftRadius: '4px',
+                borderBottomRightRadius: '4px',
               },
             }}
           >
-            <Typography 
-              sx={{ 
-                flex: '1 1 auto',
-                fontWeight: 500,
-                pr: 2
-              }}
-            >
-              {announcement.title}
-            </Typography>
-            <Typography 
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: '0.875rem'
-              }}
-            >
-              {announcement.date}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
               sx={{
-                whiteSpace: 'pre-wrap',
-                color: 'text.secondary',
-                lineHeight: 1.7
+                '& .MuiAccordionSummary-content': {
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                },
               }}
             >
-              {announcement.content}
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-      ))}
+              <Typography 
+                sx={{ 
+                  flex: '1 1 auto',
+                  fontWeight: 500,
+                  pr: 2,
+                }}
+              >
+                {announcement.title}
+              </Typography>
+              <Typography 
+                sx={{ 
+                  color: 'text.secondary',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {announcement.date}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  color: 'text.secondary',
+                  lineHeight: 1.7,
+                }}
+              >
+                {announcement.content}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        ))}
     </Container>
   );
 }
