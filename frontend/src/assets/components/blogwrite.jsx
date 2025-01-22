@@ -6,6 +6,7 @@ import remarkMath from 'remark-math';
 import rehypeMathjax from 'rehype-mathjax';
 import axios from '../../api';
 import { useNavigate } from 'react-router-dom';
+import { deepPurple, deepOrange, blue, green, red } from '@mui/material/colors';
 
 export default function BlogWriter() {
   const [title, setTitle] = useState('');
@@ -23,16 +24,24 @@ export default function BlogWriter() {
         content,
         category,
       });
+  
       console.log('Blog post submitted:', response.data);
-
+  
+      // Extract the blog ID from the API response
+      const blogId = response.data.blog.id;
+  
+      if (!blogId) {
+        throw new Error('Blog ID not returned from the API.');
+      }
+  
       // Clear the form and error state
       setTitle('');
       setContent('');
       setCategory('');
       setError(null);
-
+  
       // Redirect to the newly created blog page
-      navigate(`/blog/${response.data.id}`);
+      navigate(`/blog/${blogId}`);
     } catch (err) {
       if (err.response && err.response.data) {
         setError(err.response.data); // Set the error response from the server
@@ -41,6 +50,7 @@ export default function BlogWriter() {
       }
     }
   };
+  
 
   return (
     <Container maxWidth="lg">

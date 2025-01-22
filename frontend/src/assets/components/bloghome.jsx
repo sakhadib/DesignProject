@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     TextField,
     Button,
@@ -11,6 +11,8 @@ import {
     Avatar,
     Pagination,
     Container,
+    Collapse,
+    Chip,
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 import { useTheme, useMediaQuery } from '@mui/material';
@@ -28,9 +30,9 @@ const BlogLayout = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [categories, setCategories] = useState(['All categories']);
     const [blogPosts, setBlogPosts] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('All categories');
+    const [selectedCategory, setSelectedCategory] = useState([]);
+    const [expanded, setExpanded] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const postsPerPage = 10;
@@ -44,7 +46,10 @@ const BlogLayout = () => {
         const fetchBlogPosts = async () => {
             try {
                 const response = await axios.get('/blog/all');
-                setBlogPosts(response.data.blogs); // Use the "blogs" array from API response
+                const sortedPosts = response.data.blogs.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                ); // Sort blogs by created_at in descending order
+                setBlogPosts(sortedPosts);
             } catch (error) {
                 console.error('Error fetching blog posts:', error);
             }
@@ -53,22 +58,30 @@ const BlogLayout = () => {
         fetchBlogPosts();
     }, []);
 
-    // Extract categories dynamically from the blog posts
-    useEffect(() => {
-        const fetchCategories = () => {
-            const categoriesFromPosts = [
-                ...new Set(blogPosts.map((post) => post.category)),
-            ];
-            setCategories(['All categories', ...categoriesFromPosts]);
-        };
-
-        fetchCategories();
-    }, [blogPosts]);
-
-    const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
+    const handleCategoryToggle = (category) => {
+        setSelectedCategory((prev) =>
+            prev.includes(category)
+                ? prev.filter((c) => c !== category)
+                : [...prev, category]
+        );
         setCurrentPage(1);
     };
+
+    const handleToggleExpand = () => {
+        setExpanded(!expanded);
+    };
+
+    const categoryCounts = useMemo(() => {
+        const counts = {};
+        blogPosts.forEach((post) => {
+            counts[post.category] = (counts[post.category] || 0) + 1;
+        });
+        return counts;
+    }, [blogPosts]);
+
+    const categories = useMemo(() => {
+        return ['All Categories', ...Object.keys(categoryCounts)];
+    }, [categoryCounts]);
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -85,7 +98,9 @@ const BlogLayout = () => {
 
     const filteredPosts = blogPosts.filter((post) => {
         const matchesCategory =
-            selectedCategory === 'All categories' || post.category === selectedCategory;
+            selectedCategory.length === 0 ||
+            selectedCategory.includes('All Categories') ||
+            selectedCategory.includes(post.category);
         const matchesSearch =
             post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -143,48 +158,70 @@ const BlogLayout = () => {
                     )}
                 </Box>
 
-                <Box component="nav" display="flex" flexDirection="column" mb={4}>
-                    <Box display="flex" alignItems="center" gap={1} mb={2} width="100%">
-                        <TextField
-                            variant="outlined"
-                            placeholder="Search..."
-                            size="small"
-                            fullWidth
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            InputProps={{
-                                endAdornment: (
-                                    <IconButton>
-                                        <SearchIcon />
-                                    </IconButton>
-                                ),
-                                sx: {
-                                    backgroundColor: '#f0f0f0',
-                                    color: 'black',
-                                    borderRadius: '25px',
-                                },
-                            }}
-                        />
-                    </Box>
+                <Box component="nav" mb={4}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Search..."
+                        size="small"
+                        fullWidth
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        InputProps={{
+                            endAdornment: (
+                                <IconButton>
+                                    <SearchIcon />
+                                </IconButton>
+                            ),
+                            sx: {
+                                backgroundColor: '#f0f0f0',
+                                color: 'black',
+                                borderRadius: '25px',
+                            },
+                        }}
+                        sx={{ mb: 2 }}
+                    />
 
-                    <Box
-                        display="flex"
-                        gap={2}
-                        overflow="auto"
-                        whiteSpace="nowrap"
-                        sx={{ justifyContent: 'flex-start' }}
-                    >
-                        {categories.map((category, index) => (
-                            <Button
-                                key={index}
-                                variant={selectedCategory === category ? 'contained' : 'outlined'}
-                                color="primary"
-                                onClick={() => handleCategoryClick(category)}
-                                sx={{ borderRadius: 50 }}
-                            >
-                                {category}
+                    <Box>
+                        <Collapse in={expanded} collapsedSize={40} timeout="auto">
+                            <Grid container spacing={1}>
+                                {categories.map((category) => (
+                                    <Grid item key={category}>
+                                        <Chip
+                                            label={
+                                                category === 'All Categories'
+                                                    ? 'All Categories'
+                                                    : `${category} (${categoryCounts[category] || 0})`
+                                            }
+                                            onClick={() =>
+                                                category === 'All Categories'
+                                                    ? setSelectedCategory([])
+                                                    : handleCategoryToggle(category)
+                                            }
+                                            color={
+                                                selectedCategory.includes(category) ||
+                                                (category === 'All Categories' &&
+                                                    selectedCategory.length === 0)
+                                                    ? 'primary'
+                                                    : 'default'
+                                            }
+                                            variant={
+                                                selectedCategory.includes(category) ||
+                                                (category === 'All Categories' &&
+                                                    selectedCategory.length === 0)
+                                                    ? 'filled'
+                                                    : 'outlined'
+                                            }
+                                            sx={{ cursor: 'pointer' }}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Collapse>
+                        <Box textAlign="center" mt={2}>
+                            <Button onClick={handleToggleExpand} variant="text">
+                                {expanded ? 'Collapse ▲' : 'Expand ▼'}
                             </Button>
-                        ))}
+                        </Box>
                     </Box>
                 </Box>
 
@@ -222,7 +259,7 @@ const BlogLayout = () => {
                                             {post.user.username.charAt(0).toUpperCase()}
                                         </Avatar>
                                         <Box ml={2}>
-                                            <Typography variant="body2">Author: {post.user.username}</Typography>
+                                            <Typography variant="body2">{post.user.username}</Typography>
                                             <Typography variant="caption" color="textSecondary">
                                                 {new Date(post.created_at).toLocaleDateString()}
                                             </Typography>

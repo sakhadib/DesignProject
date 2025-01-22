@@ -73,7 +73,7 @@ const ProblemView = () => {
       <Box sx={{ display: "flex", gap: 3, marginTop: "100px", marginBottom: "60px" }}>
         <Card sx={{ flex: 1 }}>
           <CardContent>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
               {problem.title}
             </Typography>
             {/* <Typography variant="body2" color="text.secondary" gutterBottom>
