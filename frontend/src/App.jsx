@@ -27,7 +27,7 @@ function App() {
         <Route path="/" element={<Navigate to="/signup" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
-        <Route path="/blog" element={<BlogHome />} />
+        <Route path="/blog/all" element={<BlogHome />} />
         
         {/* Protect the /blog/write route */}
         <Route

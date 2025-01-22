@@ -76,7 +76,7 @@ function Header() {
         <ListItem component={Link} to="/contest">
           <ListItemText primary="Contest" />
         </ListItem>
-        <ListItem component={Link} to="/blog">
+        <ListItem component={Link} to="/blog/all">
           <ListItemText primary="Blogs" />
         </ListItem>
         <ListItem component={Link} to="/about">
@@ -130,7 +130,7 @@ function Header() {
             <NavLink to="/home">Home</NavLink>
             <NavLink to="/problem/all">Problems</NavLink>
             <NavLink to="/contest">Contest</NavLink>
-            <NavLink to="/blog">Blogs</NavLink>
+            <NavLink to="/blog/all">Blogs</NavLink>
             <NavLink to="/about">About</NavLink>
           </Box>
         </Box>
