@@ -26,8 +26,8 @@ const AllProblems = () => {
   const [problems, setProblems] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("title");
+  const [order, setOrder] = useState("desc");
+  const [orderBy, setOrderBy] = useState("id");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [expanded, setExpanded] = useState(false);
@@ -155,7 +155,7 @@ const AllProblems = () => {
       </Box>
 
       <Box sx={{ mb: 2 }}>
-        <Collapse in={expanded} collapsedSize={40}>
+        <Collapse in={expanded} collapsedSize={40} timeout="auto">
           <Grid container spacing={1}>
             {categories.map((category) => (
               <Grid item key={category}>
@@ -172,13 +172,15 @@ const AllProblems = () => {
                   }
                   color={
                     selectedCategories.includes(category) ||
-                    (category === "All Problems" && selectedCategories.length === 0)
+                    (category === "All Problems" &&
+                      selectedCategories.length === 0)
                       ? "primary"
                       : "default"
                   }
                   variant={
                     selectedCategories.includes(category) ||
-                    (category === "All Problems" && selectedCategories.length === 0)
+                    (category === "All Problems" &&
+                      selectedCategories.length === 0)
                       ? "filled"
                       : "outlined"
                   }
@@ -200,6 +202,7 @@ const AllProblems = () => {
           <Table sx={{ minWidth: 650 }} aria-label="all problems table">
             <TableHead>
               <TableRow>
+                <TableHeader label="ID" property="id" />
                 <TableHeader label="Title" property="title" />
                 <TableHeader label="XP" property="xp" />
                 <TableHeader label="Target" property="tags.target" />
@@ -211,7 +214,7 @@ const AllProblems = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((problem, index) => (
                   <TableRow
-                    key={index}
+                    key={problem.id}
                     hover
                     onClick={() => navigate(`/problem/single/${problem.id}`)}
                     sx={{
@@ -223,6 +226,7 @@ const AllProblems = () => {
                       },
                     }}
                   >
+                    <TableCell>{problem.id}</TableCell>
                     <TableCell>{problem.title}</TableCell>
                     <TableCell>{problem.xp}</TableCell>
                     <TableCell>{problem.tags.target}</TableCell>
@@ -242,18 +246,18 @@ const AllProblems = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
             backgroundColor: "#1565C0",
-            color: "white", // Changes text color to white
+            color: "white",
             "& .MuiTablePagination-actions": {
-              color: "white", // Ensures pagination controls are visible
+              color: "white",
             },
             "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-              color: "white", // Ensures labels and displayed rows are visible
+              color: "white",
             },
             "& .MuiTablePagination-select": {
-              color: "white", // Changes the dropdown text color
+              color: "white",
             },
             "& .MuiTablePagination-selectIcon": {
-              color: "white", // Changes the dropdown arrow color
+              color: "white",
             },
           }}
         />

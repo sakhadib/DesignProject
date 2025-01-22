@@ -42,7 +42,7 @@ function App() {
         <Route path="/blog/:id" element={<BlogPostDisplay />} />
         <Route path="/home" element={<Home />} />
         <Route path="/problem/all" element={<AllProblems />} />
-        <Route path="/problem/:id" element={<Individualproblem />} />
+        <Route path="/problem/single/:id" element={<Individualproblem />} />
         <Route path="/problem/add" element={<AddProblem />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
