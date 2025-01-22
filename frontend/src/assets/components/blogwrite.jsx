@@ -18,7 +18,7 @@ export default function BlogWriter() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/blog/', {
+      const response = await axios.post('/blog/create', {
         title,
         content,
         category,

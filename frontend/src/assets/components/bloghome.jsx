@@ -21,6 +21,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { deepPurple, deepOrange, blue, green, red } from '@mui/material/colors';
 
 const BlogLayout = () => {
     const navigate = useNavigate();
@@ -99,6 +100,13 @@ const BlogLayout = () => {
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
+    };
+
+    // Function to generate a background color based on the first character
+    const getBackgroundColor = (char) => {
+        const colors = [deepPurple[500], deepOrange[500], blue[500], green[500], red[500]];
+        const index = char.toLowerCase().charCodeAt(0) % colors.length; // Map the character to an index
+        return colors[index];
     };
 
     return (
@@ -205,16 +213,22 @@ const BlogLayout = () => {
                                     </ReactMarkdown>
                                     <Box display="flex" alignItems="center" mt={2}>
                                         <Avatar
-                                            alt={post.author}
-                                            src={`/placeholder.svg?text=${post.author?.charAt(0)}`}
-                                        />
+                                            alt={post.user.username}
+                                            sx={{
+                                                bgcolor: getBackgroundColor(post.user.username.charAt(0)),
+                                                color: 'white',
+                                            }}
+                                        >
+                                            {post.user.username.charAt(0).toUpperCase()}
+                                        </Avatar>
                                         <Box ml={2}>
-                                            <Typography variant="body2">Author: {post.author}</Typography>
+                                            <Typography variant="body2">Author: {post.user.username}</Typography>
                                             <Typography variant="caption" color="textSecondary">
                                                 {new Date(post.created_at).toLocaleDateString()}
                                             </Typography>
                                         </Box>
                                     </Box>
+
                                     <Typography variant="body2" mt={2}>
                                         Comments: {post.comments_count} | Votes: {post.votes_count}
                                     </Typography>
