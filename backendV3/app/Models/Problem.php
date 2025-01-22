@@ -46,4 +46,10 @@ class Problem extends Model
     {
         return json_decode($this->tags);
     }
+
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+        $this->save();
+    }
 }

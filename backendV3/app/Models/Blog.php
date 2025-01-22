@@ -31,6 +31,21 @@ class Blog extends Model
         return $this->hasMany(Vote::class);
     }
 
+    public function upVotes()
+    {
+        return $this->votes()->where('vote', true);
+    }
+
+    public function downVotes()
+    {
+        return $this->votes()->where('vote', false);
+    }
+
+    public function myVote()
+    {
+        return $this->votes()->where('user_id', auth()->user()->id);
+    }
+
     public function scopeBlogVotesCount($query)
     {
         return $query->withCount('votes');

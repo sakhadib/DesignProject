@@ -114,7 +114,7 @@ class ProblemController extends Controller
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get(['title', 'xp', 'tags'])->map(function ($problem) {
+        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags'])->map(function ($problem) {
             $problem->tags = json_decode($problem->tags, true);
             return $problem;
         });
