@@ -49,7 +49,7 @@ function App() {
         <Route path="/contest/all" element= {<ListContest/>}/>
         <Route path="/contest/registration" element={<RegistrationContest/>} />
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
-        <Route path="/announcement" element={<AnnouncementsPage/>}/>
+        <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
       </Routes>
     </Router>
   );
