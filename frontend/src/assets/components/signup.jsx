@@ -59,7 +59,7 @@ export default function SignUpForm() {
     password: formData.password,
   });
   
-  axios.post(constants.API_BASE_URL + '/user/register/', {
+  axios.post(constants.API_BASE_URL + '/auth/signup/', {
     username: formData.name,
     email: formData.email,
     password: formData.password,
