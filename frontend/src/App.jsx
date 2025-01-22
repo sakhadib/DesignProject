@@ -15,6 +15,7 @@ import PrivacyPolicy from  './assets/pages/privacy';
 import ListContest from './assets/pages/ContestAll';
 import RegistrationContest from './assets/pages/contestReg';
 import ConAfterReg from './assets/pages/ContestPages';
+import AnnouncementsPage from './assets/pages/AnnouncementPage';
 
 
 
@@ -48,7 +49,7 @@ function App() {
         <Route path="/contest/all" element= {<ListContest/>}/>
         <Route path="/contest/registration" element={<RegistrationContest/>} />
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
-
+        <Route path="/announcement" element={<AnnouncementsPage/>}/>
       </Routes>
     </Router>
   );
