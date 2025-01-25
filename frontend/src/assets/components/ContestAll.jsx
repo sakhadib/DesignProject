@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box,
   Button,
@@ -27,37 +27,41 @@ const SearchField = styled(TextField)({
   },
 });
 
-// Sample data for tables
-const upcomingContests = [
-  {
-    name: 'Spring Coding Challenge',
-    dateTime: '2024-01-20 14:00',
-    duration: '2 hours',
-    timer: '2 days',
-    status: 'Open'
-  },
-  // Add more contests as needed
-];
-
-const previousContests = [
-  {
-    name: 'Winter Code Sprint',
-    dateTime: '2023-12-15 10:00',
-    duration: '3 hours',
-    timer: 'Completed',
-    status: 'Closed'
-  },
-  // Add more contests as needed
-];
-
-export default function ContestPage() {
+const ContestPage = () => {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [upcomingContests, setUpcomingContests] = useState([]);
+  const [activeContests, setActiveContests] = useState([]);
+  const [previousContests, setPreviousContests] = useState([]);
 
-  const handleFilterChange = (event, newFilter) => {
-    if (newFilter !== null) {
-      setFilter(newFilter);
-    }
+  // Fetch data from APIs
+  useEffect(() => {
+    const fetchContests = async () => {
+      try {
+        const responses = await Promise.all([
+          fetch('http://127.0.0.1:8000/api/contest/all/upcoming'),
+          fetch('http://127.0.0.1:8000/api/contest/all/active'),
+          fetch('http://127.0.0.1:8000/api/contest/all/ended'),
+        ]);
+        const [upcoming, active, ended] = await Promise.all(responses.map((res) => res.json()));
+
+        setUpcomingContests(upcoming.contests);
+        setActiveContests(active.contests);
+        setPreviousContests(ended.contests);
+      } catch (error) {
+        console.error('Error fetching contest data:', error);
+      }
+    };
+
+    fetchContests();
+  }, []);
+
+  // Filter contests by search query
+  const filterContests = (contests) => {
+    if (!searchQuery) return contests;
+    return contests.filter((contest) =>
+      contest.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
   const ContestTable = ({ contests, title }) => (
@@ -69,26 +73,24 @@ export default function ContestPage() {
         <TableHead>
           <TableRow>
             <TableCell>Contest Name</TableCell>
-            <TableCell>Date & Time</TableCell>
-            <TableCell>Duration</TableCell>
-            <TableCell>Timer</TableCell>
-            <TableCell>Registration Status</TableCell>
+            <TableCell>Start Time</TableCell>
+            <TableCell>End Time</TableCell>
+            <TableCell>Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {contests.map((contest, index) => (
-            <TableRow key={index}>
-              <TableCell>{contest.name}</TableCell>
-              <TableCell>{contest.dateTime}</TableCell>
-              <TableCell>{contest.duration}</TableCell>
-              <TableCell>{contest.timer}</TableCell>
+          {filterContests(contests).map((contest) => (
+            <TableRow key={contest.id}>
+              <TableCell>{contest.title}</TableCell>
+              <TableCell>{contest.start_time}</TableCell>
+              <TableCell>{contest.end_time}</TableCell>
               <TableCell>
                 <Button 
                   variant="contained" 
-                  color={contest.status === 'Open' ? 'primary' : 'secondary'}
-                  disabled={contest.status === 'Closed'}
+                  color={contest.status === 'active' ? 'primary' : 'secondary'}
+                  disabled={contest.status !== 'active'}
                 >
-                  {contest.status}
+                  {contest.status === 'active' ? 'Register' : 'Closed'}
                 </Button>
               </TableCell>
             </TableRow>
@@ -104,7 +106,7 @@ export default function ContestPage() {
         <ToggleButtonGroup
           value={filter}
           exclusive
-          onChange={handleFilterChange}
+          onChange={(e, newFilter) => newFilter && setFilter(newFilter)}
           aria-label="contest filter"
         >
           <ToggleButton value="all">All</ToggleButton>
@@ -126,14 +128,12 @@ export default function ContestPage() {
 
       <Box sx={{ display: 'flex', gap: 4 }}>
         <Box sx={{ flex: 1 }}>
-          <ContestTable 
-            contests={upcomingContests} 
-            title="Upcoming Contests" 
-          />
-          <ContestTable 
-            contests={previousContests} 
-            title="Previous Contests" 
-          />
+          {(filter === 'all' || filter === 'upcoming') && (
+            <ContestTable contests={upcomingContests} title="Upcoming Contests" />
+          )}
+          {(filter === 'all' || filter === 'previous') && (
+            <ContestTable contests={previousContests} title="Previous Contests" />
+          )}
         </Box>
 
         <Card sx={{ width: 300, height: 'fit-content' }}>
@@ -144,19 +144,24 @@ export default function ContestPage() {
             <Typography variant="subtitle1" gutterBottom>
               Next Contest
             </Typography>
-            <Typography variant="h5" gutterBottom>
-              Spring Coding Challenge
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Date and Time: 2024-01-20 14:00
-            </Typography>
+            {upcomingContests[0] && (
+              <>
+                <Typography variant="h5" gutterBottom>
+                  {upcomingContests[0].title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Date and Time: {upcomingContests[0].start_time}
+                </Typography>
+              </>
+            )}
             <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
-              48:00:00
+              {upcomingContests[0] ? '48:00:00' : 'N/A'}
             </Typography>
             <Button 
               variant="contained" 
               fullWidth
               color="primary"
+              disabled={!upcomingContests[0]}
             >
               Register
             </Button>
@@ -165,5 +170,6 @@ export default function ContestPage() {
       </Box>
     </Container>
   );
-}
+};
 
+export default ContestPage;
