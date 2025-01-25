@@ -23,12 +23,27 @@ class Blog extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class)->with('user:id,username');
     }
 
     public function votes()
     {
         return $this->hasMany(Vote::class);
+    }
+
+    public function upVotes()
+    {
+        return $this->votes()->where('vote', true);
+    }
+
+    public function downVotes()
+    {
+        return $this->votes()->where('vote', false);
+    }
+
+    public function myVote()
+    {
+        return $this->votes()->where('user_id', auth()->user()->id);
     }
 
     public function scopeBlogVotesCount($query)

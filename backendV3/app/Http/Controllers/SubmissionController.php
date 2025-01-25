@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log; // Added for logging
 
 use App\Models\Submission;
 use App\Models\User;
+use App\Models\Contest;
+use App\Models\ContestProblem;
 
 use App\Models\Problem;
 
@@ -107,6 +109,17 @@ EOD;
                     $submission->answer = $user_provided_answer;
                     $submission->xp = $score;
 
+                    if($request->contest_id) {
+                        $contest_id = $request->contest_id;
+                        $problem_id = $request->problem_id;
+
+                        if($this->inContest($contest_id, $problem_id)) {
+                            $penalty = now()->diffInMinutes(Contest::find($contest_id)->start_time);
+                            $submission->penalty = $penalty;
+                            $submission->contest_id = $contest_id;
+                        } 
+                    }
+
                     $submission->save();
 
                     return response()->json([
@@ -150,5 +163,26 @@ EOD;
                 'error' => 'An unexpected error occurred while evaluating the answer.',
             ], 500);
         }
+    }
+
+
+
+
+    private function inContest($contest_id, $problem_id)
+    {
+        $contest = Contest::find($contest_id);
+        $now = now();
+        $contest_start = $contest->start_time;
+        $contest_end = $contest->end_time;
+
+        if ($now->isBefore($contest_start) || $now->isAfter($contest_end)) {
+            return false;
+        }
+
+        $problem = ContestProblem::where('contest_id', $contest_id)
+            ->where('problem_id', $problem_id)
+            ->first();
+
+        return $problem !== null;
     }
 }

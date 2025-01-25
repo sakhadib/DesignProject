@@ -13,22 +13,17 @@ export const attachToken = token => {
 // Login function that retrieves the access token and attaches it to the requests
 export const login = async (credentials) => {
     try {
-        const response = await api.post('/token/', credentials);
-        // console.log('Login response:', response.data); // Log the response to confirm format
+        const response = await api.post('/auth/login/', credentials);
 
-        const { access, refresh } = response.data; // Destructure access and refresh tokens
+        // Use the correct keys from the response
+        const { access_token, token_type, expires_in } = response.data;
 
-        if (access) {
+        if (access_token) {
             // Save access token in localStorage for authentication
-            localStorage.setItem('token', access);
-            attachToken(access); // Attach access token to subsequent requests
+            localStorage.setItem('token', access_token);
+            attachToken(access_token); // Attach access token to subsequent requests
         } else {
             console.error('Access token is missing in the response');
-        }
-
-        // Optionally, save the refresh token for future use
-        if (refresh) {
-            localStorage.setItem('refresh_token', refresh);
         }
 
         return response.data;
@@ -37,6 +32,7 @@ export const login = async (credentials) => {
         throw error;
     }
 };
+
 
 // Automatically attach token from localStorage if it exists
 const token = localStorage.getItem('token');

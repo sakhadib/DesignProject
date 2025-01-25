@@ -35,7 +35,7 @@ class CommentController extends Controller
 
         return response()->json([
             'message' => 'Comment created successfully',
-            'comment' => $comment
+            'comment' => $comment->with('user:id,username')->find($comment->id)
         ], 201);
     }
 

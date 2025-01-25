@@ -55,7 +55,7 @@ urlpatterns = [
     
     #Admin
     path('mathx/problem/<int:pk>/approve/', views.ApproveProblem.as_view(), name="problem_approve"),             # ! POST
-    path('mathx/problem/all', views.AllProblemShowAdmin.as_view(), name="all_problem_show"),                     # ? GET
+    path('mathx/problem/all/', views.AllProblemShowAdmin.as_view(), name="all_problem_show"),                     # ? GET
     
     
     #Contest

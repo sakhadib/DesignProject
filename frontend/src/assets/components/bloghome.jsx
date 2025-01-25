@@ -1,23 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, IconButton, Typography, Box, Grid, Card, CardContent, Avatar, Pagination, Container } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    TextField,
+    Button,
+    IconButton,
+    Typography,
+    Box,
+    Grid,
+    Card,
+    CardContent,
+    Avatar,
+    Pagination,
+    Container,
+    Collapse,
+    Chip,
+} from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import axios from '../../api';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { deepPurple, deepOrange, blue, green, red } from '@mui/material/colors';
 
 const BlogLayout = () => {
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [categories, setCategories] = useState(['All categories']);
     const [blogPosts, setBlogPosts] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('All categories');
+    const [selectedCategory, setSelectedCategory] = useState([]);
+    const [expanded, setExpanded] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const postsPerPage = 10;
@@ -25,41 +40,48 @@ const BlogLayout = () => {
     // Check if user is signed in
     const token = Cookies.get('token') || localStorage.getItem('token');
     const isSignedIn = Boolean(token);
-    // console.log("Is user signed in:", isSignedIn, "Token:", token); // Debugging log
 
-    // Fetch blog posts from the backend when the component mounts
+    // Fetch all blog posts
     useEffect(() => {
         const fetchBlogPosts = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/blog/all');
-                setBlogPosts(response.data);
+                const response = await axios.get('/blog/all');
+                const sortedPosts = response.data.blogs.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                ); // Sort blogs by created_at in descending order
+                setBlogPosts(sortedPosts);
             } catch (error) {
-                console.error("Error fetching blog posts:", error);
+                console.error('Error fetching blog posts:', error);
             }
         };
 
         fetchBlogPosts();
     }, []);
 
-    // Fetch blog categories from the backend
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/blog/categories/');
-                const fetchedCategories = response.data.map((item) => item.category);
-                setCategories(['All categories', ...fetchedCategories]);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            }
-        };
-
-        fetchCategories();
-    }, []);
-
-    const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
+    const handleCategoryToggle = (category) => {
+        setSelectedCategory((prev) =>
+            prev.includes(category)
+                ? prev.filter((c) => c !== category)
+                : [...prev, category]
+        );
         setCurrentPage(1);
     };
+
+    const handleToggleExpand = () => {
+        setExpanded(!expanded);
+    };
+
+    const categoryCounts = useMemo(() => {
+        const counts = {};
+        blogPosts.forEach((post) => {
+            counts[post.category] = (counts[post.category] || 0) + 1;
+        });
+        return counts;
+    }, [blogPosts]);
+
+    const categories = useMemo(() => {
+        return ['All Categories', ...Object.keys(categoryCounts)];
+    }, [categoryCounts]);
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -74,9 +96,12 @@ const BlogLayout = () => {
         navigate('/blog/write');
     };
 
-    const filteredPosts = blogPosts.filter(post => {
-        const matchesCategory = selectedCategory === 'All categories' || post.category === selectedCategory;
-        const matchesSearch = 
+    const filteredPosts = blogPosts.filter((post) => {
+        const matchesCategory =
+            selectedCategory.length === 0 ||
+            selectedCategory.includes('All Categories') ||
+            selectedCategory.includes(post.category);
+        const matchesSearch =
             post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
             post.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -92,16 +117,33 @@ const BlogLayout = () => {
         setCurrentPage(value);
     };
 
+    // Function to generate a background color based on the first character
+    const getBackgroundColor = (char) => {
+        const colors = [deepPurple[500], deepOrange[500], blue[500], green[500], red[500]];
+        const index = char.toLowerCase().charCodeAt(0) % colors.length; // Map the character to an index
+        return colors[index];
+    };
+
     return (
         <Container>
             <Box sx={{ backgroundColor: '#ffffff', color: 'black', p: 4 }}>
-                <Box component="header" mb={4} display="flex" justifyContent="space-between" alignItems="center">
+                <Box
+                    component="header"
+                    mb={4}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
                     <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
                         Blog
                     </Typography>
-                    {isSignedIn && ( // Show button only if user is signed in
+                    {isSignedIn && (
                         isMobile ? (
-                            <IconButton onClick={handleWriteBlogClick} color="primary" sx={{ backgroundColor: '#f0f0f0' }}>
+                            <IconButton
+                                onClick={handleWriteBlogClick}
+                                color="primary"
+                                sx={{ backgroundColor: '#f0f0f0' }}
+                            >
                                 <AddIcon />
                             </IconButton>
                         ) : (
@@ -116,56 +158,82 @@ const BlogLayout = () => {
                     )}
                 </Box>
 
-                <Box component="nav" display="flex" flexDirection="column" mb={4}>
-                    <Box display="flex" alignItems="center" gap={1} mb={2} width="100%">
-                        <TextField
-                            variant="outlined"
-                            placeholder="Search..."
-                            size="small"
-                            fullWidth
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            InputProps={{
-                                endAdornment: (
-                                    <IconButton>
-                                        <SearchIcon />
-                                    </IconButton>
-                                ),
-                                sx: { backgroundColor: '#f0f0f0', color: 'black', borderRadius: '25px' },
-                            }}
-                        />
-                    </Box>
+                <Box component="nav" mb={4}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Search..."
+                        size="small"
+                        fullWidth
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        InputProps={{
+                            endAdornment: (
+                                <IconButton>
+                                    <SearchIcon />
+                                </IconButton>
+                            ),
+                            sx: {
+                                backgroundColor: '#f0f0f0',
+                                color: 'black',
+                                borderRadius: '25px',
+                            },
+                        }}
+                        sx={{ mb: 2 }}
+                    />
 
-                    <Box
-                        component="nav"
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        mb={4}
-                        sx={{ overflowX: 'auto', width: '100%', whiteSpace: 'nowrap' }}
-                    >
-                        <Box display="flex" gap={2}>
-                            {categories.map((category, index) => (
-                                <Button
-                                    key={index}
-                                    variant={selectedCategory === category ? 'contained' : 'outlined'}
-                                    color="primary"
-                                    onClick={() => handleCategoryClick(category)}
-                                    sx={{ borderRadius: 50, whiteSpace: 'nowrap' }}
-                                >
-                                    {category}
-                                </Button>
-                            ))}
+                    <Box>
+                        <Collapse in={expanded} collapsedSize={40} timeout="auto">
+                            <Grid container spacing={1}>
+                                {categories.map((category) => (
+                                    <Grid item key={category}>
+                                        <Chip
+                                            label={
+                                                category === 'All Categories'
+                                                    ? 'All Categories'
+                                                    : `${category} (${categoryCounts[category] || 0})`
+                                            }
+                                            onClick={() =>
+                                                category === 'All Categories'
+                                                    ? setSelectedCategory([])
+                                                    : handleCategoryToggle(category)
+                                            }
+                                            color={
+                                                selectedCategory.includes(category) ||
+                                                (category === 'All Categories' &&
+                                                    selectedCategory.length === 0)
+                                                    ? 'primary'
+                                                    : 'default'
+                                            }
+                                            variant={
+                                                selectedCategory.includes(category) ||
+                                                (category === 'All Categories' &&
+                                                    selectedCategory.length === 0)
+                                                    ? 'filled'
+                                                    : 'outlined'
+                                            }
+                                            sx={{ cursor: 'pointer' }}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Collapse>
+                        <Box textAlign="center" mt={2}>
+                            <Button onClick={handleToggleExpand} variant="text">
+                                {expanded ? 'Collapse ▲' : 'Expand ▼'}
+                            </Button>
                         </Box>
                     </Box>
                 </Box>
 
                 <Grid container spacing={4}>
-                    {currentPosts.map((post, index) => (
-                        <Grid item xs={12} md={6} key={index}>
+                    {currentPosts.map((post) => (
+                        <Grid item xs={12} md={6} key={post.id}>
                             <Card
                                 onClick={() => handleBlogClick(post.id)}
-                                sx={{ cursor: 'pointer', backgroundColor: '#f9f9f9' }}
+                                sx={{
+                                    cursor: 'pointer',
+                                    backgroundColor: '#f9f9f9',
+                                }}
                             >
                                 <CardContent>
                                     <Typography variant="subtitle2" color="textSecondary">
@@ -180,13 +248,27 @@ const BlogLayout = () => {
                                     >
                                         {post.content.slice(0, 100) + '...'}
                                     </ReactMarkdown>
-                                    <Box display="flex" alignItems="center">
-                                        <Avatar alt={post.author} src={`/placeholder.svg?text=${post.author.charAt(0)}`} />
+                                    <Box display="flex" alignItems="center" mt={2}>
+                                        <Avatar
+                                            alt={post.user.username}
+                                            sx={{
+                                                bgcolor: getBackgroundColor(post.user.username.charAt(0)),
+                                                color: 'white',
+                                            }}
+                                        >
+                                            {post.user.username.charAt(0).toUpperCase()}
+                                        </Avatar>
                                         <Box ml={2}>
-                                            <Typography variant="body2">{post.author}</Typography>
-                                            <Typography variant="caption" color="textSecondary">{new Date(post.created_at).toLocaleDateString()}</Typography>
+                                            <Typography variant="body2">{post.user.username}</Typography>
+                                            <Typography variant="caption" color="textSecondary">
+                                                {new Date(post.created_at).toLocaleDateString()}
+                                            </Typography>
                                         </Box>
                                     </Box>
+
+                                    <Typography variant="body2" mt={2}>
+                                        Comments: {post.comments_count} | Votes: {post.votes_count}
+                                    </Typography>
                                 </CardContent>
                             </Card>
                         </Grid>

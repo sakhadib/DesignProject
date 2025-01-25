@@ -95,17 +95,14 @@ class BlogController extends Controller
 
     public function allBlogs()
     {
-        $blogs = Blog::all();
+        $blogs = Blog::with(['user:id,username'])
+            ->withCount('votes', 'comments', 'upVotes', 'downVotes')
+            ->withSum('votes', 'vote')
+            ->with('myvote')
+            ->get(['id', 'title', 'category', 'created_at', 'updated_at']);
 
-        foreach ($blogs as $blog) {
-            $blog->votes_count = $blog->votes->count();
-            $blog->votes_sum = $blog->votes->sum('vote');
-            $blog->comments_count = $blog->comments->count();
+        $user_id = auth()->user()->id;
 
-            $user_vote = $blog->votes->where('user_id', auth()->user()->id)->first();
-
-            $blog->user_vote = $user_vote ? $user_vote->vote : null;
-        }
 
         return response()->json([
             'blogs' => $blogs
@@ -114,7 +111,11 @@ class BlogController extends Controller
 
     public function singleBlog($id)
     {
-        $blog = Blog::find($id);
+        $blog = Blog::with(['user:id,username', 'comments', 'votes'])
+            ->withCount('votes', 'comments', 'upVotes', 'downVotes')
+            ->withSum('votes', 'vote')
+            ->with('myvote')
+            ->find($id, ['id', 'title', 'content', 'category', 'created_at', 'updated_at']);
 
         if (!$blog) {
             return response()->json([
@@ -122,13 +123,14 @@ class BlogController extends Controller
             ], 404);
         }
 
-        $blog->votes_count = $blog->votes->count();
-        $blog->votes_sum = $blog->votes->sum('vote');
-        $blog->comments_count = $blog->comments->count();
+        // $blog->votes_count = $blog->votes->count();
+        // $blog->votes_sum = $blog->votes->sum('vote');
+        // $blog->comments_count = $blog->comments->count();
 
-        $user_vote = $blog->votes->where('user_id', auth()->user()->id)->first();
+        // $user_vote = $blog->votes->where('user_id', auth()->user()->id)->first();
 
-        $blog->user_vote = $user_vote ? $user_vote->vote : null;
+        // $blog->user_vote = $user_vote ? $user_vote->vote : null;
+        
 
         return response()->json([
             'blog' => $blog

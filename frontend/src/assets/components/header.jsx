@@ -73,11 +73,14 @@ function Header() {
         <ListItem component={Link} to="/problem/all">
           <ListItemText primary="Problems" />
         </ListItem>
-        <ListItem component={Link} to="/contest">
+        <ListItem component={Link} to="/contest/all">
           <ListItemText primary="Contest" />
         </ListItem>
-        <ListItem component={Link} to="/blog">
+        <ListItem component={Link} to="/blog/all">
           <ListItemText primary="Blogs" />
+        </ListItem>
+        <ListItem component={Link} to="/announcement/all">
+          <ListItemText primary="Announcements" />
         </ListItem>
         <ListItem component={Link} to="/about">
           <ListItemText primary="About" />
@@ -129,8 +132,9 @@ function Header() {
           <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">
             <NavLink to="/home">Home</NavLink>
             <NavLink to="/problem/all">Problems</NavLink>
-            <NavLink to="/contest">Contest</NavLink>
-            <NavLink to="/blog">Blogs</NavLink>
+            <NavLink to="/contest/all">Contest</NavLink>
+            <NavLink to="/blog/all">Blogs</NavLink>
+            <NavLink to="/announcement/all">Announcements</NavLink>
             <NavLink to="/about">About</NavLink>
           </Box>
         </Box>
