@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Box,
   Button,
   Card,
@@ -15,10 +15,11 @@ import {
   Typography,
   Paper,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
+import axios from '../../api';
 
 // Styled search field
 const SearchField = styled(TextField)({
@@ -33,21 +34,25 @@ const ContestPage = () => {
   const [upcomingContests, setUpcomingContests] = useState([]);
   const [activeContests, setActiveContests] = useState([]);
   const [previousContests, setPreviousContests] = useState([]);
+  const [privateContests, setPrivateContests] = useState([]);
 
   // Fetch data from APIs
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const responses = await Promise.all([
-          fetch('http://127.0.0.1:8000/api/contest/all/upcoming'),
-          fetch('http://127.0.0.1:8000/api/contest/all/active'),
-          fetch('http://127.0.0.1:8000/api/contest/all/ended'),
+        const [upcomingRes, activeRes, previousRes] = await Promise.all([
+          axios.get('/contest/all/upcoming'),
+          axios.get('/contest/all/active'),
+          axios.get('/contest/all/ended'),
+          
         ]);
-        const [upcoming, active, ended] = await Promise.all(responses.map((res) => res.json()));
 
-        setUpcomingContests(upcoming.contests);
-        setActiveContests(active.contests);
-        setPreviousContests(ended.contests);
+        setUpcomingContests(upcomingRes.data.contests);
+        setActiveContests(activeRes.data.contests);
+        setPreviousContests(previousRes.data.contests);
+
+        // Example of setting private contests (mock data or actual API)
+        setPrivateContests(previousRes.data.contests.filter((contest) => contest.isPrivate));
       } catch (error) {
         console.error('Error fetching contest data:', error);
       }
@@ -85,8 +90,8 @@ const ContestPage = () => {
               <TableCell>{contest.start_time}</TableCell>
               <TableCell>{contest.end_time}</TableCell>
               <TableCell>
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   color={contest.status === 'active' ? 'primary' : 'secondary'}
                   disabled={contest.status !== 'active'}
                 >
@@ -100,6 +105,15 @@ const ContestPage = () => {
     </TableContainer>
   );
 
+  const calculateTimeLeft = (startTime) => {
+    const difference = new Date(startTime) - new Date();
+    if (difference <= 0) return '00:00:00';
+    const hours = String(Math.floor((difference / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+    const minutes = String(Math.floor((difference / (1000 * 60)) % 60)).padStart(2, '0');
+    const seconds = String(Math.floor((difference / 1000) % 60)).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
@@ -112,6 +126,7 @@ const ContestPage = () => {
           <ToggleButton value="all">All</ToggleButton>
           <ToggleButton value="upcoming">Upcoming</ToggleButton>
           <ToggleButton value="previous">Previous</ToggleButton>
+          <ToggleButton value="private">Private</ToggleButton>
         </ToggleButtonGroup>
 
         <SearchField
@@ -134,39 +149,59 @@ const ContestPage = () => {
           {(filter === 'all' || filter === 'previous') && (
             <ContestTable contests={previousContests} title="Previous Contests" />
           )}
+          {(filter === 'all' || filter === 'private') && (
+            <ContestTable contests={privateContests} title="Private Contests" />
+          )}
         </Box>
 
-        <Card sx={{ width: 300, height: 'fit-content' }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Heads Up
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-              Next Contest
-            </Typography>
-            {upcomingContests[0] && (
-              <>
-                <Typography variant="h5" gutterBottom>
-                  {upcomingContests[0].title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Date and Time: {upcomingContests[0].start_time}
-                </Typography>
-              </>
-            )}
-            <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
-              {upcomingContests[0] ? '48:00:00' : 'N/A'}
-            </Typography>
-            <Button 
-              variant="contained" 
-              fullWidth
-              color="primary"
-              disabled={!upcomingContests[0]}
-            >
-              Register
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Heads Up for Upcoming Contest */}
+        {upcomingContests[0] && (
+          <Card sx={{ width: 300, height: 'fit-content' }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Heads Up
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                Next Contest
+              </Typography>
+              <Typography variant="h5" gutterBottom>
+                {upcomingContests[0].title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Date and Time: {upcomingContests[0].start_time}
+              </Typography>
+              <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
+                {calculateTimeLeft(upcomingContests[0].start_time)}
+              </Typography>
+              <Button variant="contained" fullWidth color="primary">
+                Register
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Heads Up for Active Contest */}
+        {activeContests[0] && (
+          <Card sx={{ width: 300, height: 'fit-content', mt: 4 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Active Contest
+              </Typography>
+              <Typography variant="h5" gutterBottom>
+                {activeContests[0].title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                End Time: {activeContests[0].end_time}
+              </Typography>
+              <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
+                Ongoing
+              </Typography>
+              <Button variant="contained" fullWidth color="secondary">
+                Participate
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </Box>
     </Container>
   );
