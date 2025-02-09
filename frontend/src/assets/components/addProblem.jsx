@@ -16,11 +16,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-
-
-
-
-
 export default function AddProblem() {
   const [setterId, setSetterId] = useState('');
   const [setterName, setSetterName] = useState('');
@@ -30,10 +25,47 @@ export default function AddProblem() {
   const [questionId, setQuestionId] = useState('');
   const [xp, setXp] = useState('');
   const [questionBody, setQuestionBody] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [note, setNote] = useState('');
+  const [tags, setTags] = useState('number theory, math, addition'); // Default example tags
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle the submission logic here (e.g., sending data to a server).
+
+    const requestBody = [
+      { key: "title", value: questionTitle },
+      { key: "description", value: questionBody },
+      { key: "xp", value: xp },
+      { key: "answer", value: answer },
+      { key: "note", value: note },
+      {
+        key: "tags",
+        value: JSON.stringify({
+          target: "v5",
+          topics: tags.split(',').map((tag) => tag.trim()),
+        }),
+      },
+    ];
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/problem/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(`Success: ${data.message}`);
+      } else {
+        alert(`Error: ${data.message || "Something went wrong"}`);
+      }
+    } catch (error) {
+      console.error("Error submitting the problem:", error);
+      alert("Failed to submit the problem. Please try again.");
+    }
   };
 
   return (
@@ -132,6 +164,29 @@ export default function AddProblem() {
                 height={400}
               />
             </Box>
+            <TextField
+              fullWidth
+              label="Answer"
+              variant="outlined"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              label="Note"
+              variant="outlined"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              multiline
+              rows={4}
+            />
+            <TextField
+              fullWidth
+              label="Tags (comma-separated)"
+              variant="outlined"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+            />
           </Box>
         </Paper>
 

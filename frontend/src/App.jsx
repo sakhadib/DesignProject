@@ -16,6 +16,7 @@ import ListContest from './assets/pages/ContestAll';
 import RegistrationContest from './assets/pages/contestReg';
 import ConAfterReg from './assets/pages/ContestPages';
 import AnnouncementsPage from './assets/pages/AnnouncementPage';
+import UserContestCreate from './assets/pages/userContestCreate';
 
 
 
@@ -51,6 +52,7 @@ function App() {
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
 
+        <Route path="/contest/create" element={<UserContestCreate/>}/>
       </Routes>
     </Router>
   );
