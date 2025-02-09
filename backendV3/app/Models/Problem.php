@@ -36,6 +36,11 @@ class Problem extends Model
         $this->save();
     }
 
+    public function approve()
+    {
+        $this->status = 'approved';
+    }
+
     public function unpublish()
     {
         $this->status = 'unpublished';

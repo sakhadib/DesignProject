@@ -111,6 +111,7 @@ Route::group([
 
     Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
     Route::get('all', [ProblemController::class, 'viewAllProblems']);
+    Route::get('approved', [ProblemController::class, 'viewApprovedProblems']);
     
 });
 

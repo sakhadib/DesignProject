@@ -113,7 +113,7 @@ class Admin_controller extends Controller
             ], 404);
         }
 
-        $problem->publish();
+        $problem->approve();
         return response()->json([
             'message' => 'Problem approved successfully',
             'problem' => $problem
