@@ -45,7 +45,7 @@ Route::group([
 
 });
 
-
+//! Need Authentication for these routes
 Route::group([
 
     'middleware' => 'api',
@@ -58,10 +58,6 @@ Route::group([
     Route::post('delete', [BlogController::class, 'deleteBlog']);
     Route::post('edit', [BlogController::class, 'editBlog']);
 
-    // Get blogs
-    Route::get('all', [BlogController::class, 'allBlogs']);
-    Route::get('/single/{id}', [BlogController::class, 'singleBlog']);
-
     // Comments
     Route::post('comment', [CommentController::class, 'createComment']);
     Route::post('comment/edit', [CommentController::class, 'editComment']);
@@ -70,12 +66,26 @@ Route::group([
     // Votes
     Route::post('vote', [VoteController::class, 'createVote']);
     Route::post('vote/delete', [VoteController::class, 'deleteVote']);
-    Route::get('votes/{blog_id}', [VoteController::class, 'getBlogVotes']);
     
 });
 
 
+//TODO : No need of authentication for these routes
+Route::group([
 
+    'prefix' => 'blog'
+
+], function ($router) {
+     // Get blogs
+     Route::get('all', [BlogController::class, 'allBlogs']);
+     Route::get('/single/{id}', [BlogController::class, 'singleBlog']);
+
+     Route::get('votes/{blog_id}', [VoteController::class, 'getBlogVotes']);
+
+});
+
+
+//! Need Authentication for these routes
 Route::group([
 
     'middleware' => 'api',
@@ -86,15 +96,27 @@ Route::group([
     Route::post('create', [ProblemController::class, 'createProblem']);
     Route::post('edit', [ProblemController::class, 'editProblem']);
 
-    Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
-    Route::get('all', [ProblemController::class, 'viewAllProblems']);
-
     Route::post('submit', [SubmissionController::class, 'submit']);
     
 });
 
 
 
+
+//TODO : No need of authentication for these routes
+Route::group([
+    'prefix' => 'problem'
+
+], function ($router) {
+
+    Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
+    Route::get('all', [ProblemController::class, 'viewAllProblems']);
+    
+});
+
+
+
+//! Need Authentication for these routes
 Route::group([
 
     'middleware' => 'api',
@@ -114,6 +136,10 @@ Route::group([
 
 
 
+
+
+
+//! Need Authentication for these routes
 Route::group([
 
     'middleware' => 'api',
@@ -124,7 +150,18 @@ Route::group([
     Route::post('create', [NoticeController::class, 'createNotice']);
     Route::post('delete', [NoticeController::class, 'deleteNotice']);
     Route::post('edit', [NoticeController::class, 'updateNotice']);
+    
+});
 
+
+
+//TODO : No need of authentication for these routes
+Route::group([
+
+    'prefix' => 'notice'
+
+], function ($router) {
+    
     Route::get('all', [NoticeController::class, 'allNotices']);
     Route::get('top', [NoticeController::class, 'topNotices']);
     Route::get('single/{id}', [NoticeController::class, 'singleNotice']);
@@ -135,6 +172,7 @@ Route::group([
 
 
 
+//! Need Authentication for these routes
 Route::group(
     [
         'middleware' => 'api',
@@ -150,6 +188,16 @@ Route::group(
 
     Route::post('join', [ContestController::class, 'joinContest']);
     Route::post('leave', [ContestController::class, 'leaveContest']);
+
+});
+
+
+
+//TODO : No need of authentication for these routes
+Route::group(
+    [
+        'prefix' => 'contest'
+    ], routes: function ($router) {
 
     Route::get('all/upcoming', [ContestController::class, 'allUpcomingContests']);
     Route::get('all/active', [ContestController::class, 'allActiveContests']);
