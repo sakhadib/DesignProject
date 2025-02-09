@@ -33,9 +33,11 @@ class CommentController extends Controller
         $comment->parent_id = $request->parent_id;
         $comment->save();
 
+        $returnableComment = Comment::with('user:id,username')->find($comment->id);
+
         return response()->json([
             'message' => 'Comment created successfully',
-            'comment' => $comment->with('user:id,username')->find($comment->id)
+            'comment' => $returnableComment
         ], 201);
     }
 
