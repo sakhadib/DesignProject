@@ -39,6 +39,7 @@ class Problem extends Model
     public function approve()
     {
         $this->status = 'approved';
+        $this->save();
     }
 
     public function unpublish()
