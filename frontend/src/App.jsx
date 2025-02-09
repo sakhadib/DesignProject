@@ -50,6 +50,7 @@ function App() {
         <Route path="/contest/registration" element={<RegistrationContest/>} />
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
+
       </Routes>
     </Router>
   );
