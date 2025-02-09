@@ -79,11 +79,10 @@ const BlogPostPage = () => {
                 };
                 const response = await axios.post('/blog/comment/', commentData);
                 
+                // Make sure to get the full user data from the response
                 const newCommentData = {
-                    id: response.data.id, // Use the ID from the API response
-                    user: {
-                        username: username, // Explicitly set the username from cookies
-                    },
+                    id: response.data.comment.id,
+                    user: response.data.comment.user, // Take the user from the response data
                     content: newComment,
                     created_at: new Date().toISOString(), // Add a timestamp
                 };
@@ -96,7 +95,7 @@ const BlogPostPage = () => {
             }
         }
     };
-
+    
     const handleDeleteComment = async (commentId) => {
         try {
             // Use POST instead of DELETE
