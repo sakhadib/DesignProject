@@ -68,7 +68,7 @@ class CommentController extends Controller
 
         return response()->json([
             'message' => 'Comment updated successfully',
-            'comment' => $comment
+            'comment' => $comment->with('user:id,username')->find($comment->id)
         ], 200);
     }
 
