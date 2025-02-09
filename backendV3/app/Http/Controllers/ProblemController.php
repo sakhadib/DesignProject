@@ -129,4 +129,29 @@ class ProblemController extends Controller
             'problems' => $problems
         ]);
     }
+
+
+    public function viewApprovedProblems()
+    {
+        $problems = Problem::where('status', 'approved')->get(['id','title', 'xp', 'tags'])->map(function ($problem) {
+            $problem->tags = json_decode($problem->tags, true);
+            return $problem;
+        });
+
+        if(count($problems) === 0) {
+            return response()->json([
+                'message' => 'No problems found'
+            ], 404);
+        }
+
+        return response()->json([
+            'problems' => $problems
+        ]);
+    }
+
+
+
+    /**
+     * 
+     */
 }
