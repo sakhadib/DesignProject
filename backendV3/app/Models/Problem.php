@@ -58,4 +58,10 @@ class Problem extends Model
         $this->tags = json_encode($tags);
         $this->save();
     }
+
+
+    public function gettagsAttribute($value)
+    {
+        return json_decode($value, true); // Decode to an associative array
+    }
 }
