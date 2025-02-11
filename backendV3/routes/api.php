@@ -134,6 +134,8 @@ Route::group([
     Route::post('problem/approve', [Admin_controller::class, 'approveProblem']);
     Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
+
+    Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
 });
 
 
