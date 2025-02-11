@@ -198,4 +198,38 @@ class Admin_controller extends Controller
             'message' => 'Problem removed successfully'
         ]);
     }
+
+
+
+
+
+    /**
+     * * Get a problem
+     * 
+     * @param $problem_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSingleProblem($problem_id){
+        $problem = Problem::find($problem_id);
+
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to remove a problem'
+            ]);
+        }
+
+        if(!$problem){
+            return response()->json([
+                'message' => 'Problem not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'messege' => 'Problem found',
+            'problem' => $problem
+        ]);
+    }
 }
