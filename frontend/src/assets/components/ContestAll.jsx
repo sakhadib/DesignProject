@@ -20,6 +20,8 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
 import axios from '../../api';
+import { useNavigate } from 'react-router-dom';
+
 
 // Styled search field
 const SearchField = styled(TextField)({
@@ -29,6 +31,7 @@ const SearchField = styled(TextField)({
 });
 
 const ContestPage = () => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [upcomingContests, setUpcomingContests] = useState([]);
@@ -36,6 +39,11 @@ const ContestPage = () => {
   const [previousContests, setPreviousContests] = useState([]);
   const [privateContests, setPrivateContests] = useState([]);
 
+
+  const handleRegister = (contestId) => {
+    navigate(`/contest/registration?id=${contestId}`);
+  };
+  
   // Fetch data from APIs
   useEffect(() => {
     const fetchContests = async () => {
@@ -84,23 +92,24 @@ const ContestPage = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filterContests(contests).map((contest) => (
-            <TableRow key={contest.id}>
-              <TableCell>{contest.title}</TableCell>
-              <TableCell>{contest.start_time}</TableCell>
-              <TableCell>{contest.end_time}</TableCell>
-              <TableCell>
-                <Button
-                  variant="contained"
-                  color={contest.status === 'active' ? 'primary' : 'secondary'}
-                  disabled={contest.status !== 'active'}
-                >
-                  {contest.status === 'active' ? 'Register' : 'Closed'}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        {filterContests(contests).map((contest) => (
+          <TableRow key={contest.id}>
+            <TableCell>{contest.title}</TableCell>
+            <TableCell>{contest.start_time}</TableCell>
+            <TableCell>{contest.end_time}</TableCell>
+            <TableCell>
+              <Button
+                variant="contained"
+                color={contest.status === "active" ? "primary" : "secondary"}
+                disabled={contest.status !== "active"}
+                onClick={() => handleRegister(contest.id)}
+              >
+                {contest.status === "active" ? "Register" : "Closed"}
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
       </Table>
     </TableContainer>
   );
@@ -126,7 +135,6 @@ const ContestPage = () => {
           <ToggleButton value="all">All</ToggleButton>
           <ToggleButton value="upcoming">Upcoming</ToggleButton>
           <ToggleButton value="previous">Previous</ToggleButton>
-          <ToggleButton value="private">Private</ToggleButton>
         </ToggleButtonGroup>
 
         <SearchField
@@ -149,9 +157,7 @@ const ContestPage = () => {
           {(filter === 'all' || filter === 'previous') && (
             <ContestTable contests={previousContests} title="Previous Contests" />
           )}
-          {(filter === 'all' || filter === 'private') && (
-            <ContestTable contests={privateContests} title="Private Contests" />
-          )}
+          
         </Box>
 
         {/* Heads Up for Upcoming Contest */}
@@ -173,9 +179,9 @@ const ContestPage = () => {
               <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
                 {calculateTimeLeft(upcomingContests[0].start_time)}
               </Typography>
-              <Button variant="contained" fullWidth color="primary">
-                Register
-              </Button>
+              <Button variant="contained" fullWidth color="primary" onClick={() => handleRegister(upcomingContests[0].id)}>
+            Register
+          </Button>
             </CardContent>
           </Card>
         )}
@@ -196,7 +202,7 @@ const ContestPage = () => {
               <Typography variant="h4" sx={{ my: 2, textAlign: 'center' }}>
                 Ongoing
               </Typography>
-              <Button variant="contained" fullWidth color="secondary">
+              <Button variant="contained" fullWidth color="secondary"  onClick={() => handleRegister(activeContests[0].id)}>
                 Participate
               </Button>
             </CardContent>
