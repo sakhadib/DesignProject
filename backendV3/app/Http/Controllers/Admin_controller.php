@@ -215,11 +215,11 @@ class Admin_controller extends Controller
         $this_user = auth()->user();
         $is_this_user_admin = User::find($this_user->id)->isAdmin();
 
-        // if(!$is_this_user_admin){
-        //     return response()->json([
-        //         'message' => 'You do not have permission to remove a problem'
-        //     ]);
-        // }
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to remove a problem'
+            ]);
+        }
 
         if(!$problem){
             return response()->json([
