@@ -12,6 +12,7 @@ use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\Admin_controller;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ContestController;
+use App\Http\Controllers\ContestGetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,7 +195,7 @@ Route::group(
     Route::post('problem/remove', [ContestController::class, 'removeProblem']);
 
     Route::post('join', [ContestController::class, 'register']);
-    Route::post('leave', [ContestController::class, 'leaveContest']);
+    Route::post('leave', [ContestController::class, 'unregister']);
 
 });
 
@@ -206,13 +207,15 @@ Route::group(
         'prefix' => 'contest'
     ], routes: function ($router) {
 
-    Route::get('all/upcoming', [ContestController::class, 'allUpcomingContests']);
-    Route::get('all/active', [ContestController::class, 'allActiveContests']);
-    Route::get('all/ended', [ContestController::class, 'allEndedContests']);
-    Route::get('all/my', [ContestController::class, 'myCreatedContests']);
-    Route::get('all/user/{id}', [ContestController::class, 'userCreatedContests']);
+    Route::get('all', [ContestGetController::class, 'getAllContests']);
+    Route::get('all/upcoming', [ContestGetController::class, 'getUpcomingContests']);
+    Route::get('all/active', [ContestGetController::class, 'getRunningContests']);
+    Route::get('all/ended', [ContestGetController::class, 'allEndedContests']);
 
-    Route::get('single/{id}', [ContestController::class, 'getSingleContest']);
+    Route::post('all/my', [ContestGetController::class, 'myCreatedContests']);
+    Route::get('all/user/{id}', [ContestGetController::class, 'userCreatedContests']);
+
+    Route::get('single/{id}', [ContestGetController::class, 'getSingleContest']);
 
     Route::get('{id}/participants', [ContestController::class, 'contestParticipants']);
 
