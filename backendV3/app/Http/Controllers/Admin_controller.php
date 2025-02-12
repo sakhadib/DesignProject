@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Problem;
+use App\Models\Blog;
 
 class Admin_controller extends Controller
 {
@@ -212,8 +213,8 @@ class Admin_controller extends Controller
     public function getSingleProblem($problem_id){
         $problem = Problem::find($problem_id);
 
-        $this_user = auth()->user();
-        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+        // $this_user = auth()->user();
+        // $is_this_user_admin = User::find($this_user->id)->isAdmin();
 
         if(!$is_this_user_admin){
             return response()->json([
@@ -230,6 +231,71 @@ class Admin_controller extends Controller
         return response()->json([
             'messege' => 'Problem found',
             'problem' => $problem
+        ]);
+    }
+
+
+
+
+    /**
+     * Admin gets user list
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserList(){
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view user list'
+            ]);
+        }
+
+        $users = User::withCount(['problem', 'blog'])->get();
+
+        foreach($users as $user){
+            $user->admin = $user->isAdmin();
+        }
+
+        return response()->json([
+            'message' => 'User list',
+            'users' => $users
+        ]);
+    }
+
+
+
+    /**
+     * Get everything of specific user
+     * 
+     * get only 'id', 'title', 'xp' for related problems
+     * get only 'id', 'title', for related blogs
+     * 
+     * @param $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUser($user_id){
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view user list'
+            ]);
+        }
+
+        $user = User::withCount(['blog', 'problem'])->find($user_id);
+
+        $problems = Problem::where('user_id', $user_id)->get(['id', 'title', 'xp', 'tags']);
+        $blogs = Blog::where('user_id', $user_id)->get(['id', 'title']);
+        $user->admin = $user->isAdmin();
+
+        return response()->json([
+            'message' => 'User found',
+            'user' => $user,
+            'blogs' => $blogs,
+            'problems' => $problems,
         ]);
     }
 }

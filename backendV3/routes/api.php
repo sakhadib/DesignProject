@@ -136,6 +136,9 @@ Route::group([
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
 
     Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
+
+    Route::get('user/all', [Admin_controller::class, 'getUserList']);
+    Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
 });
 
 
