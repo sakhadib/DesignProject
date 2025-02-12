@@ -111,6 +111,8 @@ Route::group([
 
     Route::get('single/{id}', [ProblemController::class, 'viewSingleProblem']);
     Route::get('all', [ProblemController::class, 'viewAllProblems']);
+    Route::get('approved', [ProblemController::class, 'viewApprovedProblems']);
+    Route::get('pending', [ProblemController::class, 'viewPendingProblems']);
     
 });
 
@@ -132,6 +134,11 @@ Route::group([
     Route::post('problem/approve', [Admin_controller::class, 'approveProblem']);
     Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
+
+    Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
+
+    Route::get('user/all', [Admin_controller::class, 'getUserList']);
+    Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
 });
 
 

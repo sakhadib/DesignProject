@@ -52,6 +52,7 @@ function App() {
 
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
+
         <Route path="/contest/create" element={<UserContestCreate/>}/>
       </Routes>
     </Router>

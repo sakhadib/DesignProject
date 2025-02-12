@@ -99,7 +99,7 @@ class ProblemController extends Controller
         $prob_title = $problem->title;
         $prob_description = $problem->description;
         $prob_xp = $problem->xp;
-        $prob_tags = json_decode($problem->tags, true);
+        $prob_tags = $problem->tags;
 
         return response()->json([
             'message' => 'Problem found',
@@ -114,10 +114,40 @@ class ProblemController extends Controller
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags'])->map(function ($problem) {
-            $problem->tags = json_decode($problem->tags, true);
-            return $problem;
-        });
+        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags']);
+
+        if(count($problems) === 0) {
+            return response()->json([
+                'message' => 'No problems found'
+            ], 404);
+        }
+
+        return response()->json([
+            'problems' => $problems
+        ]);
+    }
+
+
+    public function viewApprovedProblems()
+    {
+        $problems = Problem::where('status', 'approved')->get(['id','title', 'xp', 'tags']);
+
+        if(count($problems) === 0) {
+            return response()->json([
+                'message' => 'No problems found'
+            ], 404);
+        }
+
+        return response()->json([
+            'problems' => $problems
+        ]);
+    }
+
+
+
+    public function viewPendingProblems()
+    {
+        $problems = Problem::where('status', 'pending')->get(['id','title', 'xp', 'tags']);
 
         if(count($problems) === 0) {
             return response()->json([
