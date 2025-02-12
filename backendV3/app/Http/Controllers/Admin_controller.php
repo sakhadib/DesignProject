@@ -253,6 +253,11 @@ class Admin_controller extends Controller
         }
 
         $users = User::withCount(['problem', 'blog'])->get();
+
+        foreach($users as $user){
+            $user->admin = $user->isAdmin();
+        }
+
         return response()->json([
             'message' => 'User list',
             'users' => $users
@@ -284,7 +289,7 @@ class Admin_controller extends Controller
 
         $problems = Problem::where('user_id', $user_id)->get(['id', 'title', 'xp', 'tags']);
         $blogs = Blog::where('user_id', $user_id)->get(['id', 'title']);
-
+        $user->admin = $user->isAdmin();
 
         return response()->json([
             'message' => 'User found',
