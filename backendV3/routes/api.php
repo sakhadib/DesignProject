@@ -186,14 +186,14 @@ Route::group(
         'prefix' => 'contest'
     ], routes: function ($router) {
 
-    Route::post('create', [ContestController::class, 'createContest']);
-    Route::post('edit', [ContestController::class, 'editContest']);
-    Route::post('delete', [ContestController::class, 'deleteContest']);
+    Route::post('create', [ContestController::class, 'create']);
+    Route::post('edit', [ContestController::class, 'update']);
+    Route::post('delete', [ContestController::class, 'delete']);
 
     Route::post('problem/add', [ContestController::class, 'addProblem']);
     Route::post('problem/remove', [ContestController::class, 'removeProblem']);
 
-    Route::post('join', [ContestController::class, 'joinContest']);
+    Route::post('join', [ContestController::class, 'register']);
     Route::post('leave', [ContestController::class, 'leaveContest']);
 
 });
