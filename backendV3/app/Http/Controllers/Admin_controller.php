@@ -213,8 +213,8 @@ class Admin_controller extends Controller
     public function getSingleProblem($problem_id){
         $problem = Problem::find($problem_id);
 
-        // $this_user = auth()->user();
-        // $is_this_user_admin = User::find($this_user->id)->isAdmin();
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
 
         if(!$is_this_user_admin){
             return response()->json([
