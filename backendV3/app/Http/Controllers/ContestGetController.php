@@ -208,7 +208,7 @@ class ContestGetController extends Controller
             ]);
         }
 
-        if($contest->start_time > now() && false){
+        if($contest->start_time > now()){
             return response()->json([
                 'message' => 'Contest has not started yet'
             ]);
