@@ -254,6 +254,33 @@ EOD;
      * @param int $user_id
      * @return \Illuminate\Http\JsonResponse
      */
+    // public function getSubmissionsForUser($user_id)
+    // {
+    //     $user = User::find($user_id);
+
+    //     if(!$user) {
+    //         return response()->json([
+    //             'messege' => 'User not found',
+    //         ], 404);
+    //     }        
+        
+    //     $submissions = Submission::where('user_id', $user_id)
+    //                              ->with('problem:id,title,xp')
+    //                              ->get(['id', 'problem_id', 'xp', 'contest_id', 'created_at']);
+
+    //     if($submissions->isEmpty()) {
+    //         return response()->json([
+    //             'messege' => 'No submissions found for this user',
+    //         ], 404);
+    //     }
+
+    //     return response()->json([
+    //         'messege' => 'Submissions found',
+    //         'user' => $user,
+    //         'submissions' => $submissions,
+    //     ]);
+    // }
+
     public function getSubmissionsForUser($user_id)
     {
         $user = User::find($user_id);
@@ -264,20 +291,22 @@ EOD;
             ], 404);
         }        
         
-        $submissions = Submission::where('user_id', $user_id)
-                                 ->with('problem:id,title,xp')
-                                 ->get(['id', 'problem_id', 'xp', 'contest_id', 'created_at']);
+        $problems = Submission::where('user_id', $user_id)
+                             ->with('problem:id,title,xp')
+                             ->groupBy('problem_id')
+                             ->get(['problem_id']);
 
-        if($submissions->isEmpty()) {
-            return response()->json([
-                'messege' => 'No submissions found for this user',
-            ], 404);
+        foreach($problems as $problem) {
+            $problem->submissions = Submission::where('user_id', $user_id)
+                                              ->where('problem_id', $problem->problem_id)
+                                              ->with('user:id,username')
+                                              ->get(['id', 'user_id', 'xp', 'contest_id', 'created_at']);
         }
 
         return response()->json([
             'messege' => 'Submissions found',
             'user' => $user,
-            'submissions' => $submissions,
+            'problems' => $problems,
         ]);
     }
 
