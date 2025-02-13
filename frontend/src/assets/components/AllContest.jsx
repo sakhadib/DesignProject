@@ -118,7 +118,7 @@ function HeadsUp({ activeContest, upcomingContest }) {
         bgcolor: "grey.100",
         borderRadius: 2,
         mb: 3,
-        mt: { xs: 3, md: 0 },
+        mt: { xs: 3, md: 8 },
         boxShadow: 3,
         transition: "all 0.3s ease-in-out",
         "&:hover": {
