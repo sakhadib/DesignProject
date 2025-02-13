@@ -240,6 +240,8 @@ Route::group(
     Route::get('user/{user_id}', [SubmissionController::class, 'getSubmissionsForUser']);
     Route::get('contest/{contest_id}', [SubmissionController::class, 'getSubmissionsForContest']);
     Route::get('contest/{contest_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserInContest']);    
+    Route::get('contest/{contest_id}/problem/{problem_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserInContestForProblem']);
+    Route::get('problem/{problem_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserForProblem']);
     
 
 });

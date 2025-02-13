@@ -358,4 +358,139 @@ EOD;
             'problems' => $problems,
         ]);
     }
+
+
+
+    /**
+     * Get all submissions of a problem in a contest
+     * 
+     * @param int $contest_id
+     * @param int $problem_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForProblemInContest($contest_id, $problem_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest) {
+            return response()->json([
+                'messege' => 'Contest not found',
+            ], 404);
+        }        
+
+        $problem = ContestProblem::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->first();
+
+        if(!$problem) {
+            return response()->json([
+                'messege' => 'Problem not found in contest',
+            ], 404);
+        }        
+
+        $submissions = Submission::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->with('user:id,username')
+                                ->get(['id', 'user_id', 'xp', 'penalty', 'created_at']);
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'contest' => $contest,
+            'problem' => $problem,
+            'submissions' => $submissions,
+        ]);
+    }
+
+
+
+
+    /**
+     * Get all submissions of a user for a problem in a contest
+     * 
+     * @param int $contest_id
+     * @param int $problem_id
+     * @param int $user_id
+     */
+    public function getSubmissionsForUserInContestForProblem($contest_id, $problem_id, $user_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest) {
+            return response()->json([
+                'messege' => 'Contest not found',
+            ], 404);
+        }        
+
+        $problem = ContestProblem::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->with('singleProblem')
+                                ->first();
+
+        if(!$problem) {
+            return response()->json([
+                'messege' => 'Problem not found in contest',
+            ], 404);
+        }        
+
+        $user = User::find($user_id);
+
+        if(!$user) {
+            return response()->json([
+                'messege' => 'User not found',
+            ], 404);
+        }        
+
+        $submissions = Submission::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->where('user_id', $user_id)
+                                ->get(['id', 'xp', 'penalty', 'created_at']);
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'contest' => $contest,
+            'problem' => $problem,
+            'user' => $user,
+            'submissions' => $submissions,
+        ]);
+    }
+
+
+
+    /**
+     * Get all submissions of a user for a problem
+     * 
+     * @param int $problem_id
+     * @param int $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForUserForProblem($problem_id, $user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user) {
+            return response()->json([
+                'messege' => 'User not found',
+            ], 404);
+        }        
+
+        $problem = Problem::where('id', $problem_id)
+                          ->first(['id', 'title', 'xp', 'tags']);
+
+        if(!$problem) {
+            return response()->json([
+                'messege' => 'Problem not found',
+            ], 404);
+        }        
+
+        $submissions = Submission::where('problem_id', $problem_id)
+                                ->where('user_id', $user_id)
+                                ->get(['id', 'xp', 'contest_id', 'created_at']);
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'user' => $user,
+            'problem' => $problem,
+            'submissions' => $submissions,
+        ]);
+    }
 }
