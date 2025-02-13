@@ -223,6 +223,10 @@ Route::group(
     Route::get('history/user/{id}', [ContestGetController::class, 'userParticipatedContests']);
 
     Route::post('future/my', [ContestGetController::class, 'myFutureContests']);
+
+    Route::post('isparticipant', [ContestGetController::class, 'amIregistered']);
+
+    Route::get('problems/{contest_id}', [ContestGetController::class, 'getProblems']);
 });
 
 
