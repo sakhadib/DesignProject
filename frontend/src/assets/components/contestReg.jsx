@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+"use client"
+
+import { useState, useEffect } from "react"
 import {
   Box,
   Typography,
@@ -7,11 +9,37 @@ import {
   FormControlLabel,
   FormControl,
   Button,
-  Container
-} from '@mui/material';
+  Container,
+  Select,
+  MenuItem,
+  InputLabel,
+  Snackbar,
+  Alert,
+} from "@mui/material"
 
 const ContestRegistration = () => {
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [contestType, setContestType] = useState("")
+  const [contestId, setContestId] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  })
+
+  useEffect(() => {
+    // Get the contest ID from the URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const id = urlParams.get("id")
+    if (id) {
+      setContestId(id)
+      // You might want to fetch contest details here to determine if it's public or private
+      // For now, we'll leave the type empty until the user selects it
+      setContestType("")
+    }
+  }, [])
 
   const termsText = `The registration confirms that you:
 
@@ -40,14 +68,56 @@ const ContestRegistration = () => {
     -Report any technical issues promptly; contests may be paused if necessary.
     
 *Final Decision:
-    -Administrators’ decisions are final. Rules may be updated before contests.
-`;
+    -Administrators' decisions are final. Rules may be updated before contests.
+`
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle registration logic here
-    console.log('Registration submitted');
-  };
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setIsLoading(true)
+
+    const payload = [
+      { key: "contest_id", value: contestId },
+      ...(contestType === "private" ? [{ key: "password", value: password }] : []),
+    ]
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/contest/join/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSnackbar({
+          open: true,
+          message: data.message,
+          severity: "success",
+        })
+        // You might want to redirect the user or update the UI here
+      } else {
+        throw new Error(data.message || "Failed to register for contest")
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: error.message || "An unexpected error occurred",
+        severity: "error",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return
+    }
+    setSnackbar({ ...snackbar, open: false })
+  }
 
   return (
     <Container maxWidth="md">
@@ -55,9 +125,9 @@ const ContestRegistration = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Registration for the contest
         </Typography>
-        
+
         <Typography variant="h5" component="h2" gutterBottom>
-          Contest Name 
+          Contest ID: {contestId}
         </Typography>
 
         <Box sx={{ mb: 3 }}>
@@ -74,9 +144,9 @@ const ContestRegistration = () => {
             }}
             variant="outlined"
             sx={{
-              backgroundColor: '#e6f1ff',
-              '& .MuiInputBase-input': {
-                fontFamily: 'monospace',
+              backgroundColor: "#e6f1ff",
+              "& .MuiInputBase-input": {
+                fontFamily: "monospace",
               },
             }}
           />
@@ -85,30 +155,61 @@ const ContestRegistration = () => {
         <Box sx={{ mb: 3 }}>
           <FormControl required error={false}>
             <FormControlLabel
-              control={
-                <Checkbox 
-                  checked={acceptTerms} 
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                />
-              }
+              control={<Checkbox checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} />}
               label="I accept all terms and conditions"
             />
           </FormControl>
         </Box>
+
+        {acceptTerms && (
+          <Box sx={{ mb: 3 }}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="contest-type-label">Contest Type</InputLabel>
+              <Select
+                labelId="contest-type-label"
+                id="contest-type"
+                value={contestType}
+                label="Contest Type"
+                onChange={(e) => setContestType(e.target.value)}
+                required
+              >
+                <MenuItem value="public">Public</MenuItem>
+                <MenuItem value="private">Private</MenuItem>
+              </Select>
+            </FormControl>
+            {contestType === "private" && (
+              <TextField
+                fullWidth
+                margin="normal"
+                id="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            )}
+          </Box>
+        )}
 
         <Button
           type="submit"
           variant="contained"
           color="primary"
           size="large"
-          disabled={!acceptTerms}
+          disabled={!acceptTerms || !contestType || !contestId || (contestType === "private" && !password) || isLoading}
         >
-          Register
+          {isLoading ? "Registering..." : "Register"}
         </Button>
       </Box>
+      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
-  );
-};
+  )
+}
 
-export default ContestRegistration;
+export default ContestRegistration
 

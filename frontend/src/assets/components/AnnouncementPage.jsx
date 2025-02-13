@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeMathjax from 'rehype-mathjax';
 import {
   Accordion,
   AccordionSummary,
@@ -16,7 +19,6 @@ export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch announcements from API
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
@@ -30,7 +32,7 @@ export default function AnnouncementsPage() {
             id: notice.id,
             title: notice.title,
             content: notice.content,
-            date: new Date(notice.created_at).toLocaleDateString(), // Format the date
+            date: new Date(notice.created_at).toLocaleDateString(),
           }))
         );
       } catch (err) {
@@ -48,22 +50,14 @@ export default function AnnouncementsPage() {
       <Box sx={{ mb: 4 }}>
         <Typography 
           variant="subtitle1" 
-          sx={{ 
-            color: 'text.secondary',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-          }}
+          sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}
         >
           MathXplorer
         </Typography>
         <Typography 
           variant="h3" 
           component="h1" 
-          sx={{ 
-            fontWeight: 900,
-            textTransform: 'uppercase',
-            mb: 4,
-          }}
+          sx={{ fontWeight: 900, textTransform: 'uppercase', mb: 4 }}
         >
           ANNOUNCEMENTS
         </Typography>
@@ -82,10 +76,7 @@ export default function AnnouncementsPage() {
       )}
 
       {!loading && !error && announcements.length === 0 && (
-        <Typography 
-          variant="body1" 
-          sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}
-        >
+        <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}>
           No announcements available.
         </Typography>
       )}
@@ -97,9 +88,7 @@ export default function AnnouncementsPage() {
             key={announcement.id}
             sx={{
               mb: 1,
-              '&:before': {
-                display: 'none',
-              },
+              '&:before': { display: 'none' },
               boxShadow: 'none',
               border: '1px solid',
               borderColor: 'divider',
@@ -124,33 +113,24 @@ export default function AnnouncementsPage() {
                 },
               }}
             >
-              <Typography 
-                sx={{ 
-                  flex: '1 1 auto',
-                  fontWeight: 500,
-                  pr: 2,
-                }}
-              >
+              <Typography sx={{ flex: '1 1 auto', fontWeight: 500, pr: 2 }}>
                 {announcement.title}
               </Typography>
-              <Typography 
-                sx={{ 
-                  color: 'text.secondary',
-                  fontSize: '0.875rem',
-                }}
-              >
+              <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
                 {announcement.date}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Typography
-                sx={{
-                  whiteSpace: 'pre-wrap',
-                  color: 'text.secondary',
-                  lineHeight: 1.7,
-                }}
+                component="div"
+                sx={{ whiteSpace: 'pre-wrap', color: 'text.secondary', lineHeight: 1.7 }}
               >
-                {announcement.content}
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeMathjax]}
+                >
+                  {announcement.content}
+                </ReactMarkdown>
               </Typography>
             </AccordionDetails>
           </Accordion>

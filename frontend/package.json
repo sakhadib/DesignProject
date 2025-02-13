@@ -35,7 +35,7 @@
     "react-markdown": "^9.0.1",
     "react-mathjax2": "^0.0.2",
     "react-resizable-panels": "^2.1.7",
-    "react-router-dom": "^6.27.0",
+    "react-router-dom": "^6.29.0",
     "react-split": "^2.0.14",
     "react-split-pane": "^0.1.92",
     "react-split-pane-next": "^1.0.6",

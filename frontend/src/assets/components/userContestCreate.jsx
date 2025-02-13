@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+"use client"
+
+import { useState, useEffect } from "react"
 import {
   Box,
   Typography,
@@ -17,8 +19,82 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Collapse,
+  IconButton,
+  Chip,
 } from "@mui/material"
-import axios from "../../api"
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
+import api from "../../api"
+
+const Row = ({ problem, handleSelectProblem }) => {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [problemDetails, setProblemDetails] = useState(null)
+
+  const fetchProblemDetails = async () => {
+    if (!open) {
+      setLoading(true)
+      try {
+        const response = await api.get(`/problem/single/${problem.id}`)
+        setProblemDetails(response.data.problem)
+      } catch (error) {
+        console.error("Error fetching problem details:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  const handleToggle = () => {
+    if (!open && !problemDetails) {
+      fetchProblemDetails()
+    }
+    setOpen(!open)
+  }
+
+  return (
+    <>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={handleToggle}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell>{problem.id}</TableCell>
+        <TableCell>{problem.title}</TableCell>
+        <TableCell>
+          {problem.tags.topics.map((tag, index) => (
+            <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+          ))}
+        </TableCell>
+        <TableCell>{problem.xp || "N/A"}</TableCell>
+        <TableCell align="right">
+          <Button size="small" variant="outlined" onClick={() => handleSelectProblem(problem)}>
+            Add
+          </Button>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              {loading ? (
+                <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : (
+                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", mb: 2 }}>
+                  {problemDetails?.description || "No description available."}
+                </Typography>
+              )}
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  )
+}
 
 export default function CreateContest() {
   const [formData, setFormData] = useState({
@@ -26,16 +102,15 @@ export default function CreateContest() {
     startTime: "",
     endTime: "",
     description: "",
-    status: "upcoming", // default status
-    type: "private", // always private
-    visibility: "visible", // default visibility
-    password: "1234", // default password
+    password: "",
   })
 
-  const [problems, setProblems] = useState([]) // selected problems
-  const [allProblems, setAllProblems] = useState([]) // all available problems
-  const [loading, setLoading] = useState(false) // loading state
-  const [problemDialogOpen, setProblemDialogOpen] = useState(false) // dialog state
+  const [problems, setProblems] = useState([])
+  const [allProblems, setAllProblems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [problemDialogOpen, setProblemDialogOpen] = useState(false)
+  const [addedProblems, setAddedProblems] = useState(new Set())
+  const [searchTerm, setSearchTerm] = useState("")
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -47,20 +122,28 @@ export default function CreateContest() {
 
   const handleAddProblem = () => {
     setProblemDialogOpen(true)
+    setSearchTerm("")
     if (allProblems.length === 0) {
       setLoading(true)
-      axios
-        .get("/problem/all/") // fetch all problems
+      api
+        .get("/problem/all/")
         .then((response) => {
-          console.log("API Response:", response.data) // Log full response
+          console.log("API Response:", response.data)
           const problemsData = Array.isArray(response.data.problems) ? response.data.problems : []
-          setAllProblems(problemsData)
+          setAllProblems(
+            problemsData.map((problem) => ({
+              ...problem,
+              isVisible: true,
+            })),
+          )
         })
         .catch((error) => {
           console.error("Error fetching problems:", error)
-          setAllProblems([]) // Handle errors gracefully
+          setAllProblems([])
         })
         .finally(() => setLoading(false))
+    } else {
+      setAllProblems((prevProblems) => prevProblems.map((problem) => ({ ...problem, isVisible: true })))
     }
   }
 
@@ -69,39 +152,39 @@ export default function CreateContest() {
   }
 
   const handleSelectProblem = (problem) => {
-    if (!problems.some((p) => p.id === problem.id)) {
-      setProblems([...problems, problem])
+    if (!addedProblems.has(problem.id)) {
+      setProblems((prev) => [...prev, { ...problem, xp: problem.xp || "N/A" }])
+      setAddedProblems((prev) => new Set(prev).add(problem.id))
     }
   }
 
   const handleRemoveProblem = (id) => {
     setProblems(problems.filter((problem) => problem.id !== id))
+    setAddedProblems((prev) => {
+      const newSet = new Set(prev)
+      newSet.delete(id)
+      return newSet
+    })
   }
 
   const handleStartContest = () => {
     if (problems.length > 0 && formData.title && formData.startTime && formData.endTime && formData.description) {
-      // Construct the payload for creating a contest
-      const contestPayload = [
-        { key: "title", value: formData.title },
-        { key: "description", value: formData.description },
-        { key: "start_time", value: formData.startTime },
-        { key: "end_time", value: formData.endTime },
-        { key: "status", value: formData.status },
-        { key: "type", value: formData.type },
-        { key: "visibility", value: formData.visibility },
-        { key: "password", value: formData.password },
-      ]
+      const contestPayload = {
+        title: formData.title,
+        description: formData.description,
+        start_time: formData.startTime,
+        end_time: formData.endTime,
+        password: formData.password,
+      }
 
-      // Send the POST request to create the contest
-      setLoading(true) // Show loading state
-      axios
+      setLoading(true)
+      api
         .post("/contest/create/", contestPayload)
         .then((response) => {
           console.log("API Response:", response.data)
 
           if (response.data.message === "Contest created successfully") {
             alert("Contest created successfully!")
-            // Optionally, reset form or redirect
           } else {
             alert("Failed to create contest.")
           }
@@ -110,11 +193,31 @@ export default function CreateContest() {
           console.error("Error creating contest:", error)
           alert("An error occurred while creating the contest.")
         })
-        .finally(() => setLoading(false)) // Hide loading state
+        .finally(() => setLoading(false))
     } else {
       alert("Please make sure all required fields are filled and problems are selected.")
     }
   }
+
+  const handleSearch = (term) => {
+    setAllProblems((prevProblems) =>
+      prevProblems.map((problem) => ({
+        ...problem,
+        isVisible:
+          problem.title.toLowerCase().includes(term.toLowerCase()) ||
+          problem.tags.topics.some((tag) => tag.toLowerCase().includes(term.toLowerCase())),
+      })),
+    )
+  }
+
+  useEffect(() => {
+    setAllProblems((prevAllProblems) =>
+      prevAllProblems.map((problem) => ({
+        ...problem,
+        isAdded: addedProblems.has(problem.id),
+      })),
+    )
+  }, [addedProblems])
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -123,16 +226,15 @@ export default function CreateContest() {
         align="center"
         gutterBottom
         sx={{
-          color: "primary.main", // Assuming you're using Material-UI theme for primary color or define blue manually
+          color: "primary.main",
           fontWeight: "bold",
-          fontSize: "2.25rem", // Equivalent to the xl size in Material-UI typography scale
+          fontSize: "2.25rem",
         }}
       >
         Create Contest
       </Typography>
 
       <Box component="form" sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}>
-        {/* Title Input */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <Typography sx={{ width: "120px" }}>Title</Typography>
           <TextField
@@ -145,7 +247,6 @@ export default function CreateContest() {
           />
         </Box>
 
-        {/* Start Time Input */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <Typography sx={{ width: "120px" }}>Start Time</Typography>
           <TextField
@@ -162,7 +263,6 @@ export default function CreateContest() {
           />
         </Box>
 
-        {/* End Time Input */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <Typography sx={{ width: "120px" }}>End Time</Typography>
           <TextField
@@ -179,7 +279,6 @@ export default function CreateContest() {
           />
         </Box>
 
-        {/* Description Input */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
           <Typography sx={{ width: "120px" }}>Description</Typography>
           <TextField
@@ -193,48 +292,8 @@ export default function CreateContest() {
           />
         </Box>
 
-        {/* Status Input */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Status</Typography>
-          <TextField
-            fullWidth
-            name="status"
-            value={formData.status}
-            onChange={handleInputChange}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
-
-        {/* Type Input */}
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Type</Typography>
-          <TextField
-            fullWidth
-            name="type"
-            value={formData.type}
-            onChange={handleInputChange}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
-
-        {/* Visibility Input */}
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Visibility</Typography>
-          <TextField
-            fullWidth
-            name="visibility"
-            value={formData.visibility}
-            onChange={handleInputChange}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
-
-        {/* Password Input */}
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Password</Typography>
+          <Typography sx={{ width: "120px" }}>Password (Optional)</Typography>
           <TextField
             fullWidth
             name="password"
@@ -242,10 +301,11 @@ export default function CreateContest() {
             onChange={handleInputChange}
             variant="outlined"
             size="small"
+            type="password"
+            helperText="Enter a password to make the contest private"
           />
         </Box>
 
-        {/* Problem Set */}
         <Box sx={{ mt: 2 }}>
           <Typography variant="h6" gutterBottom>
             Problem Set
@@ -270,10 +330,12 @@ export default function CreateContest() {
           <TableContainer component={Paper} sx={{ mt: 3 }}>
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: "primary.main" }}>
-                  <TableCell sx={{ color: "white" }}>ID</TableCell>
-                  <TableCell sx={{ color: "white" }}>Problem Title</TableCell>
-                  <TableCell align="right" sx={{ color: "white" }}>
+                <TableRow sx={{ backgroundColor: "#1E90FF" }}>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Problem Title</TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Tags</TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>XP</TableCell>
+                  <TableCell align="right" sx={{ color: "white", fontWeight: "bold" }}>
                     Actions
                   </TableCell>
                 </TableRow>
@@ -281,9 +343,15 @@ export default function CreateContest() {
               <TableBody>
                 {problems.length > 0 ? (
                   problems.map((problem, index) => (
-                    <TableRow key={problem.id} sx={{ backgroundColor: index % 2 === 0 ? "grey.100" : "white" }}>
+                    <TableRow key={problem.id} sx={{ backgroundColor: index % 2 === 0 ? "white" : "grey.100" }}>
                       <TableCell>{problem.id}</TableCell>
                       <TableCell>{problem.title}</TableCell>
+                      <TableCell>
+                        {problem.tags.topics.map((tag, index) => (
+                          <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                        ))}
+                      </TableCell>
+                      <TableCell>{problem.xp || "N/A"}</TableCell>
                       <TableCell align="right">
                         <Button size="small" color="error" onClick={() => handleRemoveProblem(problem.id)}>
                           Remove
@@ -293,7 +361,7 @@ export default function CreateContest() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={3} align="center">
+                    <TableCell colSpan={5} align="center">
                       No problems selected.
                     </TableCell>
                   </TableRow>
@@ -303,7 +371,6 @@ export default function CreateContest() {
           </TableContainer>
         </Box>
 
-        {/* Start Button */}
         {problems.length > 0 && (
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, mb: 5 }}>
             <Button variant="contained" color="primary" onClick={handleStartContest} sx={{ width: "200px", mb: 2 }}>
@@ -314,7 +381,21 @@ export default function CreateContest() {
       </Box>
 
       <Dialog open={problemDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle>Select Problems</DialogTitle>
+        <DialogTitle>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h6">Select Problems</Typography>
+            <TextField
+              size="small"
+              placeholder="Search problems..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                handleSearch(e.target.value)
+              }}
+              sx={{ width: "50%" }}
+            />
+          </Box>
+        </DialogTitle>
         <DialogContent>
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
@@ -325,27 +406,25 @@ export default function CreateContest() {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell />
                     <TableCell>ID</TableCell>
                     <TableCell>Problem Title</TableCell>
+                    <TableCell>Tags</TableCell>
+                    <TableCell>XP</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {Array.isArray(allProblems) &&
-                    allProblems.map((problem) => (
-                      <TableRow key={problem.id}>
-                        <TableCell>{problem.id}</TableCell>
-                        <TableCell>{problem.title}</TableCell>
-                        <TableCell align="right">
-                          <Button size="small" variant="outlined" onClick={() => handleSelectProblem(problem)}>
-                            Add
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  {allProblems.length === 0 && (
+                    allProblems
+                      .filter((problem) => !addedProblems.has(problem.id) && (problem.isVisible ?? true))
+                      .map((problem) => (
+                        <Row key={problem.id} problem={problem} handleSelectProblem={handleSelectProblem} />
+                      ))}
+                  {allProblems.filter((problem) => !addedProblems.has(problem.id) && (problem.isVisible ?? true))
+                    .length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3} align="center">
+                      <TableCell colSpan={6} align="center">
                         No problems available.
                       </TableCell>
                     </TableRow>
