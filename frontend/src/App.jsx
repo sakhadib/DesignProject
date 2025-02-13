@@ -48,7 +48,8 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
         <Route path="/contest/all" element= {<ListContest/>}/>
-        <Route path="/contest/registration" element={<RegistrationContest/>} />
+        <Route path="/contest/registration" element={<RegistrationContest />} />
+
         <Route path="/contest/afterreg" element={<ConAfterReg/>} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
 

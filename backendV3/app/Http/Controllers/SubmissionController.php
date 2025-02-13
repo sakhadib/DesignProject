@@ -15,6 +15,12 @@ use App\Models\Problem;
 
 class SubmissionController extends Controller
 {
+    /**
+     * Submit a solution to a problem for evaluation
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function submit(Request $request)
     {
         // Validate the incoming request
@@ -25,6 +31,25 @@ class SubmissionController extends Controller
 
         // Fetch the problem details
         $problem = Problem::find($request->problem_id);
+
+        if(!$problem) {
+            return response()->json([
+                'error' => 'Problem not found',
+            ], 404);
+        }
+
+        if($request->has('contest_id') && $request->contest_id)
+        {
+            $Contest_problem = ContestProblem::where('contest_id', $request->contest_id)
+            ->where('problem_id', $request->problem_id)
+            ->first();
+
+            if(!$Contest_problem) {
+                return response()->json([
+                    'error' => 'Problem not found in contest',
+                ], 404);
+            }
+        }
 
         // Extract problem details
         $problem_statement = $problem->description;
@@ -167,7 +192,12 @@ EOD;
 
 
 
-
+    /**
+     * Summary of inContest
+     * @param int $contest_id
+     * @param int $problem_id
+     * @return bool
+     */
     private function inContest($contest_id, $problem_id)
     {
         $contest = Contest::find($contest_id);
@@ -185,4 +215,9 @@ EOD;
 
         return $problem !== null;
     }
+
+
+
+
+    
 }
