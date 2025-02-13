@@ -27,6 +27,11 @@ class Submission extends Model
         return $this->belongsTo(Problem::class);
     }
 
+    public function contest()
+    {
+        return $this->belongsTo(Contest::class);
+    }
+
     public function assignXP($xp)
     {
         $this->xp = $xp;
@@ -38,4 +43,6 @@ class Submission extends Model
         $this->penalty = $penalty;
         $this->save();
     }
+
+    
 }
