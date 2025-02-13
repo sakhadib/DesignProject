@@ -219,5 +219,20 @@ EOD;
 
 
 
-    
+    //-----------------------------------------Get Request-----------------------------------------//
+
+    /**
+     * Get all submissions for a specific problem
+     * 
+     * @param int $problem_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissions($problem_id)
+    {
+        $submissions = Submission::where('problem_id', $problem_id)->get();
+
+        return response()->json([
+            'submissions' => $submissions,
+        ]);
+    }
 }

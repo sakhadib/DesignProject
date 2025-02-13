@@ -18,7 +18,7 @@ class ContestGetController extends Controller
      */
     public function getAllContests()
     {
-        $contests = Contest::where('type', 'user-created')
+        $contests = Contest::where('type', 'admin-created')
                            ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
@@ -39,6 +39,7 @@ class ContestGetController extends Controller
     public function getUpcomingContests()
     {
         $contests = Contest::where('start_time', '>', now())
+                           ->where('type', 'admin-created')
                            ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
@@ -61,6 +62,7 @@ class ContestGetController extends Controller
     {
         $contests = Contest::where('start_time', '<', now())
                            ->where('end_time', '>', now())
+                           ->where('type', 'admin-created')
                            ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
@@ -88,6 +90,7 @@ class ContestGetController extends Controller
     public function allEndedContests()
     {
         $contests = Contest::where('end_time', '<', now())
+                           ->where('type', 'admin-created')
                            ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
@@ -170,7 +173,7 @@ class ContestGetController extends Controller
     {
         $contest = Contest::where('id', $contest_id)
                           ->where('start_time', '>', now())
-                          ->with(['fullProblems', 'user:id,username'])
+                          ->with(['user:id,username'])
                           ->withCount(['participants', 'problems', 'submissions'])
                           ->get();
 
@@ -183,6 +186,42 @@ class ContestGetController extends Controller
         return response()->json([
             'message' => 'Contest found',
             'contest' => $contest
+        ]);
+    }
+
+
+
+
+    /**
+     * Get problems of a contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProblems($contest_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found'
+            ]);
+        }
+
+        if($contest->start_time > now() && false){
+            return response()->json([
+                'message' => 'Contest has not started yet'
+            ]);
+        }
+
+        $problems = ContestProblem::where('contest_id', $contest_id)
+                                  ->with('problem')
+                                  ->get();
+
+        return response()->json([
+            'message' => 'Problems of the contest',
+            'contest' => $contest,
+            'problems' => $problems
         ]);
     }
 
@@ -294,6 +333,36 @@ class ContestGetController extends Controller
             'message' => 'User participated contests',
             'user' => $user,
             'contests' => $contests
+        ]);
+    }
+
+
+
+
+    public function amIregistered(Request $request)
+    {
+        $request->validate([
+            'contest_id' => 'required'
+        ]);
+
+        $this_user_id = auth()->user()->id;
+        $user = User::find($this_user_id);
+
+        $contest = ContestParticipant::where('contest_id', $request->contest_id)
+                                     ->with('contest')
+                                     ->where('user_id', $this_user_id)
+                                     ->first();
+
+        if($contest){
+            return response()->json([
+                'message' => 'User is registered in the contest',
+                'contest' => $contest,
+                'user' => $user
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'User is not registered in the contest'
         ]);
     }
 
