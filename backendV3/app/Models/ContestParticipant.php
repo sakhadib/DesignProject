@@ -23,8 +23,9 @@ class ContestParticipant extends Model
 
     public function contest()
     {
-        return $this->belongsTo(Contest::class);
+        return $this->belongsTo(Contest::class)->withCount(['participants', 'problems']);
     }
+
 
     public function user()
     {
