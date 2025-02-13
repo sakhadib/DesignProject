@@ -42,5 +42,11 @@ class Contest extends Model
         return $this->hasMany(ContestParticipant::class);
     }
 
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
+
     
 }

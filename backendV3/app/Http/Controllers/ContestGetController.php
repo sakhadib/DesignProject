@@ -172,7 +172,7 @@ class ContestGetController extends Controller
         $contest = Contest::where('id', $contest_id)
                           ->where('start_time', '>', now())
                           ->with(['fullProblems', 'user:id,username'])
-                          ->withCount(['participants', 'problems'])
+                          ->withCount(['participants', 'problems', 'submissions'])
                           ->get();
 
         if(!$contest){
