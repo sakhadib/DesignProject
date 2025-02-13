@@ -222,6 +222,22 @@ Route::group(
     Route::post('history', [ContestGetController::class, 'myParticipatedContests']);
     Route::get('history/user/{id}', [ContestGetController::class, 'userParticipatedContests']);
 
+    Route::post('future/my', [ContestGetController::class, 'myFutureContests']);
+});
+
+
+//TODO : No need of authentication for these routes
+Route::group(
+    [
+        'prefix' => 'submission'
+    ], routes: function ($router) {
+
+    Route::get('all', [SubmissionController::class, 'allSubmissions']);
+    Route::get('all/user/{id}', [SubmissionController::class, 'userSubmissions']);
+    Route::get('all/problem/{id}', [SubmissionController::class, 'problemSubmissions']);
+    Route::get('all/contest/{id}', [SubmissionController::class, 'contestSubmissions']);
+
+    Route::get('single/{id}', [SubmissionController::class, 'singleSubmission']);
 
 });
 

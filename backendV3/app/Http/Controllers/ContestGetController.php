@@ -18,7 +18,7 @@ class ContestGetController extends Controller
      */
     public function getAllContests()
     {
-        $contests = Contest::with(['problems', 'user:id,username'])
+        $contests = Contest::with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -38,7 +38,7 @@ class ContestGetController extends Controller
     public function getUpcomingContests()
     {
         $contests = Contest::where('start_time', '>', now())
-                           ->with(['problems', 'user:id,username'])
+                           ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -60,7 +60,7 @@ class ContestGetController extends Controller
     {
         $contests = Contest::where('start_time', '<', now())
                            ->where('end_time', '>', now())
-                           ->with(['problems', 'user:id,username'])
+                           ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -87,7 +87,7 @@ class ContestGetController extends Controller
     public function allEndedContests()
     {
         $contests = Contest::where('end_time', '<', now())
-                           ->with(['problems', 'user:id,username'])
+                           ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -116,7 +116,6 @@ class ContestGetController extends Controller
         $this_user = User::find($this_user_id);
 
         $contests = Contest::where('created_by', $this_user_id)
-                           ->with(['problems'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -146,7 +145,6 @@ class ContestGetController extends Controller
         }
 
         $contests = Contest::where('created_by', $user_id)
-                           ->with(['problems'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
@@ -240,6 +238,34 @@ class ContestGetController extends Controller
             'contests' => $contests
         ]);
     }
+
+
+
+
+    /**
+     * Contests that current user is registered in and in future
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function myFutureContests()
+    {
+        $this_user_id = auth()->user()->id;
+        $this_user = User::find($this_user_id);
+
+        $contests = ContestParticipant::where('user_id', $this_user_id)
+                                     ->whereHas('contest', function($query){
+                                         $query->where('start_time', '>', now());
+                                     })
+                                     ->with('contest')
+                                     ->get();
+
+        return response()->json([
+            'message' => 'My future contests',
+            'user' => $this_user,
+            'contests' => $contests
+        ]);
+    }
+
 
 
 
