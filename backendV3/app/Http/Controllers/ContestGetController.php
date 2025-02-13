@@ -18,7 +18,8 @@ class ContestGetController extends Controller
      */
     public function getAllContests()
     {
-        $contests = Contest::with(['user:id,username'])
+        $contests = Contest::where('type', 'user-created')
+                           ->with(['user:id,username'])
                            ->withCount(['participants', 'problems'])
                            ->get();
 
