@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin_controller;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ContestController;
 use App\Http\Controllers\ContestGetController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -246,6 +247,20 @@ Route::group(
     
 
 });
+
+
+
+
+//TODO : No need of authentication for these routes
+Route::group(
+    [
+        'prefix' => 'user'
+    ], routes: function ($router) {
+
+        Route::get('all', [UserController::class, 'allUsers']);
+
+    }
+);
 
 
 

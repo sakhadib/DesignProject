@@ -97,4 +97,16 @@ class User extends Authenticatable implements JWTSubject
     public function blog(){
         return $this->hasMany(Blog::class)->withCount(['votes', 'comments', 'upVotes']);
     }
+
+
+    public function submission(){
+        return $this->hasMany(Submission::class)
+                    ->with('problem:id,title,xp')
+                    ->select(['id', 'user_id', 'problem_id','contest_id', 'xp', 'penalty', 'created_at']);
+    }
+
+
+    public function participatedContest(){
+        return $this->hasMany(ContestParticipant::class)->with('contest:id,title');
+    }
 }
