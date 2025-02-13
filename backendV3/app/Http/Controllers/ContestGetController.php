@@ -187,5 +187,88 @@ class ContestGetController extends Controller
         ]);
     }
 
+
+
+
+    /**
+     * Get Participant List of a contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getParticipantList($contest_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found'
+            ]);
+        }
+
+        $participants = ContestParticipant::where('contest_id', $contest_id)
+                                         ->with('user:id,username')
+                                         ->get(['id', 'user_id']);
+
+        return response()->json([
+            'message' => 'Participants of the contest',
+            'contest' => $contest,
+            'participants' => $participants
+        ]);
+    }
+
+
+
+
+    /**
+     * Get My Participated Contests
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function myParticipatedContests()
+    {
+        $this_user_id = auth()->user()->id;
+        $this_user = User::find($this_user_id);
+
+        $contests = ContestParticipant::where('user_id', $this_user_id)
+                                     ->with('contest')
+                                     ->get();
+
+        return response()->json([
+            'message' => 'My participated contests',
+            'user' => $this_user,
+            'contests' => $contests
+        ]);
+    }
+
+
+
+
+    /**
+     * Get all contests participated by a user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function userParticipatedContests($user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found'
+            ]);
+        }
+
+        $contests = ContestParticipant::where('user_id', $user_id)
+                                     ->with('contest')
+                                     ->get();
+
+        return response()->json([
+            'message' => 'User participated contests',
+            'user' => $user,
+            'contests' => $contests
+        ]);
+    }
+
     
 }

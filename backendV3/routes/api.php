@@ -217,10 +217,10 @@ Route::group(
 
     Route::get('single/{id}', [ContestGetController::class, 'getSingleContest']);
 
-    Route::get('{id}/participants', [ContestController::class, 'contestParticipants']);
+    Route::get('{id}/participants', [ContestGetController::class, 'getParticipantList']);
 
-    Route::get('history', [ContestController::class, 'myParticipatedContests']);
-    Route::get('history/user/{id}', [ContestController::class, 'userParticipatedContests']);
+    Route::post('history', [ContestGetController::class, 'myParticipatedContests']);
+    Route::get('history/user/{id}', [ContestGetController::class, 'userParticipatedContests']);
 
 
 });

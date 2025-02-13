@@ -23,7 +23,7 @@ class ContestParticipant extends Model
 
     public function contest()
     {
-        return $this->belongsTo(Contest::class);
+        return $this->belongsTo(Contest::class)->with('problems');
     }
 
     public function user()
