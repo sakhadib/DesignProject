@@ -24,7 +24,7 @@ class ContestProblem extends Model
 
     public function problem()
     {
-        return $this->belongsTo(Problem::class);
+        return $this->belongsTo(Problem::class)->select(['id', 'title', 'description', 'xp', 'tags']);
     }
 
     public function user()

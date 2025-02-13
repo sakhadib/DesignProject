@@ -26,6 +26,25 @@ class SubmissionController extends Controller
         // Fetch the problem details
         $problem = Problem::find($request->problem_id);
 
+        if(!$problem) {
+            return response()->json([
+                'error' => 'Problem not found',
+            ], 404);
+        }
+
+        if($request->has('contest_id') && $request->contest_id)
+        {
+            $Contest_problem = ContestProblem::where('contest_id', $request->contest_id)
+            ->where('problem_id', $request->problem_id)
+            ->first();
+
+            if(!$Contest_problem) {
+                return response()->json([
+                    'error' => 'Problem not found in contest',
+                ], 404);
+            }
+        }
+
         // Extract problem details
         $problem_statement = $problem->description;
         $actual_answer = $problem->answer;
