@@ -114,7 +114,7 @@ class ProblemController extends Controller
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags']);
+        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags', 'status']);
 
         if(count($problems) === 0) {
             return response()->json([
