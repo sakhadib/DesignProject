@@ -236,12 +236,9 @@ Route::group(
         'prefix' => 'submission'
     ], routes: function ($router) {
 
-    Route::get('all', [SubmissionController::class, 'allSubmissions']);
-    Route::get('all/user/{id}', [SubmissionController::class, 'userSubmissions']);
-    Route::get('all/problem/{id}', [SubmissionController::class, 'problemSubmissions']);
-    Route::get('all/contest/{id}', [SubmissionController::class, 'contestSubmissions']);
+    Route::get('problem/{problem_id}', [SubmissionController::class, 'getSubmissionsForProblem']);
 
-    Route::get('single/{id}', [SubmissionController::class, 'singleSubmission']);
+    
 
 });
 

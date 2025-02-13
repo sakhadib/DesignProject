@@ -227,11 +227,21 @@ EOD;
      * @param int $problem_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getSubmissions($problem_id)
+    public function getSubmissionsForProblem($problem_id)
     {
-        $submissions = Submission::where('problem_id', $problem_id)->get();
+        $submissions = Submission::where('problem_id', $problem_id)
+                                 ->with('user:id,username')
+                                 ->get(['id', 'user_id', 'xp', 'contest_id', 'created_at']);
 
+        if($submissions->isEmpty()) {
+            return response()->json([
+                'messege' => 'No submissions found for this problem',
+            ], 404);
+        }
+
+        
         return response()->json([
+            'messege' => 'Submissions found',
             'submissions' => $submissions,
         ]);
     }

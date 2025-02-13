@@ -338,7 +338,12 @@ class ContestGetController extends Controller
 
 
 
-
+    /**
+     * Summary of amIregistered
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function amIregistered(Request $request)
     {
         $request->validate([
