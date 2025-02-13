@@ -493,4 +493,53 @@ EOD;
             'submissions' => $submissions,
         ]);
     }
+
+
+
+
+    /**
+     * Get all submissions of a problem for a contest
+     * 
+     * @param int $contest_id
+     * @param int $problem_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForProblemForContest($contest_id, $problem_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest) {
+            return response()->json([
+                'messege' => 'Contest not found',
+            ], 404);
+        }        
+
+        $problem = ContestProblem::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->with('singleProblem')
+                                ->first();
+
+        if(!$problem) {
+            return response()->json([
+                'messege' => 'Problem not found in contest',
+            ], 404);
+        }        
+
+        $submissions = Submission::where('contest_id', $contest_id)
+                                ->where('problem_id', $problem_id)
+                                ->with('user:id,username')
+                                ->get(['id', 'user_id', 'xp', 'penalty', 'created_at']);
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'contest' => $contest,
+            'problem' => $problem,
+            'submissions' => $submissions,
+        ]);
+    }
+
+
+
+
+
 }
