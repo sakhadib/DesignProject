@@ -285,7 +285,6 @@ EOD;
 
 
 
-
     /**
      * Get all submissions of a contest
      * 
@@ -310,5 +309,53 @@ EOD;
         ]);
         
         
+    }
+
+
+
+
+    /**
+     * Get all submissions of a user in a contest
+     * 
+     * @param int $user_id
+     * @param int $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForUserInContest($contest_id, $user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user) {
+            return response()->json([
+                'messege' => 'User not found',
+            ], 404);
+        }        
+
+        $contest = Contest::find($contest_id);
+
+        if(!$contest) {
+            return response()->json([
+                'messege' => 'Contest not found',
+            ], 404);
+        }        
+
+        $problems = ContestProblem::where('contest_id', $contest_id)
+                                  ->groupBy('problem_id')
+                                  ->with('singleProblem')
+                                  ->get(['problem_id']);
+
+        foreach($problems as $problem) {
+            $problem->submissions = Submission::where('user_id', $user_id)
+                                              ->where('contest_id', $contest_id)
+                                              ->where('problem_id', $problem->problem_id)
+                                              ->get(['id', 'xp', 'created_at']);
+        }
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'user' => $user,
+            'contest' => $contest,
+            'problems' => $problems,
+        ]);
     }
 }
