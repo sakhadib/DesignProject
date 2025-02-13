@@ -114,7 +114,7 @@ class ProblemController extends Controller
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags']);
+        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags', 'status']);
 
         if(count($problems) === 0) {
             return response()->json([
@@ -130,7 +130,7 @@ class ProblemController extends Controller
 
     public function viewApprovedProblems()
     {
-        $problems = Problem::where('status', 'approved')->get(['id','title', 'xp', 'tags']);
+        $problems = Problem::where('status', 'approved')->get(['id','title', 'description', 'xp', 'tags']);
 
         if(count($problems) === 0) {
             return response()->json([

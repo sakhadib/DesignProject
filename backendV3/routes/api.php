@@ -223,6 +223,10 @@ Route::group(
     Route::get('history/user/{id}', [ContestGetController::class, 'userParticipatedContests']);
 
     Route::post('future/my', [ContestGetController::class, 'myFutureContests']);
+
+    Route::post('isparticipant', [ContestGetController::class, 'amIregistered']);
+
+    Route::get('problems/{contest_id}', [ContestGetController::class, 'getProblems']);
 });
 
 
@@ -232,12 +236,9 @@ Route::group(
         'prefix' => 'submission'
     ], routes: function ($router) {
 
-    Route::get('all', [SubmissionController::class, 'allSubmissions']);
-    Route::get('all/user/{id}', [SubmissionController::class, 'userSubmissions']);
-    Route::get('all/problem/{id}', [SubmissionController::class, 'problemSubmissions']);
-    Route::get('all/contest/{id}', [SubmissionController::class, 'contestSubmissions']);
-
-    Route::get('single/{id}', [SubmissionController::class, 'singleSubmission']);
+    Route::get('problem/{problem_id}', [SubmissionController::class, 'getSubmissionsForProblem']);
+    Route::get('user/{user_id}', [SubmissionController::class, 'getSubmissionsForUser']);    
+    
 
 });
 

@@ -14,13 +14,13 @@ import {
   Chip,
   CircularProgress,
   Button,
+  useMediaQuery,
   useTheme,
 } from "@mui/material"
 import axios from "axios"
 import { format } from "date-fns"
-import { useNavigate } from "react-router-dom"
 
-function ContestTable({ contests, type, isLoading, handleRegister }) {
+function ContestTable({ contests, type, isLoading }) {
   if (isLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
@@ -42,11 +42,11 @@ function ContestTable({ contests, type, isLoading, handleRegister }) {
             <TableCell>Duration</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Created By</TableCell>
-            <TableCell>Action</TableCell>
+            <TableCell> Action </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {contests.length > 0 ? (
+          {contests && contests.length > 0 ? (
             contests.map((contest) => {
               const startTime = new Date(contest.start_time)
               const endTime = new Date(contest.end_time)
@@ -76,12 +76,7 @@ function ContestTable({ contests, type, isLoading, handleRegister }) {
                         Not Available
                       </Typography>
                     ) : (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="primary"
-                        onClick={() => handleRegister(contest.id)}
-                      >
+                      <Button variant="contained" size="small" color="primary">
                         Register
                       </Button>
                     )}
@@ -101,48 +96,71 @@ function ContestTable({ contests, type, isLoading, handleRegister }) {
     </TableContainer>
   )
 }
+function HeadsUp({ activeContest, upcomingContest }) {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-function HeadsUp({ activeContest, upcomingContest, handleRegister }) {
-  const [errorMessage, setErrorMessage] = useState("")
-  const contest = activeContest || upcomingContest
-
-  const handleParticipation = () => {
-    if (!contest) return
-    handleRegister(contest.id)
+  const buttonStyle = {
+    backgroundColor: "#8d256f",
+    "&:hover": {
+      backgroundColor: "#6d1d55",
+    },
+    fontSize: "0.8rem",
+    padding: "6px 12px",
   }
 
+  const contest = activeContest || upcomingContest
+
   return (
-    <Box sx={{ p: 2, bgcolor: "grey.100", borderRadius: 2, mb: 3, boxShadow: 3 }}>
-      <Typography variant="h5" sx={{ color: "#8d256f", fontWeight: "bold", textAlign: "center", mb: 1 }}>
+    <Box
+      sx={{
+        p: 2,
+        bgcolor: "grey.100",
+        borderRadius: 2,
+        mb: 3,
+        mt: { xs: 3, md: 0 },
+        boxShadow: 3,
+        transition: "all 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 6,
+          transform: "translateY(-5px)",
+        },
+        height: "auto",
+        maxHeight: { xs: "none", md: "500px" },
+        overflowY: "auto",
+      }}
+    >
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ color: "#8d256f", fontWeight: "bold", textAlign: "center", fontSize: "1.2rem", mb: 1 }}
+      >
         Heads Up
       </Typography>
       {contest ? (
-        <>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold", textAlign: "center" }}>
+        <Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5, textAlign: "center", fontSize: "1rem" }}>
             {contest.title}
           </Typography>
-          <Typography variant="body2" sx={{ color: "text.secondary", textAlign: "center", mb: 1 }}>
+          <Typography variant="body2" sx={{ mb: 1, color: "text.secondary", textAlign: "center", fontSize: "0.9rem" }}>
             {contest.description.substring(0, 80)}...
           </Typography>
-          <Typography variant="caption" sx={{ display: "block", textAlign: "center" }}>
-            Starts: {format(new Date(contest.start_time), "MMM dd, yyyy HH:mm")}
-          </Typography>
-          <Typography variant="caption" sx={{ display: "block", textAlign: "center" }}>
-            Ends: {format(new Date(contest.end_time), "MMM dd, yyyy HH:mm")}
-          </Typography>
+          <Box sx={{ textAlign: "center", mb: 1 }}>
+            <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+              Starts: {format(new Date(contest.start_time), "MMM dd, yyyy HH:mm")}
+            </Typography>
+            <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+              Ends: {format(new Date(contest.end_time), "MMM dd, yyyy HH:mm")}
+            </Typography>
+          </Box>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Button variant="contained" onClick={handleParticipation}>
+            <Button variant="contained" sx={buttonStyle}>
               {activeContest ? "Participate" : "Register"}
             </Button>
           </Box>
-          {errorMessage && (
-            <Typography variant="body2" color="error" sx={{ textAlign: "center", mt: 1 }}>
-              {errorMessage}
-            </Typography>
-          )}
-        </>
+        </Box>
       ) : (
-        <Typography variant="body2" sx={{ textAlign: "center" }}>
+        <Typography variant="body2" sx={{ mt: 2, color: "text.secondary", textAlign: "center" }}>
           No contest available at the moment.
         </Typography>
       )}
@@ -157,10 +175,9 @@ export default function AllContests() {
   const [isLoadingUpcoming, setIsLoadingUpcoming] = useState(false)
   const [isLoadingPrevious, setIsLoadingPrevious] = useState(false)
   const [activeContest, setActiveContest] = useState(null)
-  const [errorMessage, setErrorMessage] = useState("")
 
-  const navigate = useNavigate()
   const theme = useTheme()
+  //const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const fetchUpcomingContests = async () => {
     setIsLoadingUpcoming(true)
@@ -170,10 +187,8 @@ export default function AllContests() {
       setActiveContest(response.data.contests.find((contest) => contest.status === "active") || null)
     } catch (error) {
       console.error("Error fetching upcoming contests:", error)
-      setErrorMessage("Failed to fetch upcoming contests. Please try again later.")
-    } finally {
-      setIsLoadingUpcoming(false)
     }
+    setIsLoadingUpcoming(false)
   }
 
   const fetchPreviousContests = async () => {
@@ -183,30 +198,14 @@ export default function AllContests() {
       setPreviousContests(response.data.contests)
     } catch (error) {
       console.error("Error fetching previous contests:", error)
-      setErrorMessage("Failed to fetch previous contests. Please try again later.")
-    } finally {
-      setIsLoadingPrevious(false)
     }
-  }
-
-  const handleRegister = async (contestId) => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/contest/isparticipant", { contest_id: contestId })
-      if (response.data.success) {
-        navigate(`/contest/registration?id=${contestId}`)
-      } else {
-        setErrorMessage(response.data.message || "Failed to register for the contest. Please try again.")
-      }
-    } catch (error) {
-      console.error("Error registering for contest:", error)
-      setErrorMessage("An error occurred while registering. Please try again later.")
-    }
+    setIsLoadingPrevious(false)
   }
 
   useEffect(() => {
     fetchUpcomingContests()
     fetchPreviousContests()
-  }, [])
+  }, []) // Added dependency array
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue)
@@ -214,11 +213,6 @@ export default function AllContests() {
 
   return (
     <Box sx={{ width: "100%", p: 3 }}>
-      {errorMessage && (
-        <Typography variant="body2" color="error" sx={{ textAlign: "center", mb: 2 }}>
-          {errorMessage}
-        </Typography>
-      )}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2 }}>
         <Box sx={{ width: { xs: "100%", md: "70%" } }}>
           <Tabs
@@ -238,36 +232,12 @@ export default function AllContests() {
           </Tabs>
           {tabValue === 0 && (
             <>
-              <ContestTable
-                contests={upcomingContests}
-                type="Upcoming"
-                isLoading={isLoadingUpcoming}
-                handleRegister={handleRegister}
-              />
-              <ContestTable
-                contests={previousContests}
-                type="Previous"
-                isLoading={isLoadingPrevious}
-                handleRegister={handleRegister}
-              />
+              <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
+              <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
             </>
           )}
-          {tabValue === 1 && (
-            <ContestTable
-              contests={upcomingContests}
-              type="Upcoming"
-              isLoading={isLoadingUpcoming}
-              handleRegister={handleRegister}
-            />
-          )}
-          {tabValue === 2 && (
-            <ContestTable
-              contests={previousContests}
-              type="Previous"
-              isLoading={isLoadingPrevious}
-              handleRegister={handleRegister}
-            />
-          )}
+          {tabValue === 1 && <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />}
+          {tabValue === 2 && <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />}
         </Box>
         <Box
           sx={{
@@ -278,7 +248,6 @@ export default function AllContests() {
           <HeadsUp
             activeContest={activeContest}
             upcomingContest={upcomingContests.length > 0 ? upcomingContests[0] : null}
-            handleRegister={handleRegister}
           />
         </Box>
       </Box>

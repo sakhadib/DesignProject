@@ -219,5 +219,65 @@ EOD;
 
 
 
-    
+    //-----------------------------------------Get Request-----------------------------------------//
+
+    /**
+     * Get all submissions for a specific problem
+     * 
+     * @param int $problem_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForProblem($problem_id)
+    {
+        $submissions = Submission::where('problem_id', $problem_id)
+                                 ->with('user:id,username')
+                                 ->get(['id', 'user_id', 'xp', 'contest_id', 'created_at']);
+
+        if($submissions->isEmpty()) {
+            return response()->json([
+                'messege' => 'No submissions found for this problem',
+            ], 404);
+        }
+
+        
+        return response()->json([
+            'messege' => 'Submissions found',
+            'submissions' => $submissions,
+        ]);
+    }
+
+
+
+    /**
+     * Get all submission of an user
+     * 
+     * @param int $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForUser($user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user) {
+            return response()->json([
+                'messege' => 'User not found',
+            ], 404);
+        }        
+        
+        $submissions = Submission::where('user_id', $user_id)
+                                 ->with('problem:id,title,xp')
+                                 ->get(['id', 'problem_id', 'xp', 'contest_id', 'created_at']);
+
+        if($submissions->isEmpty()) {
+            return response()->json([
+                'messege' => 'No submissions found for this user',
+            ], 404);
+        }
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'user' => $user,
+            'submissions' => $submissions,
+        ]);
+    }
 }
