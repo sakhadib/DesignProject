@@ -12,7 +12,7 @@ import ProtectedRoute from './assets/components/protectedroute';
 import AddProblem from './assets/pages/addProblem';
 import AboutPage from './assets/pages/about';
 import PrivacyPolicy from  './assets/pages/privacy';
-
+import AllContest from './assets/pages/AllContest';
 import RegistrationContest from './assets/pages/contestReg';
 
 import AnnouncementsPage from './assets/pages/AnnouncementPage';
@@ -47,7 +47,7 @@ function App() {
         <Route path="/problem/add" element={<AddProblem />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
-       
+       <Route path="/contest/all" element={<AllContest />} />
         <Route path="/contest/registration" element={<RegistrationContest />} />
 
        
