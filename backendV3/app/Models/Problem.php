@@ -25,6 +25,13 @@ class Problem extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class)
+                    ->with('user:id,username')
+                    ->select(['id', 'user_id', 'problem_id','contest_id', 'xp', 'penalty', 'created_at']);
+    }
+
     public function isPublished()
     {
         return $this->status === 'published';

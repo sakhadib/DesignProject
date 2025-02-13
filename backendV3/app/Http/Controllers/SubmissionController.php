@@ -280,4 +280,33 @@ EOD;
             'submissions' => $submissions,
         ]);
     }
+
+
+
+
+    /**
+     * Get all submissions of a contest
+     * 
+     * @param int $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubmissionsForContest($contest_id)
+    {
+        $contest = Contest::find($contest_id)
+                          ->with('problems')
+                          ->first();
+
+        if(!$contest) {
+            return response()->json([
+                'messege' => 'Contest not found',
+            ], 404);
+        }        
+
+        return response()->json([
+            'messege' => 'Submissions found',
+            'contest' => $contest,
+        ]);
+        
+        
+    }
 }

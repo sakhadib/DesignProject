@@ -237,7 +237,8 @@ Route::group(
     ], routes: function ($router) {
 
     Route::get('problem/{problem_id}', [SubmissionController::class, 'getSubmissionsForProblem']);
-    Route::get('user/{user_id}', [SubmissionController::class, 'getSubmissionsForUser']);    
+    Route::get('user/{user_id}', [SubmissionController::class, 'getSubmissionsForUser']);
+    Route::get('contest/{contest_id}', [SubmissionController::class, 'getSubmissionsForContest']);    
     
 
 });

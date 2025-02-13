@@ -29,7 +29,7 @@ class Contest extends Model
 
     public function problems()
     {
-        return $this->hasMany(ContestProblem::class)->with('problem:id,title');
+        return $this->hasMany(ContestProblem::class)->with('problem:id,title,xp');
     }
 
     public function fullProblems()
