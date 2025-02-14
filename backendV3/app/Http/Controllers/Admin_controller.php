@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Problem;
 use App\Models\Blog;
+use App\Models\ContestProblem;
 
 class Admin_controller extends Controller
 {
@@ -156,6 +157,34 @@ class Admin_controller extends Controller
             'message' => 'Problem unpublished successfully',
             'problem' => $problem
         ]);
+    }
+
+
+    /**
+     * Get problem of a contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getContestProblems($contest_id){
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view contest problems'
+            ]);
+        }
+
+        $problems = ContestProblem::where('contest_id', $contest_id)
+                                  ->with('singleProblem')
+                                  ->get();
+
+        return response()->json([
+            'message' => 'Contest problems',
+            'problems' => $problems
+        ]);
+
     }
 
 

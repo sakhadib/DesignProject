@@ -139,6 +139,8 @@ Route::group([
 
     Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
 
+    Route::get('contest/problem/{problem_id}', [Admin_controller::class, 'getContestProblems']);
+
     Route::get('user/all', [Admin_controller::class, 'getUserList']);
     Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
 });
