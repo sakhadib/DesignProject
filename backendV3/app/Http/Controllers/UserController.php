@@ -31,4 +31,66 @@ class UserController extends Controller
         );
     }
 
+
+
+
+    /**
+     * return the user details by user id
+     * 
+     * @param int $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function userDetails($user_id)
+    {
+        $user = User::where('id', $user_id)
+                    ->with(['shortBlog'])
+                    ->withCount(['participatedContest', 'submission', 'problem'])
+                    ->first();
+
+        $submissions = Submission::selectRaw('DATE(created_at) as date, COUNT(*) as submission_count')
+                     ->where('user_id', $user_id)
+                     ->groupBy('date')
+                     ->get();
+
+        $user->submissions_summary = $submissions;
+
+        return response()->json(
+            [
+                'message' => 'User details',
+                'data' => $user
+            ]
+        ); 
+    }
+
+
+
+
+    /**
+     * Get user details by username
+     * 
+     * @param string $username
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserDetailsByUsername($username)
+    {
+        $user = User::where('username', $username)
+                    ->with(['shortBlog'])
+                    ->withCount(['participatedContest', 'submission', 'problem'])
+                    ->first();
+
+        $submissions = Submission::selectRaw('DATE(created_at) as date, COUNT(*) as submission_count')
+                     ->where('user_id', $user->id)
+                     ->groupBy('date')
+                     ->get();
+
+        $user->submissions_summary = $submissions;
+
+        return response()->json(
+            [
+                'message' => 'User details',
+                'data' => $user
+            ]
+        );
+    }
+
 }

@@ -258,7 +258,8 @@ Route::group(
     ], routes: function ($router) {
 
         Route::get('all', [UserController::class, 'allUsers']);
-
+        Route::get('single/{id}', [UserController::class, 'userDetails']);
+        Route::get('username/{username}', [UserController::class, 'getUserDetailsByUsername']);
     }
 );
 
