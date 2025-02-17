@@ -135,6 +135,8 @@ Route::group([
     Route::post('remove', [Admin_controller::class, 'removeAdmin']);
 
     Route::post('problem/approve', [Admin_controller::class, 'approveProblem']);
+    Route::post('problem/incontest', [Admin_controller::class, 'makeProblemStateToinContest']);
+    Route::post('problem/outcontest', [Admin_controller::class, 'approveProblem']);
     Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
 

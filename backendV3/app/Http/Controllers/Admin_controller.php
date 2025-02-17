@@ -122,6 +122,41 @@ class Admin_controller extends Controller
         ]);
     }
 
+    /**
+     * Summary of makeProblemStateToinContest
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
+    public function makeProblemStateToinContest(Request $request){
+        $request->validate([
+            'problem_id' => 'required'
+        ]);
+
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to approve a problem'
+            ]);
+        }
+
+        $problem = Problem::find($request->problem_id);
+
+        if(!$problem){
+            return response()->json([
+                'message' => 'Problem not found'
+            ], 404);
+        }
+
+        $problem->inContest();
+        return response()->json([
+            'message' => 'Problem state changed to in contest successfully',
+            'problem' => $problem
+        ]);
+    }
+
 
     /**
      * * Unpublish a problem
