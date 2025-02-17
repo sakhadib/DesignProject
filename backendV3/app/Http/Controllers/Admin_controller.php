@@ -9,6 +9,7 @@ use App\Models\Admin;
 use App\Models\Problem;
 use App\Models\Blog;
 use App\Models\ContestProblem;
+use App\Models\Contest;
 
 class Admin_controller extends Controller
 {
@@ -295,6 +296,42 @@ class Admin_controller extends Controller
         return response()->json([
             'messege' => 'Problem found',
             'problem' => $problem
+        ]);
+    }
+
+
+
+    /**
+     * * Get single contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSingleContest($contest_id){
+
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view contest'
+            ]);
+        }
+
+        $contest = Contest::where('id', $contest_id)
+                          ->with(['user:id,username'])
+                          ->withCount(['participants', 'problems', 'submissions'])
+                          ->get();;
+
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'messege' => 'Contest found',
+            'contest' => $contest
         ]);
     }
 
