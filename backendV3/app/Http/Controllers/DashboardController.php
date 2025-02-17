@@ -194,7 +194,10 @@ class DashboardController extends Controller
     }
 
 
-
+    /**
+     * Summary of getStatByProblemTag
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function getStatByProblemTag()
     {
         $v0_problem_ids = Problem::where('tags', 'like', '%v0%')->pluck('id');
