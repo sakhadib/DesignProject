@@ -214,6 +214,8 @@ class DashboardController extends Controller
         $v4_submission_count = Submission::whereIn('problem_id', $v4_problem_ids)->count();
         $v5_submission_count = Submission::whereIn('problem_id', $v5_problem_ids)->count();
 
+        $count = Submission::count();
+
         return response()->json([
             'v0' => $v0_submission_count,
             'v1' => $v1_submission_count,
@@ -221,6 +223,7 @@ class DashboardController extends Controller
             'v3' => $v3_submission_count,
             'v4' => $v4_submission_count,
             'v5' => $v5_submission_count,
+            'total' => $count
         ]);
     }
 
