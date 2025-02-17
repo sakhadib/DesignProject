@@ -43,6 +43,12 @@ class Problem extends Model
         $this->save();
     }
 
+    public function inContest()
+    {
+        $this->status = 'in_contest';
+        $this->save();
+    }
+
     public function approve()
     {
         $this->status = 'approved';

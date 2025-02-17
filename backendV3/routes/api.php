@@ -14,6 +14,7 @@ use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ContestController;
 use App\Http\Controllers\ContestGetController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -262,6 +263,17 @@ Route::group(
         Route::get('all', [UserController::class, 'allUsers']);
         Route::get('single/{id}', [UserController::class, 'userDetails']);
         Route::get('username/{username}', [UserController::class, 'getUserDetailsByUsername']);
+    }
+);
+
+
+
+Route::group(
+    [
+        'prefix' => 'common'
+    ], routes: function ($router) {
+
+        Route::get('count', [DashboardController::class, 'commonCountValues']);
     }
 );
 
