@@ -195,5 +195,31 @@ class DashboardController extends Controller
 
 
 
+    public function getStatByProblemTag()
+    {
+        $v0_problem_ids = Problem::where('tags', 'like', '%v0%')->pluck('id');
+        $v1_problem_ids = Problem::where('tags', 'like', '%v1%')->pluck('id');
+        $v2_problem_ids = Problem::where('tags', 'like', '%v2%')->pluck('id');
+        $v3_problem_ids = Problem::where('tags', 'like', '%v3%')->pluck('id');
+        $v4_problem_ids = Problem::where('tags', 'like', '%v4%')->pluck('id');
+        $v5_problem_ids = Problem::where('tags', 'like', '%v5%')->pluck('id');
+
+        $v0_submission_count = Submission::whereIn('problem_id', $v0_problem_ids)->count();
+        $v1_submission_count = Submission::whereIn('problem_id', $v1_problem_ids)->count();
+        $v2_submission_count = Submission::whereIn('problem_id', $v2_problem_ids)->count();
+        $v3_submission_count = Submission::whereIn('problem_id', $v3_problem_ids)->count();
+        $v4_submission_count = Submission::whereIn('problem_id', $v4_problem_ids)->count();
+        $v5_submission_count = Submission::whereIn('problem_id', $v5_problem_ids)->count();
+
+        return response()->json([
+            'v0' => $v0_submission_count,
+            'v1' => $v1_submission_count,
+            'v2' => $v2_submission_count,
+            'v3' => $v3_submission_count,
+            'v4' => $v4_submission_count,
+            'v5' => $v5_submission_count,
+        ]);
+    }
+
    
 }

@@ -280,6 +280,7 @@ Route::group(
         Route::get('count', [DashboardController::class, 'commonCountValues']);
         Route::get('submission/contest/in', [DashboardController::class, 'getInContestSubmissionCount']);
         Route::get('submission/contest/out', [DashboardController::class, 'getOutContestSubmissionCount']);
+        Route::get('submission/tags', [DashboardController::class, 'getStatByProblemTag']);
     }
 );
 
