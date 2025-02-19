@@ -144,7 +144,6 @@ class ProblemController extends Controller
     }
 
 
-
     public function viewPendingProblems()
     {
         $problems = Problem::where('status', 'pending')->get(['id','title', 'xp', 'tags']);

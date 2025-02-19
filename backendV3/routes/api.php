@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin_controller;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ContestController;
 use App\Http\Controllers\ContestGetController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,10 +135,16 @@ Route::group([
     Route::post('remove', [Admin_controller::class, 'removeAdmin']);
 
     Route::post('problem/approve', [Admin_controller::class, 'approveProblem']);
+    Route::post('problem/incontest', [Admin_controller::class, 'makeProblemStateToinContest']);
+    Route::post('problem/outcontest', [Admin_controller::class, 'approveProblem']);
     Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
 
     Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
+
+    Route::get('contest/single/{contest_id}', [Admin_controller::class, 'getSingleContest']);
+
+    Route::get('contest/problem/{problem_id}', [Admin_controller::class, 'getContestProblems']);
 
     Route::get('user/all', [Admin_controller::class, 'getUserList']);
     Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
@@ -238,10 +246,43 @@ Route::group(
 
     Route::get('problem/{problem_id}', [SubmissionController::class, 'getSubmissionsForProblem']);
     Route::get('user/{user_id}', [SubmissionController::class, 'getSubmissionsForUser']);
-    Route::get('contest/{contest_id}', [SubmissionController::class, 'getSubmissionsForContest']);    
+    Route::get('contest/{contest_id}', [SubmissionController::class, 'getSubmissionsForContest']);
+    Route::get('contest/{contest_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserInContest']);    
+    Route::get('contest/{contest_id}/problem/{problem_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserInContestForProblem']);
+    Route::get('problem/{problem_id}/user/{user_id}', [SubmissionController::class, 'getSubmissionsForUserForProblem']);
+    Route::get('contest/{contest_id}/problem/{problem_id}', [SubmissionController::class, 'getSubmissionsForProblemForContest']);
     
 
 });
+
+
+
+
+//TODO : No need of authentication for these routes
+Route::group(
+    [
+        'prefix' => 'user'
+    ], routes: function ($router) {
+
+        Route::get('all', [UserController::class, 'allUsers']);
+        Route::get('single/{id}', [UserController::class, 'userDetails']);
+        Route::get('username/{username}', [UserController::class, 'getUserDetailsByUsername']);
+    }
+);
+
+
+
+Route::group(
+    [
+        'prefix' => 'common'
+    ], routes: function ($router) {
+
+        Route::get('count', [DashboardController::class, 'commonCountValues']);
+        Route::get('submission/contest/in', [DashboardController::class, 'getInContestSubmissionCount']);
+        Route::get('submission/contest/out', [DashboardController::class, 'getOutContestSubmissionCount']);
+        Route::get('submission/tags', [DashboardController::class, 'getStatByProblemTag']);
+    }
+);
 
 
 

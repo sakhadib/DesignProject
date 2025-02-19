@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Problem;
 use App\Models\Blog;
+use App\Models\ContestProblem;
+use App\Models\Contest;
 
 class Admin_controller extends Controller
 {
@@ -121,6 +123,41 @@ class Admin_controller extends Controller
         ]);
     }
 
+    /**
+     * Summary of makeProblemStateToinContest
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
+    public function makeProblemStateToinContest(Request $request){
+        $request->validate([
+            'problem_id' => 'required'
+        ]);
+
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to approve a problem'
+            ]);
+        }
+
+        $problem = Problem::find($request->problem_id);
+
+        if(!$problem){
+            return response()->json([
+                'message' => 'Problem not found'
+            ], 404);
+        }
+
+        $problem->inContest();
+        return response()->json([
+            'message' => 'Problem state changed to in contest successfully',
+            'problem' => $problem
+        ]);
+    }
+
 
     /**
      * * Unpublish a problem
@@ -156,6 +193,34 @@ class Admin_controller extends Controller
             'message' => 'Problem unpublished successfully',
             'problem' => $problem
         ]);
+    }
+
+
+    /**
+     * Get problem of a contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getContestProblems($contest_id){
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view contest problems'
+            ]);
+        }
+
+        $problems = ContestProblem::where('contest_id', $contest_id)
+                                  ->with('singleProblem')
+                                  ->get();
+
+        return response()->json([
+            'message' => 'Contest problems',
+            'problems' => $problems
+        ]);
+
     }
 
 
@@ -231,6 +296,42 @@ class Admin_controller extends Controller
         return response()->json([
             'messege' => 'Problem found',
             'problem' => $problem
+        ]);
+    }
+
+
+
+    /**
+     * * Get single contest
+     * 
+     * @param $contest_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSingleContest($contest_id){
+
+        $this_user = auth()->user();
+        $is_this_user_admin = User::find($this_user->id)->isAdmin();
+
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to view contest'
+            ]);
+        }
+
+        $contest = Contest::where('id', $contest_id)
+                          ->with(['user:id,username'])
+                          ->withCount(['participants', 'problems', 'submissions'])
+                          ->get();;
+
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'messege' => 'Contest found',
+            'contest' => $contest
         ]);
     }
 

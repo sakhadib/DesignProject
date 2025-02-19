@@ -29,6 +29,12 @@ class ContestProblem extends Model
                     ->select(['id', 'title', 'xp', 'tags']);
     }
 
+    public function singleProblem()
+    {
+        return $this->belongsTo(Problem::class, 'problem_id')
+                    ->select(['id', 'title', 'xp', 'tags']);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'added_by');
