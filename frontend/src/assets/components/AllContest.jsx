@@ -19,6 +19,7 @@ import {
 } from "@mui/material"
 import axios from "axios"
 import { format } from "date-fns"
+import {Link} from "react-router-dom"
 
 function ContestTable({ contests, type, isLoading }) {
   if (isLoading) {
@@ -77,7 +78,9 @@ function ContestTable({ contests, type, isLoading }) {
                       </Typography>
                     ) : (
                       <Button variant="contained" size="small" color="primary">
-                        Register
+                        <Link to={`/contest/${contest.id}/registration`} style={{ textDecoration: 'none', color: 'white' }}>
+                          Register
+                        </Link>
                       </Button>
                     )}
                   </TableCell>
@@ -154,9 +157,12 @@ function HeadsUp({ activeContest, upcomingContest }) {
             </Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Button variant="contained" sx={buttonStyle}>
+          <Button variant="contained" sx={buttonStyle}>
+            <Link to={`/contest/${contest.id}/registration`} style={{ textDecoration: 'none', color: 'white' }}>
               {activeContest ? "Participate" : "Register"}
-            </Button>
+            </Link>
+          </Button>
+
           </Box>
         </Box>
       ) : (
@@ -212,7 +218,7 @@ export default function AllContests() {
   }
 
   return (
-    <Box sx={{ width: "100%", p: 3 }}>
+    <Box sx={{ width: "95%", p: 3 }}>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2 }}>
         <Box sx={{ width: { xs: "100%", md: "70%" } }}>
           <Tabs

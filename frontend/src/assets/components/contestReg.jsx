@@ -1,6 +1,4 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -9,105 +7,107 @@ import {
   FormControlLabel,
   FormControl,
   Button,
-  Container,
-  Select,
-  MenuItem,
-  InputLabel,
-  Snackbar,
-  Alert,
-} from "@mui/material"
+  Container
+} from '@mui/material';
 
 const ContestRegistration = () => {
-  const [acceptTerms, setAcceptTerms] = useState(false)
-  const [contestType, setContestType] = useState("")
-  const [contestId, setContestId] = useState("")
-  const [contests, setContests] = useState({ upcoming: [], active: [], ended: [] })
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  })
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
-  useEffect(() => {
-    const fetchContests = async () => {
-      try {
-        const upcomingRes = await fetch("http://127.0.0.1:8000/api/contest/all/upcoming")
-        const activeRes = await fetch("http://127.0.0.1:8000/api/contest/all/active")
-        const endedRes = await fetch("http://127.0.0.1:8000/api/contest/all/end")
-        
-        const upcomingData = await upcomingRes.json()
-        const activeData = await activeRes.json()
-        const endedData = await endedRes.json()
-        
-        setContests({
-          upcoming: upcomingData || [],
-          active: activeData || [],
-          ended: endedData || [],
-        })
-      } catch (error) {
-        setSnackbar({
-          open: true,
-          message: "Failed to fetch contest data",
-          severity: "error",
-        })
-      }
-    }
-    fetchContests()
-  }, [])
+  const termsText = `The registration confirms that you:
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return
-    }
-    setSnackbar({ ...snackbar, open: false })
-  }
+* Eligibility:
+    -Open to all registered MathXplorer users with accurate account details.
+*Fair Play:
+    -Cheating, sharing solutions, or using unauthorized aids is prohibited.
+*Contest Structure:
+    -Solve problems within the contest duration.
+    -Follow the specified submission format; incorrect formats may be disqualified.
+    -Points are based on correctness and difficulty, with ties broken by submission time.
+    
+*Code of Conduct:
+    -Maintain respectful communication.
+    -Do not share solutions or attempt to exploit the system.
+    
+*Disqualification:
+    -Plagiarism, multiple accounts, or rule violations may lead to disqualification.
+    -Appeals must be submitted within 48 hours of disqualification.
+    
+*Prizes and Recognition:
+    -Only rule-compliant participants are eligible for prizes and leaderboard rankings.
+    
+*Technical Guidelines:
+    -Ensure stable internet connectivity.
+    -Report any technical issues promptly; contests may be paused if necessary.
+    
+*Final Decision:
+    -Administrators’ decisions are final. Rules may be updated before contests.
+`;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Handle registration logic here
+    console.log('Registration submitted');
+  };
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom>
-        Contest List
-      </Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Registration for the contest
+        </Typography>
+        
+        <Typography variant="h5" component="h2" gutterBottom>
+          Contest Name 
+        </Typography>
 
-      <Typography variant="h5" component="h2" gutterBottom>
-        Upcoming Contests:
-      </Typography>
-      {contests.upcoming.length > 0 ? (
-        contests.upcoming.map((contest, index) => (
-          <Typography key={index}>{contest.name}</Typography>
-        ))
-      ) : (
-        <Typography>No upcoming contests</Typography>
-      )}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" component="h3" gutterBottom>
+            Terms of agreement:
+          </Typography>
+          <TextField
+            multiline
+            fullWidth
+            rows={10}
+            value={termsText}
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="outlined"
+            sx={{
+              backgroundColor: '#f5f5f5',
+              '& .MuiInputBase-input': {
+                fontFamily: 'monospace',
+              },
+            }}
+          />
+        </Box>
 
-      <Typography variant="h5" component="h2" gutterBottom>
-        Active Contests:
-      </Typography>
-      {contests.active.length > 0 ? (
-        contests.active.map((contest, index) => (
-          <Typography key={index}>{contest.name}</Typography>
-        ))
-      ) : (
-        <Typography>No active contests</Typography>
-      )}
+        <Box sx={{ mb: 3 }}>
+          <FormControl required error={false}>
+            <FormControlLabel
+              control={
+                <Checkbox 
+                  checked={acceptTerms} 
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                />
+              }
+              label="I accept"
+            />
+          </FormControl>
+        </Box>
 
-      <Typography variant="h5" component="h2" gutterBottom>
-        Ended Contests:
-      </Typography>
-      {contests.ended.length > 0 ? (
-        contests.ended.map((contest, index) => (
-          <Typography key={index}>{contest.name}</Typography>
-        ))
-      ) : (
-        <Typography>No ended contests</Typography>
-      )}
-
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={!acceptTerms}
+        >
+          Register
+        </Button>
+      </Box>
     </Container>
-  )
-}
+  );
+};
 
-export default ContestRegistration
+export default ContestRegistration;
