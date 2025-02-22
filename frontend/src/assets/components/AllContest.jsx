@@ -78,7 +78,7 @@ function ContestTable({ contests, type, isLoading }) {
                       </Typography>
                     ) : (
                       <Button variant="contained" size="small" color="primary">
-                        <Link to={`/contest/${contest.id}/registration`} style={{ textDecoration: 'none', color: 'white' }}>
+                        <Link to={`/contest/single/${contest.id}`} style={{ textDecoration: 'none', color: 'white' }}>
                           Register
                         </Link>
                       </Button>
@@ -158,7 +158,7 @@ function HeadsUp({ activeContest, upcomingContest }) {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <Button variant="contained" sx={buttonStyle}>
-            <Link to={`/contest/${contest.id}/registration`} style={{ textDecoration: 'none', color: 'white' }}>
+            <Link to={`/contest/single/${contest.id}`} style={{ textDecoration: 'none', color: 'white' }}>
               {activeContest ? "Participate" : "Register"}
             </Link>
           </Button>
