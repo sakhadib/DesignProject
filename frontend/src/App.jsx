@@ -17,6 +17,7 @@ import RegistrationContest from './assets/pages/contestReg';
 
 import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
+import IndividualCon from './assets/pages/singleContest';
 
 
 
@@ -48,8 +49,8 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
        <Route path="/contest/all" element={<AllContest />} />
-        <Route path="/contest/registration" element={<RegistrationContest />} />
-
+        <Route path="/contest/:id/registration" element={<RegistrationContest />} />
+        <Route path="/contest/single/:id" element={<IndividualCon />} />
        
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
 
