@@ -172,7 +172,6 @@ class ContestGetController extends Controller
     public function getSingleContest($contest_id)
     {
         $contest = Contest::where('id', $contest_id)
-                          ->where('start_time', '>', now())
                           ->with(['user:id,username'])
                           ->withCount(['participants', 'problems', 'submissions'])
                           ->get();
@@ -370,6 +369,11 @@ class ContestGetController extends Controller
             'message' => 'User is not registered in the contest'
         ]);
     }
+
+
+
+
+    
 
     
 }
