@@ -19,7 +19,8 @@ const TimeUnit = styled(Box)(({ theme }) => ({
 }));
 
 const FlipTimer = ({ initialTime }) => {
-  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [timeLeft, setTimeLeft] = useState(initialTime || 0);
+
 
   useEffect(() => {
     const timer = setInterval(() => {
