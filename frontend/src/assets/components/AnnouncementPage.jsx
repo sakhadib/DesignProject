@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeMathjax from 'rehype-mathjax';
 import {
   Accordion,
   AccordionSummary,
@@ -11,30 +8,49 @@ import {
   Box,
   CircularProgress,
   Alert,
+  IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ReactMarkdown from 'react-markdown';
+import rehypeKatex from 'rehype-katex'; // LaTeX support
+import remarkMath from 'remark-math'; // Markdown math support
+import 'katex/dist/katex.min.css'; // Required CSS for LaTeX rendering
+import { useNavigate } from 'react-router-dom';
+import axios from '../../api';
 
-export default function AnnouncementsPage() {
+export default function AnnouncementsTable() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  // Function to get user's local timezone
+const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const formatLocalTime = (utcTime) => {
+  const utcDate = new Date(utcTime + " UTC");
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+    timeZone: userTimezone,
+  }).format(utcDate);
+};
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/notice/all/');
-        if (!response.ok) {
-          throw new Error('Failed to fetch announcements');
-        }
-        const data = await response.json();
-        setAnnouncements(
-          data.notices.map((notice) => ({
-            id: notice.id,
-            title: notice.title,
-            content: notice.content,
-            date: new Date(notice.created_at).toLocaleDateString(),
-          }))
-        );
+        const response = await axios.get('/notice/all/');
+        const data = response.data;
+
+        // Sort announcements by created_at (latest first)
+        const sortedAnnouncements = data.notices.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        setAnnouncements(sortedAnnouncements);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -45,21 +61,22 @@ export default function AnnouncementsPage() {
     fetchAnnouncements();
   }, []);
 
+  
+
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    };
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="subtitle1" 
-          sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-        >
-          MathXplorer
-        </Typography>
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          sx={{ fontWeight: 900, textTransform: 'uppercase', mb: 4 }}
-        >
-          ANNOUNCEMENTS
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 900, textTransform: 'uppercase', mb: 4, textAlign:"center" }}>
+          Announcements
         </Typography>
       </Box>
 
@@ -75,66 +92,59 @@ export default function AnnouncementsPage() {
         </Alert>
       )}
 
-      {!loading && !error && announcements.length === 0 && (
-        <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}>
-          No announcements available.
-        </Typography>
-      )}
-
       {!loading &&
         !error &&
-        announcements.map((announcement) => (
-          <Accordion 
-            key={announcement.id}
-            sx={{
-              mb: 1,
-              '&:before': { display: 'none' },
-              boxShadow: 'none',
-              border: '1px solid',
-              borderColor: 'divider',
-              '&:first-of-type': {
-                borderTopLeftRadius: '4px',
-                borderTopRightRadius: '4px',
-              },
-              '&:last-of-type': {
-                borderBottomLeftRadius: '4px',
-                borderBottomRightRadius: '4px',
-              },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+        announcements.map((announcement) => {
+          const { date, time } = formatDateTime(announcement.created_at);
+
+          return (
+            <Box
+              key={announcement.id}
               sx={{
-                '& .MuiAccordionSummary-content': {
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                },
+                display: 'flex',
+                alignItems: 'stretch',
+                border: '1px solid #ddd',
+                mb: 2,
+                borderRadius: '4px',
+                overflow: 'hidden',
               }}
             >
-              <Typography sx={{ flex: '1 1 auto', fontWeight: 500, pr: 2 }}>
-                {announcement.title}
-              </Typography>
-              <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
-                {announcement.date}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography
-                component="div"
-                sx={{ whiteSpace: 'pre-wrap', color: 'text.secondary', lineHeight: 1.7 }}
+              {/* Left Blue Border */}
+              <Box
+                sx={{
+                  width: '3px',
+                  backgroundColor: '#1976D2', // Blue color of "New Announcement" button
+                  flexShrink: 0,
+                }}
+              />
+
+              <Accordion
+                sx={{
+                  flex: 1,
+                  boxShadow: 'none',
+                  border: 'none',
+                  '&:before': { display: 'none' },
+                }}
               >
-                <ReactMarkdown
-                  remarkPlugins={[remarkMath]}
-                  rehypePlugins={[rehypeMathjax]}
-                >
-                  {announcement.content}
-                </ReactMarkdown>
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography sx={{ flex: '1 1 auto', fontWeight: 800, fontSize: '18px', color:"#1976D2" }}>
+                    {announcement.title}
+                  </Typography>
+                  <Box sx={{ textAlign: 'right' }}>
+                    <Typography sx={{ color: 'text.secondary', fontSize: '10px' }}>{date}</Typography>
+                    <Typography sx={{ color: 'text.secondary', fontSize: '9px' }}>{time}</Typography>
+                  </Box>
+                </AccordionSummary>
+
+                <AccordionDetails>
+                  <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                    {announcement.content}
+                  </ReactMarkdown>
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          );
+        })}
     </Container>
   );
 }
