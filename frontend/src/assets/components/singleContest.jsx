@@ -12,7 +12,7 @@ const ContestPage = () => {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
-    axios.get(/contest/single/${id})
+    axios.get('/contest/single/${id}')
       .then((response) => {
         const contestData = response.data?.contest[0]; // Get the first contest object
         setContest(contestData);
@@ -75,20 +75,22 @@ const ContestPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* Since problems aren't provided in the API, handle empty data */}
-            {contest.full_problems?.map((problemData, index) => (
-              <TableRow key={problemData.id}>
-                <TableCell>{Problem ${index + 1}}</TableCell>
-                <TableCell>{problemData.problem?.title || 'N/A'}</TableCell>
-                <TableCell>{problemData.problem?.tags?.topics?.join(', ') || 'N/A'}</TableCell>
-                <TableCell align="right">{problemData.points}</TableCell>
-              </TableRow>
-            )) || (
-              <TableRow>
-                <TableCell colSpan={4} align="center">No problems available</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+  {contest.full_problems?.length > 0 ? (
+    contest.full_problems.map((problemData, index) => (
+      <TableRow key={problemData.id}>
+        <TableCell>{`Problem ${index + 1}`}</TableCell>
+        <TableCell>{problemData.problem?.title || 'N/A'}</TableCell>
+        <TableCell>{problemData.problem?.tags?.topics?.join(', ') || 'N/A'}</TableCell>
+        <TableCell align="right">{problemData.points}</TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={4} align="center">No problems available</TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
         </Table>
       </TableContainer>
 

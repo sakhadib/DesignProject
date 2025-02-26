@@ -51,9 +51,7 @@ function App() {
        <Route path="/contest/all" element={<AllContest />} />
         <Route path="/contest/:id/registration" element={<RegistrationContest />} />
         <Route path="/contest/single/:id" element={<IndividualCon />} />
-       
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
-
         <Route path="/contest/create" element={<UserContestCreate/>}/>
       </Routes>
     </Router>
