@@ -16,51 +16,51 @@ export default function AboutSection() {
     {
       name: "Tahsin Islam",
       role: "Software Engineering student",
-      description: "An Software Engineering student and developer of MathRanker. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
       image: tahsin
     },
     {
       name: "Takia Farhin",
       role: "Software Engineering student",
-      description: "An Software Engineering student and developer of MathRanker. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
       image: takia
     },
     {
       name: "Sakhawat Adib",
       role: "Software Engineering student",
-      description: "An Software Engineering student and developer of MathRanker. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
       image: shuvro
     }
   ];
 
   const values = [
     {
-      title: "Passion for Learning: ",
+      title: "Passion for Learning",
       description: "We believe in nurturing a deep love for mathematics and the excitement of discovery through engaging challenges.",
       image: passion
     },
     {
-      title: "Inclusivity:",
+      title: "Inclusivity",
       description: "MathXplorer welcomes everyone, creating an environment where math enthusiasts of all levels feel valued and supported.",
       image: inclusivity
     },
     {
-      title: "Collaboration: ",
+      title: "Collaboration",
       description: "We encourage users to learn from each other, share insights, and grow together as a community.",
       image: collaboration
     },
     {
-      title: "Excellence:",
+      title: "Excellence",
       description: "We strive to provide high-quality content and a seamless user experience, fostering excellence in every math pursuit.",
       image: excellence
     },
     {
-      title: "Innovation: ",
+      title: "Innovation",
       description: "By integrating unique features like our Socratic chatbot, we aim to make math learning interactive, accessible, and fun.",
       image: innovation
     },
     {
-      title: "Continuous Growth: ",
+      title: "Continuous Growth",
       description: "We are committed to lifelong learning, empowering users to improve their skills, confidence, and understanding of math.",
       image: growth
     }
@@ -90,7 +90,6 @@ export default function AboutSection() {
                   width: '100%',
                   height: 'auto',
                   borderRadius: 2
-                 
                 }}
               />
             </Grid>
@@ -127,7 +126,7 @@ export default function AboutSection() {
         }}
       >
         <CardContent sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Engage through Interaction :</Typography>
+          <Typography variant="h6" sx={{fontWeight:"bold", color:"#1565C0", mb:1}}>Engage through Interaction</Typography>
           <Typography>Make math fun with interactive, guided challenges</Typography>
         </CardContent>
       </Card>
@@ -138,6 +137,7 @@ export default function AboutSection() {
           height: '100%',
           bgcolor: 'grey.50',
           transition: 'transform 0.3s ease',
+          
           '&:hover': {
             transform: 'scale(1.05)',
             boxShadow: 6,
@@ -145,8 +145,8 @@ export default function AboutSection() {
         }}
       >
         <CardContent sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Empower Growth:</Typography>
-          <Typography>Boost skills and confidence at all levels.</Typography>
+          <Typography variant="h6" sx={{fontWeight:"bold", color:"#1565C0", mb:1}}>Empower Growth</Typography>
+          <Typography>Boost skills and confidence at all levels. Be a math legend.</Typography>
         </CardContent>
       </Card>
     </Grid>
@@ -163,7 +163,7 @@ export default function AboutSection() {
         }}
       >
         <CardContent sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Build Community:</Typography>
+          <Typography variant="h6" sx={{fontWeight:"bold", color:"#1565C0", mb:1}}>Build Community</Typography>
           <Typography>Connect math enthusiasts from everywhere</Typography>
         </CardContent>
       </Card>
@@ -205,12 +205,12 @@ export default function AboutSection() {
           <Avatar
             src={value.image}
             alt={value.title}
-            sx={{ width: 80, height: 80, mx: 'auto', mb: 2,objectFit: 'cover',borderRadius: 1 }}
+            sx={{ width: 80, height: 80, mx: 'auto', mb: 2,objectFit: 'cover',borderRadius: 1}}
           />
 
           
-          <Typography variant="h6" sx={{ mb: 1 }}>{value.title}</Typography>
-          <Typography>{value.description}</Typography>
+          <Typography variant="h6" sx={{fontWeight:"bold", color:"#8d256f", mb:1, textAlign: "center"}}>{value.title}</Typography>
+          <Typography sx={{textAlign: "center"}}>{value.description}</Typography>
         </Box>
       </Grid>
     ))}

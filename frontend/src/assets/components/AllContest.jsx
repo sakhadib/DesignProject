@@ -364,7 +364,6 @@ export default function AllContests() {
         <Grid item xs={12} md={8}>
           <Box sx={{ width: "95%", p: 3 }}>
             <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-              <Tab label="All" />
               <Tab label="Upcoming" />
               <Tab label="Previous" />
             </Tabs>
@@ -372,13 +371,9 @@ export default function AllContests() {
             {activeTab === 0 && (
               <>
                 <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
-                <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
               </>
             )}
             {activeTab === 1 && (
-              <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
-            )}
-            {activeTab === 2 && (
               <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
             )}
           </Box>
