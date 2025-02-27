@@ -18,6 +18,7 @@ import RegistrationContest from './assets/pages/contestReg';
 import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
 import IndividualCon from './assets/pages/singleContest';
+import ContestProblem from './assets/pages/contestProbView';
 
 
 
@@ -53,6 +54,7 @@ function App() {
         <Route path="/contest/single/:id" element={<IndividualCon />} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
         <Route path="/contest/create" element={<UserContestCreate/>}/>
+        <Route path="/contest/problem/:id" element={<ContestProblem/>}/>
       </Routes>
     </Router>
   );
