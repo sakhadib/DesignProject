@@ -1,18 +1,79 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Checkbox, FormControlLabel, FormControl, Button, Container } from '@mui/material';
-import axios from 'axios'; // Assuming axios is already set up
-import { useNavigate, useParams } from 'react-router-dom'; // Import useNavigate and useParams
+import React, { useState, useEffect } from "react";
+import { Box, Typography, TextField, Checkbox, FormControlLabel, FormControl, Button, Container } from "@mui/material";
+import axios from "axios"; // Assuming axios is already set up
+import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
 
 const ContestRegistration = () => {
   const { id } = useParams(); // Get the dynamic contest ID from URL
+  const [contest, setContest] = useState(null); // Store contest data
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate(); // To handle redirection
 
-  // Sample terms for the contest
-  const termsText = `
+  useEffect(() => {
+    const fetchContestDetails = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/contest/single/${id}`);
+        setContest(response.data?.contest[0]); // Store contest details
+      } catch (err) {
+        console.error("Error fetching contest:", err);
+      }
+    };
+
+    fetchContestDetails();
+  }, [id]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+
+    const requestData = { contest_id: id }; // Use dynamic contest ID from URL
+    if (password) requestData.password = password;
+
+    try {
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+      const response = await axios.post("http://127.0.0.1:8000/api/contest/join/", requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send the token with the request
+        },
+      });
+
+      setSuccess(response.data.message);
+
+      // Redirect to the contest single page after success
+      setTimeout(() => {
+        navigate(`/contest/single/${id}`); // Use dynamic id for redirection
+      }, 2000);
+    } catch (err) {
+      console.error("Registration Error:", err.response?.data);
+      setError(err.response?.data?.message || "Registration failed. Try again.");
+    }
+  };
+
+  return (
+    <Container maxWidth="md">
+      <Box component="form" onSubmit={handleSubmit} sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Registration for the contest
+        </Typography>
+
+        {/* Display Contest Title */}
+        <Typography variant="h5" component="h2" gutterBottom>
+          {contest ? contest.title : "Loading..."}
+        </Typography>
+
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" component="h3" gutterBottom>
+            Terms of agreement:
+          </Typography>
+          <TextField
+  multiline
+  fullWidth
+  rows={10}
+  value={`
     1. **Eligibility**:
        - Open to all registered MathXplorer users with accurate account details.
     
@@ -41,79 +102,26 @@ const ContestRegistration = () => {
 
     8. **Final Decision**:
        - Administrators’ decisions are final. Rules may be updated before contests.
-  `;
+  `}
+  InputProps={{
+    readOnly: true,
+  }}
+  variant="outlined"
+  sx={{
+    backgroundColor: "#f5f5f5",
+    "& .MuiInputBase-input": {
+      fontFamily: "monospace",
+    },
+  }}
+/>
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
-
-    const requestData = { contest_id: id }; // Use dynamic contest ID from URL
-    if (password) requestData.password = password;
-
-    console.log("Request Data:", requestData);
-
-    try {
-      const token = localStorage.getItem("token"); // Get the token from localStorage
-      const response = await axios.post("http://127.0.0.1:8000/api/contest/join/", requestData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send the token with the request
-        },
-      });
-
-      setSuccess(response.data.message);
-
-      // Redirect to the contest single page after success
-      setTimeout(() => {
-        navigate(`/contest/single/${id}`); // Use dynamic id for redirection
-      }, 2000);
-    } catch (err) {
-      console.error("Registration Error:", err.response?.data);
-      setError(err.response?.data?.message || "Registration failed. Try again.");
-    }
-  };
-
-  return (
-    <Container maxWidth="md">
-      <Box component="form" onSubmit={handleSubmit} sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Registration for the contest
-        </Typography>
-        
-        <Typography variant="h5" component="h2" gutterBottom>
-          Contest Name 
-        </Typography>
-
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" component="h3" gutterBottom>
-            Terms of agreement:
-          </Typography>
-          <TextField
-            multiline
-            fullWidth
-            rows={10}
-            value={termsText}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="outlined"
-            sx={{
-              backgroundColor: '#f5f5f5',
-              '& .MuiInputBase-input': {
-                fontFamily: 'monospace',
-              },
-            }}
-          />
         </Box>
 
         <Box sx={{ mb: 3 }}>
           <FormControl required error={false}>
             <FormControlLabel
               control={
-                <Checkbox 
-                  checked={acceptTerms} 
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                />
+                <Checkbox checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} />
               }
               label="I accept"
             />
@@ -135,13 +143,7 @@ const ContestRegistration = () => {
         {error && <Typography color="error">{error}</Typography>}
         {success && <Typography color="primary">{success}</Typography>}
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          size="large"
-          disabled={!acceptTerms}
-        >
+        <Button type="submit" variant="contained" color="primary" size="large" disabled={!acceptTerms}>
           Register
         </Button>
       </Box>
