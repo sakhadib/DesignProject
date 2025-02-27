@@ -1,8 +1,6 @@
-"use client"
-
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../api";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -23,14 +21,19 @@ import FlipTimer from "./flip-timer";
 
 const ContestPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [contest, setContest] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [contestStatus, setContestStatus] = useState("upcoming");
+  const [isParticipant, setIsParticipant] = useState(false);
+  const [loadingParticipant, setLoadingParticipant] = useState(true);
+  const [contestProblems, setContestProblems] = useState([]);
 
+  // Fetch contest details
   useEffect(() => {
-    axios
-      .get(`/contest/single/${id}`)
-      .then((response) => {
+    const fetchContestDetails = async () => {
+      try {
+        const response = await axios.get(`/contest/single/${id}`);
         const contestData = response.data?.contest[0];
         setContest(contestData);
 
@@ -47,18 +50,60 @@ const ContestPage = () => {
         } else {
           setContestStatus("previous");
         }
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
+
+        // Check if user is a participant
+        await checkParticipant(contestData.id);
+      } catch (error) {
+        console.error("API Error fetching contest:", error);
+      }
+    };
+
+    fetchContestDetails();
   }, [id]);
 
+  // Check if user is a participant
+  const checkParticipant = async (contestId) => {
+    try {
+      const res = await axios.post(
+        `/contest/isparticipant`,
+        { contest_id: contestId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.data.message !== "User is not registered in the contest") {
+        setIsParticipant(true);
+      }
+    } catch (error) {
+      console.error("Error checking participation:", error);
+    } finally {
+      setLoadingParticipant(false);
+    }
+  };
+
+  // Fetch problems if user is registered & contest is active or previous
+  useEffect(() => {
+    const fetchContestProblems = async () => {
+      try {
+        const response = await axios.get(`/contest/problems/${id}`);
+        if (response.data && response.data.problems) {
+          setContestProblems(response.data.problems);
+        }
+      } catch (error) {
+        console.error("Error fetching problems:", error);
+      }
+    };
+
+    if ((contestStatus === "active" || contestStatus === "previous") && isParticipant) {
+      fetchContestProblems();
+    }
+  }, [contestStatus, isParticipant, id]);
+
   if (!contest) {
-    return (
-      <Typography variant="h5" align="center">
-        Loading...
-      </Typography>
-    );
+    return <Typography variant="h5" align="center">Loading...</Typography>;
   }
 
   return (
@@ -71,19 +116,18 @@ const ContestPage = () => {
           <Typography variant="subtitle1" align="center" gutterBottom>
             Created by: {contest.user?.username || "Unknown"}
           </Typography>
-          <Typography variant="subtitle2" align="center" gutterBottom>
-            Total Participants: {contest.participants_count}
-          </Typography>
           <Box display="flex" justifyContent="center" mb={2}>
             <Chip
               label={contestStatus.charAt(0).toUpperCase() + contestStatus.slice(1)}
-              color={
-                contestStatus === "active"
-                  ? "primary"
-                  : contestStatus === "upcoming"
-                  ? "secondary"
-                  : "default"
-              }
+              sx={{
+                backgroundColor:
+                  contestStatus === "active"
+                    ? "#6AA121"
+                    : contestStatus === "upcoming"
+                    ? "#8d256f"
+                    : "#B0BEC5",
+                color: "#fff",
+              }}
             />
           </Box>
           {(contestStatus === "upcoming" || contestStatus === "active") && (
@@ -102,6 +146,7 @@ const ContestPage = () => {
         </CardContent>
       </Card>
 
+      {/* Problem Set Table */}
       <Card>
         <CardContent>
           <Typography variant="h4" component="h2" gutterBottom>
@@ -113,24 +158,34 @@ const ContestPage = () => {
                 <TableRow>
                   <TableCell>Problem</TableCell>
                   <TableCell>Title</TableCell>
-                  <TableCell>Difficulty</TableCell>
+                  <TableCell>Topics</TableCell>
                   <TableCell align="right">Points</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {contest.full_problems?.length > 0 ? (
-                  contest.full_problems.map((problemData, index) => (
+                {contestProblems.length > 0 ? (
+                  contestProblems.map((problemData, index) => (
                     <TableRow key={problemData.id}>
                       <TableCell>{`Problem ${index + 1}`}</TableCell>
                       <TableCell>{problemData.problem?.title || "N/A"}</TableCell>
-                      <TableCell>{problemData.problem?.tags?.topics?.join(", ") || "N/A"}</TableCell>
+                      <TableCell>
+                        {problemData.problem?.tags?.topics?.join(", ") || "N/A"}
+                      </TableCell>
                       <TableCell align="right">{problemData.points}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} align="center">
-                      No problems available
+                      {loadingParticipant
+                        ? "Checking participation..."
+                        : contestStatus === "upcoming"
+                        ? isParticipant
+                          ? "Problems will be shown after the contest starts"
+                          : "Register to view problems"
+                        : isParticipant
+                        ? "No problems available"
+                        : "Register to view problems"}
                     </TableCell>
                   </TableRow>
                 )}
@@ -140,15 +195,28 @@ const ContestPage = () => {
         </CardContent>
       </Card>
 
+      {/* Register Button */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
-        <Button
-          variant="contained"
-          size="large"
-          disabled={contestStatus === "previous"}
-          sx={{ px: 4, py: 1.5, borderRadius: 1, textTransform: "none", fontSize: "1.1rem" }}
-        >
-          {contestStatus === "active" ? "Join Contest" : contestStatus === "upcoming" ? "Register" : "Contest Ended"}
-        </Button>
+        {contestStatus === "upcoming" ? (
+          isParticipant ? (
+            <Button variant="contained" size="large" disabled sx={{ px: 4, py: 1.5, borderRadius: 1, fontSize: "1.1rem" }}>
+              Registered
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate(`/contest/registration/${id}`)}
+              sx={{ px: 4, py: 1.5, borderRadius: 1, fontSize: "1.1rem" }}
+            >
+              Register
+            </Button>
+          )
+        ) : (
+          <Button variant="contained" size="large" disabled sx={{ px: 4, py: 1.5, borderRadius: 1, fontSize: "1.1rem" }}>
+            {contestStatus === "previous" ? "Contest Ended" : "Contest Started"}
+          </Button>
+        )}
       </Box>
     </Box>
   );

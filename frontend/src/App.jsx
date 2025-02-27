@@ -49,7 +49,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
        <Route path="/contest/all" element={<AllContest />} />
-        <Route path="/contest/:id/registration" element={<RegistrationContest />} />
+        <Route path="/contest/registration/:id" element={<RegistrationContest />} />
         <Route path="/contest/single/:id" element={<IndividualCon />} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
         <Route path="/contest/create" element={<UserContestCreate/>}/>
