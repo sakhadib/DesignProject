@@ -307,5 +307,6 @@ const ContestPage = () => {
   )
 }
 
-export default ContestPage
+export default ContestPage;
+
 

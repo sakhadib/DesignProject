@@ -1,6 +1,4 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -22,79 +20,15 @@ import {
   Collapse,
   IconButton,
   Chip,
-} from "@mui/material"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
-import api from "../../api"
-
-const Row = ({ problem, handleSelectProblem }) => {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [problemDetails, setProblemDetails] = useState(null)
-
-  const fetchProblemDetails = async () => {
-    if (!open) {
-      setLoading(true)
-      try {
-        const response = await api.get(`/problem/single/${problem.id}`)
-        setProblemDetails(response.data.problem)
-      } catch (error) {
-        console.error("Error fetching problem details:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const handleToggle = () => {
-    if (!open && !problemDetails) {
-      fetchProblemDetails()
-    }
-    setOpen(!open)
-  }
-
-  return (
-    <>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={handleToggle}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell>{problem.id}</TableCell>
-        <TableCell>{problem.title}</TableCell>
-        <TableCell>
-          {problem.tags.topics.map((tag, index) => (
-            <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-          ))}
-        </TableCell>
-        <TableCell>{problem.xp || "N/A"}</TableCell>
-        <TableCell align="right">
-          <Button size="small" variant="outlined" onClick={() => handleSelectProblem(problem)}>
-            Add
-          </Button>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              {loading ? (
-                <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-                  <CircularProgress size={24} />
-                </Box>
-              ) : (
-                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", mb: 2 }}>
-                  {problemDetails?.description || "No description available."}
-                </Typography>
-              )}
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  )
-}
+} from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import axios from "../../api";
+import ReactMarkdown from "react-markdown"; // For rendering Markdown
+import rehypeKatex from "rehype-katex"; // LaTeX support
+import remarkMath from "remark-math"; // Markdown math support
+import "katex/dist/katex.min.css"; // Required CSS for LaTeX rendering
+import { useNavigate } from "react-router-dom"; // Import for navigation
 
 export default function CreateContest() {
   const [formData, setFormData] = useState({
@@ -103,126 +37,114 @@ export default function CreateContest() {
     endTime: "",
     description: "",
     password: "",
-  })
+  });
 
-  const [problems, setProblems] = useState([])
-  const [allProblems, setAllProblems] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [problemDialogOpen, setProblemDialogOpen] = useState(false)
-  const [addedProblems, setAddedProblems] = useState(new Set())
-  const [searchTerm, setSearchTerm] = useState("")
+  const [problems, setProblems] = useState([]);
+  const [allProblems, setAllProblems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [problemDialogOpen, setProblemDialogOpen] = useState(false);
+  const [addedProblems, setAddedProblems] = useState(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // For navigation
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
+    }));
+  };
+
+  // Function to get user's local timezone
+const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+// Convert UTC+0 to Local Time in YYYY-MM-DD HH:MM:SS format
+const formatLocalTime = (utcTime) => {
+  if (!utcTime) return "";
+  const utcDate = new Date(utcTime + " UTC");
+
+  // Format to YYYY-MM-DD HH:MM:SS
+  return utcDate.toLocaleString("en-GB", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // Use 24-hour format
+    timeZone: userTimezone,
+  }).replace(",", "");
+};
+
+// Convert Local Time to UTC+0 Before Sending API Request in YYYY-MM-DD HH:MM:SS format
+const convertLocalToUTC = (localTime) => {
+  if (!localTime) return "";
+  
+  // Ensure localTime is parsed correctly
+  const localDate = new Date(localTime);
+  
+  // Check if the date is valid
+  if (isNaN(localDate.getTime())) {
+    console.error("Invalid Date Format:", localTime);
+    return "";
   }
 
-  const handleAddProblem = () => {
-    setProblemDialogOpen(true)
-    setSearchTerm("")
-    if (allProblems.length === 0) {
-      setLoading(true)
-      api
-        .get("/problem/all/")
-        .then((response) => {
-          console.log("API Response:", response.data)
-          const problemsData = Array.isArray(response.data.problems) ? response.data.problems : []
-          setAllProblems(
-            problemsData.map((problem) => ({
-              ...problem,
-              isVisible: true,
-            })),
-          )
-        })
-        .catch((error) => {
-          console.error("Error fetching problems:", error)
-          setAllProblems([])
-        })
-        .finally(() => setLoading(false))
-    } else {
-      setAllProblems((prevProblems) => prevProblems.map((problem) => ({ ...problem, isVisible: true })))
-    }
-  }
+  return localDate.toISOString().slice(0, 19).replace("T", " ");
+};
 
-  const handleCloseDialog = () => {
-    setProblemDialogOpen(false)
-  }
 
-  const handleSelectProblem = (problem) => {
-    if (!addedProblems.has(problem.id)) {
-      setProblems((prev) => [...prev, { ...problem, xp: problem.xp || "N/A" }])
-      setAddedProblems((prev) => new Set(prev).add(problem.id))
-    }
-  }
-
-  const handleRemoveProblem = (id) => {
-    setProblems(problems.filter((problem) => problem.id !== id))
-    setAddedProblems((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(id)
-      return newSet
-    })
-  }
-
-  const handleStartContest = () => {
-    if (problems.length > 0 && formData.title && formData.startTime && formData.endTime && formData.description) {
+  const handleCreateContest = () => {
+    if (formData.title && formData.startTime && formData.endTime && formData.description && formData.password) {
+      // Convert Start and End time to UTC+0 format
+      const startTimeUTC = convertLocalToUTC(formData.startTime);
+      const endTimeUTC = convertLocalToUTC(formData.endTime);
+  
       const contestPayload = {
         title: formData.title,
         description: formData.description,
-        start_time: formData.startTime,
-        end_time: formData.endTime,
+        start_time: startTimeUTC,  // Use converted start time
+        end_time: endTimeUTC,      // Use converted end time
         password: formData.password,
+      };
+  
+      setLoading(true);
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      if (!token) {
+        console.error("No token found");
+        return;
       }
-
-      setLoading(true)
-      api
-        .post("/contest/create/", contestPayload)
+  
+      axios
+        .post("/contest/create/", contestPayload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((response) => {
-          console.log("API Response:", response.data)
-
-          if (response.data.message === "Contest created successfully") {
-            alert("Contest created successfully!")
+  
+          if (response.data.message === "Contest Created Successfully") {
+            const contestId = response.data.contest.id; // ✅ Extract the contest ID
+            alert("Contest created successfully!");
+            navigate(`/contests/private/${contestId}`); // ✅ Navigate using the correct ID
           } else {
-            alert("Failed to create contest.")
+            alert("Failed to create contest.");
           }
         })
         .catch((error) => {
-          console.error("Error creating contest:", error)
-          alert("An error occurred while creating the contest.")
+          console.error("Error creating contest:", error);
+          alert("An error occurred while creating the contest.");
         })
-        .finally(() => setLoading(false))
+        .finally(() => setLoading(false));
     } else {
-      alert("Please make sure all required fields are filled and problems are selected.")
+      alert("Please make sure all required fields are filled.");
     }
-  }
-
-  const handleSearch = (term) => {
-    setAllProblems((prevProblems) =>
-      prevProblems.map((problem) => ({
-        ...problem,
-        isVisible:
-          problem.title.toLowerCase().includes(term.toLowerCase()) ||
-          problem.tags.topics.some((tag) => tag.toLowerCase().includes(term.toLowerCase())),
-      })),
-    )
-  }
-
-  useEffect(() => {
-    setAllProblems((prevAllProblems) =>
-      prevAllProblems.map((problem) => ({
-        ...problem,
-        isAdded: addedProblems.has(problem.id),
-      })),
-    )
-  }, [addedProblems])
+  };
+  
+  
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography
-        variant="h4"
         align="center"
         gutterBottom
         sx={{
@@ -293,7 +215,7 @@ export default function CreateContest() {
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Password (Optional)</Typography>
+          <Typography sx={{ width: "120px" }}>Password</Typography>
           <TextField
             fullWidth
             name="password"
@@ -301,144 +223,30 @@ export default function CreateContest() {
             onChange={handleInputChange}
             variant="outlined"
             size="small"
-            type="password"
-            helperText="Enter a password to make the contest private"
           />
         </Box>
 
         <Box sx={{ mt: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Problem Set
-          </Typography>
           <Box sx={{ display: "flex", justifyContent: "right", alignItems: "center", mt: 4 }}>
             <Button
               variant="outlined"
-              onClick={handleAddProblem}
+              onClick={handleCreateContest}
               sx={{
                 color: "white",
                 width: "200px",
                 backgroundColor: "#1E90FF",
                 "&:hover": {
                   backgroundColor: "#1565C0",
+                  color: "white",
                 },
               }}
             >
-              + ADD PROBLEM
+              Create
             </Button>
           </Box>
-
-          <TableContainer component={Paper} sx={{ mt: 3 }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "#1E90FF" }}>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Problem Title</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Tags</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>XP</TableCell>
-                  <TableCell align="right" sx={{ color: "white", fontWeight: "bold" }}>
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {problems.length > 0 ? (
-                  problems.map((problem, index) => (
-                    <TableRow key={problem.id} sx={{ backgroundColor: index % 2 === 0 ? "white" : "grey.100" }}>
-                      <TableCell>{problem.id}</TableCell>
-                      <TableCell>{problem.title}</TableCell>
-                      <TableCell>
-                        {problem.tags.topics.map((tag, index) => (
-                          <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-                        ))}
-                      </TableCell>
-                      <TableCell>{problem.xp || "N/A"}</TableCell>
-                      <TableCell align="right">
-                        <Button size="small" color="error" onClick={() => handleRemoveProblem(problem.id)}>
-                          Remove
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      No problems selected.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
         </Box>
-
-        {problems.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, mb: 5 }}>
-            <Button variant="contained" color="primary" onClick={handleStartContest} sx={{ width: "200px", mb: 2 }}>
-              Start Contest
-            </Button>
-          </Box>
-        )}
       </Box>
-
-      <Dialog open={problemDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h6">Select Problems</Typography>
-            <TextField
-              size="small"
-              placeholder="Search problems..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-                handleSearch(e.target.value)
-              }}
-              sx={{ width: "50%" }}
-            />
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell />
-                    <TableCell>ID</TableCell>
-                    <TableCell>Problem Title</TableCell>
-                    <TableCell>Tags</TableCell>
-                    <TableCell>XP</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Array.isArray(allProblems) &&
-                    allProblems
-                      .filter((problem) => !addedProblems.has(problem.id) && (problem.isVisible ?? true))
-                      .map((problem) => (
-                        <Row key={problem.id} problem={problem} handleSelectProblem={handleSelectProblem} />
-                      ))}
-                  {allProblems.filter((problem) => !addedProblems.has(problem.id) && (problem.isVisible ?? true))
-                    .length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={6} align="center">
-                        No problems available.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
     </Container>
-  )
+  );
 }
 

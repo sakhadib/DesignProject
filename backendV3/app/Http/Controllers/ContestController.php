@@ -231,6 +231,8 @@ class ContestController extends Controller
         $contest_problem->added_by = $this_user_id;
         $contest_problem->save();
 
+        $problem->inContest();
+
         return response()->json([
             'message' => 'Problem added to contest successfully',
         ]);
@@ -286,6 +288,8 @@ class ContestController extends Controller
         }
 
         $contest_problem->delete();
+
+        $problem->approve();
 
         return response()->json([
             'message' => 'Problem removed from contest successfully',
