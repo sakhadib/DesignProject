@@ -148,6 +148,9 @@ Route::group([
 
     Route::get('user/all', [Admin_controller::class, 'getUserList']);
     Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
+
+    Route::post('contest/problem/add', [ContestController::class, 'addProblem']);
+    Route::post('contest/problem/remove', [ContestController::class, 'removeProblem']);
 });
 
 
@@ -199,8 +202,7 @@ Route::group(
     Route::post('edit', [ContestController::class, 'update']);
     Route::post('delete', [ContestController::class, 'delete']);
 
-    Route::post('problem/add', [ContestController::class, 'addProblem']);
-    Route::post('problem/remove', [ContestController::class, 'removeProblem']);
+
 
     Route::post('join', [ContestController::class, 'register']);
     Route::post('leave', [ContestController::class, 'unregister']);
