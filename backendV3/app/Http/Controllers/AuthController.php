@@ -41,14 +41,14 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        $token = JWTAuth::fromUser($user);
+        // $token = JWTAuth::fromUser($user);
 
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL(),
+            // 'access_token' => $token,
+            // 'token_type' => 'bearer',
+            // 'expires_in' => JWTAuth::factory()->getTTL(),
         ], 201);
     }
 
