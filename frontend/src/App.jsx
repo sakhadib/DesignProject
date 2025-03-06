@@ -56,9 +56,14 @@ function App() {
         <Route path="/contest/single/:id" element={<IndividualCon />} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
         <Route path="/contest/create" element={<UserContestCreate/>}/>
+
         <Route path="/contest/problem/:id" element={<ContestProblem/>}/>
         <Route path="/contests/private/:id" element={<UserContestDetails/>}/>
         <Route path="/contests/private/edit/:id" element={<UserContestEdits/>}/>
+
+        <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
+
+
       </Routes>
     </Router>
   );

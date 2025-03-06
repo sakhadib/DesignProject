@@ -15,6 +15,8 @@ use App\Http\Controllers\ContestController;
 use App\Http\Controllers\ContestGetController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LeaderBoardController;
+use App\Http\Controllers\RatingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -293,6 +295,18 @@ Route::group(
         Route::get('submission/contest/in', [DashboardController::class, 'getInContestSubmissionCount']);
         Route::get('submission/contest/out', [DashboardController::class, 'getOutContestSubmissionCount']);
         Route::get('submission/tags', [DashboardController::class, 'getStatByProblemTag']);
+    }
+);
+
+
+
+Route::group(
+    [
+        'prefix' => 'rating'
+    ], routes: function ($router) {
+        Route::get('contest/{contest_id}', [LeaderBoardController::class, 'getContestLeaderboard']);
+        Route::get('contest/{contest_id}/user/{user_id}', [LeaderBoardController::class, 'totalPenaltyOfAnUser']);
+        
     }
 );
 
