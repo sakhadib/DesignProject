@@ -142,52 +142,72 @@ const ContestPage = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: 4 }}>
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Typography variant="h3" component="h1" align="center" gutterBottom>
-            {contest.title}
-          </Typography>
-          <Typography variant="subtitle1" align="center" gutterBottom>
-            Created by: {contest.user?.username || "Unknown"}
-          </Typography>
-          <Box display="flex" justifyContent="center" mb={2}>
-            <Chip
-              label={contestStatus.charAt(0).toUpperCase() + contestStatus.slice(1)}
-              sx={{
-                backgroundColor:
-                  contestStatus === "active" ? "#6AA121" : contestStatus === "upcoming" ? "#8d256f" : "#B0BEC5",
-                color: "#fff",
-              }}
-            />
-          </Box>
+ <Card sx={{ mb: 4 }}>
+  <CardContent>
+    <Typography variant="h3" component="h1" align="center" gutterBottom>
+      {contest.title}
+    </Typography>
+    <Typography variant="subtitle1" align="center" gutterBottom>
+      Created by: {contest.user?.username || "Unknown"}
+    </Typography>
+    <Box display="flex" justifyContent="center" mb={2}>
+      <Chip
+        label={contestStatus.charAt(0).toUpperCase() + contestStatus.slice(1)}
+        sx={{
+          backgroundColor:
+            contestStatus === "active" ? "#6AA121" : contestStatus === "upcoming" ? "#8d256f" : "#B0BEC5",
+          color: "#fff",
+        }}
+      />
+    </Box>
 
-          {/* Display local start and end times */}
-          <Box sx={{ textAlign: "center", mb: 2 }}>
-            <Typography variant="body1">
-              <strong>Start Time:</strong> {localStartTime}
-            </Typography>
+    {/* Display local start and end times */}
+    <Box sx={{ textAlign: "center", mb: 2 }}>
+      <Typography variant="body1">
+        <strong>Start Time:</strong> {localStartTime}
+      </Typography>
 
-            <Typography variant="body1">
-              <strong>End Time:</strong> {localEndTime}
-            </Typography>
-          </Box>
+      <Typography variant="body1">
+        <strong>End Time:</strong> {localEndTime}
+      </Typography>
+    </Box>
 
-          {/* Show timer for active or upcoming contests */}
-          {(contestStatus === "upcoming" || contestStatus === "active") && (
-            <Box mb={2}>
-              <FlipTimer initialTime={timeRemaining} />
-              <Typography variant="subtitle1" align="center">
-                {contestStatus === "upcoming" ? "Time to start" : "Time remaining"}
-              </Typography>
-            </Box>
-          )}
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom sx={{ color: "#1565C0", fontSize: "2rem", textAlign: "justify" }}>
-            Description
-          </Typography>
-          <Typography variant="body1">{contest.description}</Typography>
-        </CardContent>
-      </Card>
+    {/* Show timer for active or upcoming contests */}
+    {(contestStatus === "upcoming" || contestStatus === "active") && (
+      <Box mb={2}>
+        <FlipTimer initialTime={timeRemaining} />
+        <Typography variant="subtitle1" align="center">
+          {contestStatus === "upcoming" ? "Time to start" : "Time remaining"}
+        </Typography>
+      </Box>
+    )}
+    <Divider sx={{ my: 2 }} />
+    <Typography variant="h6" gutterBottom sx={{ color: "#1565C0", fontSize: "2rem", textAlign: "justify" }}>
+      Description
+    </Typography>
+    <Typography variant="body1">{contest.description}</Typography>
+
+   
+  </CardContent>
+</Card>
+ {/* Leaderboard Button */}
+    <Box sx={{ display: "flex", justifyContent: "right", mt: 2 }}>
+      <Button
+        variant="contained"
+        sx={{
+          height: "20px",
+          backgroundColor: "#1976D2", // Blue color
+          color: "white",
+          fontSize: "0.9rem", // Optional font size adjustment
+          padding: "20px 20px", // Optional padding adjustment
+          borderRadius: "15px", // Optional border radius adjustment
+          margin: "10px 10px", // Optional margin adjustment
+        }}
+        onClick={() => navigate(`/contest/${id}/leaderboard`)} // Redirect to leaderboard page
+      >
+        Leaderboard
+      </Button>
+    </Box>
 
       {/* Problem Set Table */}
       <Card>

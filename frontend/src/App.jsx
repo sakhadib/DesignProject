@@ -19,7 +19,7 @@ import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
 import IndividualCon from './assets/pages/singleContest';
 import ContestProblem from './assets/pages/contestProbView';
-
+import Leaderboard from './assets/pages/leaderBoard';
 
 
 
@@ -55,7 +55,7 @@ function App() {
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
         <Route path="/contest/create" element={<UserContestCreate/>}/>
         <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
-
+        <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
       </Routes>
     </Router>
   );
