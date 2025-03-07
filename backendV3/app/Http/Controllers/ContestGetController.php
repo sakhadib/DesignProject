@@ -125,7 +125,7 @@ class ContestGetController extends Controller
 
         return response()->json([
             'message' => 'My created contests',
-            'creator' => $this_user,
+            'user' => $this_user,
             'contests' => $contests
         ]);
     }
