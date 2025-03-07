@@ -19,6 +19,9 @@ import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
 import IndividualCon from './assets/pages/singleContest';
 import ContestProblem from './assets/pages/contestProbView';
+import Leaderboard from './assets/pages/leaderBoard';
+import UserContestDetails from './assets/pages/userContestView';
+import UserContestEdits from './assets/pages/userContestEdit';
 
 
 
@@ -49,12 +52,20 @@ function App() {
         <Route path="/problem/add" element={<AddProblem />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicy/>}/>
-       <Route path="/contest/all" element={<AllContest />} />
+        <Route path="/contest/all" element={<AllContest />} />
         <Route path="/contest/registration/:id" element={<RegistrationContest />} />
         <Route path="/contest/single/:id" element={<IndividualCon />} />
         <Route path="/announcement/all" element={<AnnouncementsPage/>}/>
         <Route path="/contest/create" element={<UserContestCreate/>}/>
+
         <Route path="/contest/problem/:id" element={<ContestProblem/>}/>
+        <Route path="/contests/private/:id" element={<UserContestDetails/>}/>
+        <Route path="/contests/private/edit/:id" element={<UserContestEdits/>}/>
+
+        <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
+        <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
+
+
       </Routes>
     </Router>
   );
