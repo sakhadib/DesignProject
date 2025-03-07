@@ -117,15 +117,14 @@ class ContestGetController extends Controller
     public function myCreatedContests()
     {
         $this_user_id = auth()->user()->id;
-        $this_user = User::find($this_user_id);
 
         $contests = Contest::where('created_by', $this_user_id)
                            ->withCount(['participants', 'problems'])
+                           ->with(['user:id,username'])
                            ->get();
 
         return response()->json([
             'message' => 'My created contests',
-            'user' => $this_user,
             'contests' => $contests
         ]);
     }
