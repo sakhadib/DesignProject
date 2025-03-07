@@ -214,6 +214,8 @@ Route::group(
     Route::post('edit', [ContestController::class, 'update']);
     Route::post('delete', [ContestController::class, 'delete']);
 
+    Route::post('problem/add', [ContestController::class, 'AddProblemForUserCreatedContest']);
+    Route::post('problem/remove', [ContestController::class, 'removeProblemForUserCreatedContest']);
 
 
     Route::post('join', [ContestController::class, 'register']);
@@ -249,6 +251,8 @@ Route::group(
     Route::post('isparticipant', [ContestGetController::class, 'amIregistered']);
 
     Route::get('problems/{contest_id}', [ContestGetController::class, 'getProblems']);
+
+    Route::get('my/problems/{contest_id}', [ContestGetController::class, 'getContestProblemsOfMyContest']);
 });
 
 

@@ -117,15 +117,14 @@ class ContestGetController extends Controller
     public function myCreatedContests()
     {
         $this_user_id = auth()->user()->id;
-        $this_user = User::find($this_user_id);
 
         $contests = Contest::where('created_by', $this_user_id)
                            ->withCount(['participants', 'problems'])
+                           ->with(['user:id,username'])
                            ->get();
 
         return response()->json([
             'message' => 'My created contests',
-            'creator' => $this_user,
             'contests' => $contests
         ]);
     }
@@ -367,6 +366,38 @@ class ContestGetController extends Controller
 
         return response()->json([
             'message' => 'User is not registered in the contest'
+        ]);
+    }
+
+
+
+
+    public function getContestProblemsOfMyContest($contest_id)
+    {
+        $contest = Contest::find($contest_id);
+
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found'
+            ]);
+        }
+
+        $this_user_id = auth()->user()->id;
+
+        if($contest->created_by != $this_user_id){
+            return response()->json([
+                'message' => 'You are not the creator of this contest'
+            ]);
+        }
+
+        $problems = ContestProblem::where('contest_id', $contest_id)
+                                  ->with('problem')
+                                  ->get();
+
+        return response()->json([
+            'message' => 'Problems of the contest',
+            'contest' => $contest,
+            'problems' => $problems
         ]);
     }
 

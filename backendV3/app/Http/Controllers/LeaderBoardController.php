@@ -41,14 +41,15 @@ class LeaderBoardController extends Controller
             $user = User::where('id', $user_id)->first(['id', 'username']);
             $submissions = Submission::where('user_id', $user_id)
                                      ->where('contest_id', $contest_id)
-                                     ->groupBy(['problem_id', 'penalty'])
-                                     ->selectRaw('problem_id, penalty, max(xp) as xp')
+                                     ->groupBy(['problem_id'])
+                                     ->selectRaw('problem_id, max(xp) as xp, min(penalty) as penalty, count(xp) as submission_count')
                                      ->get();
             $user->submissions = $submissions;
             $users[] = $user;
         }
 
         return response()->json([
+            'contest' => $contest,
             'participants' => $users
         ], 200);
     }
@@ -88,8 +89,8 @@ class LeaderBoardController extends Controller
 
         $submissions = Submission::where('user_id', $user_id)
                                  ->where('contest_id', $contest_id)
-                                 ->groupBy(['problem_id', 'penalty'])
-                                 ->selectRaw('problem_id, penalty, max(xp) as xp')
+                                 ->groupBy(['problem_id'])
+                                 ->selectRaw('problem_id, max(xp) as xp, min(penalty) as penalty, count(xp) as submission_count')
                                  ->get();
 
         $total_penalty = 0;
@@ -114,7 +115,8 @@ class LeaderBoardController extends Controller
                 'total_penalty' => $total_penalty,
                 'total_xp' => $total_xp,
                 'attempted_problems' => $attempted_problems
-            ]
+            ],
+            "submissions" => $submissions
         ], 200);
     }
 }
