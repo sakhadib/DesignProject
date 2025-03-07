@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 
 use App\Models\Contest;
@@ -179,7 +180,7 @@ class ContestController extends Controller
 
 
     /**
-     * Add a problem to a contest
+     * Add a problem to a contest by admin
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -200,6 +201,13 @@ class ContestController extends Controller
         }
 
         $this_user_id = auth()->user()->id;
+
+        $admin = Admin::where('user_id', $this_user_id)->first();
+        if(!$admin){
+            return response()->json([
+                'message' => 'You do not have permission to add problems to contests'
+            ]);
+        }
 
         if($contest->created_by != $this_user_id){
             return response()->json([
@@ -241,7 +249,7 @@ class ContestController extends Controller
 
 
     /**
-     * Remove a problem from a contest
+     * Remove a problem from a contest by admin
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -262,6 +270,13 @@ class ContestController extends Controller
         }
 
         $this_user_id = auth()->user()->id;
+
+        $admin = Admin::where('user_id', $this_user_id)->first();
+        if(!$admin){
+            return response()->json([
+                'message' => 'You do not have permission to remove problems from contests'
+            ]);
+        }
 
         if($contest->created_by != $this_user_id){
             return response()->json([
