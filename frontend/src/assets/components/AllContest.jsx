@@ -44,9 +44,11 @@ export default function AllContests() {
   const [upcomingContests, setUpcomingContests] = useState([]);
   const [previousContests, setPreviousContests] = useState([]);
   const [activeContests, setActiveContests] = useState([]);
+  const [myContests, setMyContests] = useState([]);
   const [isLoadingUpcoming, setIsLoadingUpcoming] = useState(false);
   const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
   const [isLoadingActive, setIsLoadingActive] = useState(false);
+  const [isLoadingMy, setIsLoadingMy] = useState(false);
   const [activeContest, setActiveContest] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [page, setPage] = useState(0);
@@ -91,11 +93,24 @@ export default function AllContests() {
     setIsLoadingActive(false);
   };
 
+  // Fetching my contests
+  const fetchMyContests = async () => {
+    setIsLoadingMy(true);
+    try {
+      const response = await axios.post("/contest/all/my");
+      setMyContests(response.data.contests);
+    } catch (error) {
+      console.error("Error fetching my contests:", error);
+    }
+    setIsLoadingMy(false);
+  };
+
   useEffect(() => {
     
     fetchUpcomingContests();
     fetchPreviousContests(); 
-    fetchActiveContests();   
+    fetchActiveContests();
+    fetchMyContests();   
   }, []);
 
   
@@ -285,6 +300,7 @@ export default function AllContests() {
           <Table>
             <TableHead>
               <TableRow sx={{ color: "white" }}>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>ID</TableCell>
                 <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Contest Name</TableCell>
                 <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Start Time</TableCell>            
                 <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Duration</TableCell>
@@ -308,6 +324,7 @@ export default function AllContests() {
                     backgroundColor: "#f1f1f1",
                     },
                 }}>
+                  <TableCell sx={{textAlign: "center"}}>{contest.id}</TableCell>
                   <TableCell sx={{textAlign: "center"}}>{contest.title}</TableCell>
                   <TableCell sx={{textAlign: "center"}}>{formatLocalTime(contest.start_time)}</TableCell>
                   <TableCell sx={{textAlign: "center"}}>
@@ -366,6 +383,7 @@ export default function AllContests() {
             <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
               <Tab label="Upcoming" />
               <Tab label="Previous" />
+              <Tab label="My Contests"/>
             </Tabs>
 
             {activeTab === 0 && (
@@ -374,6 +392,9 @@ export default function AllContests() {
               </>
             )}
             {activeTab === 1 && (
+              <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
+            )}
+            {activeTab === 2 && (
               <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
             )}
           </Box>
