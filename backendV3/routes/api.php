@@ -251,6 +251,8 @@ Route::group(
     Route::post('isparticipant', [ContestGetController::class, 'amIregistered']);
 
     Route::get('problems/{contest_id}', [ContestGetController::class, 'getProblems']);
+
+    Route::get('my/problems/{contest_id}', [ContestGetController::class, 'getContestProblemsOfMyContest']);
 });
 
 
