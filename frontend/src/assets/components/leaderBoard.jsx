@@ -82,32 +82,32 @@ const LeaderboardPage = () => {
   }
 
   return (
-    
     <Card sx={{ maxWidth: "100%", margin: "auto", my: 4, overflowX: "auto" }}>
-    <CardHeader title={contestTitle} 
-    subheader="Ranked by total XP earned and penalty time"
-    sx={{
-        "& .MuiCardHeader-title": {
+      <CardHeader
+        title={contestTitle}
+        subheader="Ranked by total XP earned and penalty time"
+        sx={{
+          "& .MuiCardHeader-title": {
             color: "#2A52BE",
             fontWeight: "bold",
             fontSize: "2.2rem",
-        },
-        "& .MuiCardHeader-subheader": {
+          },
+          "& .MuiCardHeader-subheader": {
             color: "#424242",
-        },
-    }}
-    />
+          },
+        }}
+      />
       <CardContent>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="leaderboard table">
             <TableHead>
-              <TableRow>
-                <TableCell>Rank</TableCell>
-                <TableCell>Participant</TableCell>
-                <TableCell align="center">Total XP</TableCell>
-                <TableCell align="center">Penalty</TableCell>
+              <TableRow sx={{ backgroundColor: "#8d256f" }}>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Rank</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Participant</TableCell>
+                <TableCell align="center" sx={{ color: "white", fontWeight: "bold" }}>Total XP</TableCell>
+                <TableCell align="center" sx={{ color: "white", fontWeight: "bold" }}>Penalty</TableCell>
                 {problems.map((problemId) => (
-                  <TableCell key={problemId} align="center">
+                  <TableCell key={problemId} align="center" sx={{ color: "white", fontWeight: "bold" }}>
                     Problem {problemId}
                   </TableCell>
                 ))}
@@ -134,7 +134,6 @@ const LeaderboardPage = () => {
                           fontWeight: "bold",
                         }}
                       >
-                        {/* Show only XP points here */}
                         {submission ? submission.xp : "-"}
                       </TableCell>
                     )

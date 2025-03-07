@@ -19,13 +19,10 @@ import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
 import IndividualCon from './assets/pages/singleContest';
 import ContestProblem from './assets/pages/contestProbView';
-<<<<<<< HEAD
 import Leaderboard from './assets/pages/leaderBoard';
-=======
 import UserContestDetails from './assets/pages/userContestView';
 import UserContestEdits from './assets/pages/userContestEdit';
 
->>>>>>> 0bb69c9d41caa90d75eb2e060ebeecaa734e6f6f
 
 
 
@@ -66,12 +63,9 @@ function App() {
         <Route path="/contests/private/edit/:id" element={<UserContestEdits/>}/>
 
         <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
-<<<<<<< HEAD
         <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
-=======
 
 
->>>>>>> 0bb69c9d41caa90d75eb2e060ebeecaa734e6f6f
       </Routes>
     </Router>
   );
