@@ -395,7 +395,7 @@ export default function AllContests() {
               <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
             )}
             {activeTab === 2 && (
-              <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
+              <ContestTable contests={myContests} type="Previous" isLoading={isLoadingPrevious} />
             )}
           </Box>
         </Grid>
