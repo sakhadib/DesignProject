@@ -19,6 +19,7 @@ import AnnouncementsPage from './assets/pages/AnnouncementPage';
 import UserContestCreate from './assets/pages/userContestCreate';
 import IndividualCon from './assets/pages/singleContest';
 import ContestProblem from './assets/pages/contestProbView';
+import Leaderboard from './assets/pages/leaderBoard';
 import UserContestDetails from './assets/pages/userContestView';
 import UserContestEdits from './assets/pages/userContestEdit';
 
@@ -62,6 +63,7 @@ function App() {
         <Route path="/contests/private/edit/:id" element={<UserContestEdits/>}/>
 
         <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
+        <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
 
 
       </Routes>

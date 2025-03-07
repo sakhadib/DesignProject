@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client"
+
+import { useState, useEffect } from "react"
 import {
   Button,
   TextField,
@@ -14,58 +16,88 @@ import {
   CardContent,
   IconButton,
   Chip,
-} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import ReactMarkdown from "react-markdown";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css"; // Import KaTeX CSS for math rendering
-import axios from "../../api";
-import { useParams } from "react-router-dom";
+  Modal,
+} from "@mui/material"
+import SendIcon from "@mui/icons-material/Send"
+import ReactMarkdown from "react-markdown"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
+import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
+import axios from "../../api"
+import { useParams } from "react-router-dom"
+import CloseIcon from "@mui/icons-material/Close";
+
 
 const ProblemView = () => {
-  const { id } = useParams();
-  const [open, setOpen] = useState(false);
-  const [problem, setProblem] = useState(null);
-  const [answer, setAnswer] = useState("");
-  const [message, setMessage] = useState("");
+  const { id } = useParams()
+  const [open, setOpen] = useState(false)
+  const [problem, setProblem] = useState(null)
+  const [answer, setAnswer] = useState("")
+  const [message, setMessage] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalContent, setModalContent] = useState("")
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+  const handleModalOpen = () => setModalOpen(true)
+  const handleModalClose = () => setModalOpen(false)
 
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const response = await axios.get(`/problem/single/${id}`);
-        setProblem(response.data.problem);
+        const response = await axios.get(`/problem/single/${id}`)
+        setProblem(response.data.problem)
       } catch (error) {
-        console.error("Error fetching the problem:", error);
+        console.error("Error fetching the problem:", error)
       }
-    };
+    }
 
-    fetchProblem();
-  }, [id]);
+    fetchProblem()
+  }, [id])
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted answer:", answer);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!answer.trim()) {
+      setModalContent("Please enter an answer before submitting.")
+      handleModalOpen()
+      return
+    }
+
+    try {
+      const response = await axios.post("/problem/submit/", {
+        problem_id: problem.id,
+        answer: answer,
+        contest_id: problem.contest_id || null,
+      })
+
+      const { message, xp_recieved } = response.data
+
+      setModalContent(`${message}\nXP Received: ${xp_recieved}`)
+      handleModalOpen()
+      setAnswer("")
+    } catch (error) {
+      console.error("Error submitting answer:", error)
+      setModalContent("Submission failed. Please try again.")
+      handleModalOpen()
+    }
+  }
 
   const handleSendMessage = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (message.trim()) {
-      console.log("Sent message:", message);
-      setMessage("");
+      console.log("Sent message:", message)
+      setMessage("")
     }
-  };
+  }
 
-  if (!problem) return <Typography>Loading...</Typography>;
+  if (!problem) return <Typography>Loading...</Typography>
 
   const statistics = [
     { label: "XP", value: problem.xp },
     { label: "Topics", value: problem.tags.topics.join(", ") },
     { label: "Target", value: problem.tags.target },
-  ];
+  ]
 
   return (
     <Box sx={{ padding: 3, maxWidth: 1200, margin: "0 auto" }}>
@@ -76,9 +108,6 @@ const ProblemView = () => {
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
               {problem.title}
             </Typography>
-            {/* <Typography variant="body2" color="text.secondary" gutterBottom>
-              Tags: {problem.tags.topics.join(", ")}
-            </Typography> */}
             <Typography variant="subtitle1" gutterBottom>
               <Box component="span" sx={{ display: "inline-flex", gap: 1, ml: 1 }}>
                 {problem.tags.topics.map((tag) => (
@@ -87,15 +116,10 @@ const ProblemView = () => {
                     label={tag}
                     sx={{
                       cursor: "pointer",
-                      borderRadius: "16px", // Fully rounded
-                      // padding: "8px 16px", // Padding for a nicer look.
+                      borderRadius: "16px",
                       fontSize: "14px",
-                      // fontWeight: "bold", // Bold text
-                      color: "white", // White text
-                      backgroundColor: "#007FFF", // Blue background
-                      // "&:hover": {
-                      //   backgroundColor: "#135ab3", // Darker blue on hover
-                      // },
+                      color: "white",
+                      backgroundColor: "#007FFF",
                     }}
                   />
                 ))}
@@ -105,12 +129,7 @@ const ProblemView = () => {
               Problem Statement
             </Typography>
 
-            {/* Render markdown description */}
-            <ReactMarkdown
-              children={problem.description}
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            />
+            <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
 
             <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
               Submit Answer
@@ -194,11 +213,7 @@ const ProblemView = () => {
             <Typography variant="h5" gutterBottom>
               {problem.title}
             </Typography>
-            <ReactMarkdown
-              children={problem.description}
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-            />
+            <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
             <Box sx={{ mt: 4 }}>
               <Typography variant="subtitle1" gutterBottom>
                 Statistic
@@ -283,8 +298,19 @@ const ProblemView = () => {
           </Box>
         </Box>
       </Dialog>
-    </Box>
-  );
-};
 
-export default ProblemView;
+      {/* Modal for submission feedback */}
+      <Modal open={modalOpen} onClose={handleModalClose}>
+      <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>{modalContent}</Typography>
+      <Button variant="contained" onClick={handleModalClose}>OK</Button>
+      </Box>
+      </Modal>
+
+
+    </Box>
+  )
+}
+
+export default ProblemView
+

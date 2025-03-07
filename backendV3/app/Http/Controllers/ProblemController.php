@@ -103,7 +103,7 @@ class ProblemController extends Controller
 
         return response()->json([
             'message' => 'Problem found',
-            'problem' => [
+            'problem' => [ 
                 'id'=> $id,
                 'title' => $prob_title,
                 'description' => $prob_description,

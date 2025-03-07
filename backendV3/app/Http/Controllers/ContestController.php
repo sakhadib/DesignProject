@@ -298,6 +298,108 @@ class ContestController extends Controller
 
 
 
+    public function AddProblemForUserCreatedContest(Request $request)
+    {
+        $request->validate([
+            'contest_id' => 'required',
+            'problem_id' => 'required'
+        ]);
+
+        $contest = Contest::where('id', $request->contest_id)
+                          ->where('type', 'user-created')
+                          ->first();
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found or not user-created'
+            ]);
+        }
+
+        $problem = Problem::where('id', $request->problem_id)
+                          ->where('status', 'published')
+                          ->first();
+        if(!$problem){
+            return response()->json([
+                'message' => 'Problem not found'
+            ]);
+        }
+
+        $contest_problem = ContestProblem::where('contest_id', $contest->id)
+                                         ->where('problem_id', $problem->id)
+                                         ->first();
+        if($contest_problem){
+            return response()->json([
+                'message' => 'Problem already added to contest'
+            ]);
+        }
+
+        $points = $problem->xp;
+        if($request->points){
+            $points = $request->points;
+        }
+
+        $this_user_id = auth()->user()->id;
+
+        $number_of_problems = ContestProblem::where('contest_id', $contest->id)->count();
+        $order = $number_of_problems + 1;
+
+        $contest_problem = new ContestProblem();
+        $contest_problem->contest_id = $contest->id;
+        $contest_problem->problem_id = $problem->id;
+        $contest_problem->points = $points;
+        $contest_problem->order = $order;
+        $contest_problem->added_by = $this_user_id;
+        $contest_problem->save();
+
+        return response()->json([
+            'message' => 'Problem added to contest successfully',
+        ]);
+    }
+
+
+
+    public function removeProblemForUserCreatedContest(Request $request)
+    {
+        $request->validate([
+            'contest_id' => 'required',
+            'problem_id' => 'required'
+        ]);
+
+        $contest = Contest::where('id', $request->contest_id)
+                          ->where('type', 'user-created')
+                          ->first();
+        if(!$contest){
+            return response()->json([
+                'message' => 'Contest not found or not user-created'
+            ]);
+        }
+
+        $problem = Problem::where('id', $request->problem_id)
+                          ->where('status', 'published')
+                          ->first();
+        if(!$problem){
+            return response()->json([
+                'message' => 'Problem not found'
+            ]);
+        }
+
+        $contest_problem = ContestProblem::where('contest_id', $contest->id)
+                                         ->where('problem_id', $problem->id)
+                                         ->first();
+        if(!$contest_problem){
+            return response()->json([
+                'message' => 'Problem not found in this contest'
+            ]);
+        }
+
+        $contest_problem->delete();
+
+        return response()->json([
+            'message' => 'Problem removed from contest successfully',
+        ]);
+    }
+
+
+
 
     /**
      * Register for a contest
