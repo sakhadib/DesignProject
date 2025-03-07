@@ -201,13 +201,7 @@ const ContestPage = () => {
       <Button
         variant="contained"
         sx={{
-          height: "20px",
-          backgroundColor: "#1976D2", // Blue color
-          color: "white",
-          fontSize: "0.9rem", // Optional font size adjustment
-          padding: "20px 20px", // Optional padding adjustment
-          borderRadius: "15px", // Optional border radius adjustment
-          margin: "10px 10px", // Optional margin adjustment
+          px: 4, py: 1.5, borderRadius: 1, fontSize: "1.1rem" , backgroundColor:"#8d256f"
         }}
         onClick={() => navigate(`/contest/${id}/leaderboard`)} // Redirect to leaderboard page
       >
