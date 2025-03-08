@@ -18,6 +18,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaderBoardController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RatingCalculationController;
+use App\Http\Controllers\UserPageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -329,6 +330,20 @@ Route::group(
         Route::get('user/{user_id}', [RatingController::class, 'getRating']);
         Route::get('history/user/{user_id}', [RatingController::class, 'getRatingHistory']);
         Route::get('contest/{contest_id}', [RatingController::class, 'ratingsForContest']);
+    }
+);
+
+
+Route::group(
+    [
+        'prefix' => 'user'
+    ], routes: function ($router) {
+        Route::get('details/{user_id}', [UserPageController::class, 'getUserDetails']);
+        Route::get('rating/{user_id}', [UserPageController::class, 'getUserRating']);
+        Route::get('rating/history/{user_id}', [UserPageController::class, 'getUserRatingHistory']);
+        Route::get('submission/heatmap/{user_id}', [UserPageController::class, 'dateWiseSubmissionCount']);
+        Route::get('submission/mini/{user_id}', [UserPageController::class, 'lastFiveSubmittedProblems']);
+        Route::get('submission/all/{user_id}', [UserPageController::class, 'allSolvedProblems']);
     }
 );
 
