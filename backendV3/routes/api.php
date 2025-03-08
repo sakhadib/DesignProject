@@ -339,11 +339,21 @@ Route::group(
         'prefix' => 'user'
     ], routes: function ($router) {
         Route::get('details/{user_id}', [UserPageController::class, 'getUserDetails']);
+
         Route::get('rating/{user_id}', [UserPageController::class, 'getUserRating']);
         Route::get('rating/history/{user_id}', [UserPageController::class, 'getUserRatingHistory']);
+
         Route::get('submission/heatmap/{user_id}', [UserPageController::class, 'dateWiseSubmissionCount']);
         Route::get('submission/mini/{user_id}', [UserPageController::class, 'lastFiveSubmittedProblems']);
         Route::get('submission/all/{user_id}', [UserPageController::class, 'allSolvedProblems']);
+
+        Route::get('blog/mini/{user_id}', [UserPageController::class, 'lastFiveBlogsByUser']);
+        Route::get('blog/all/{user_id}', [UserPageController::class, 'allBlogsByUser']);
+
+        Route::get('problem/all/{user_id}', [UserPageController::class, 'userSubmittedProblems']);
+
+        Route::get('contest/mini/{user_id}', [UserPageController::class, 'lastFiveContestByUser']);
+        Route::get('contest/all/{user_id}', [UserPageController::class, 'allContestByUser']);
     }
 );
 

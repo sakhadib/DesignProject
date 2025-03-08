@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Problem;
 use App\Models\Rating;
 use App\Models\Submission;
+use App\Models\Blog;
+use App\Models\ContestProblem;
+use App\Models\Contest;
 use Illuminate\Http\Request;
 
 use App\Models\User;
@@ -156,6 +159,102 @@ class UserPageController extends Controller
         return response()->json([
             'user' => $user,
             'problems' => $problems,
+        ], 200);
+    }
+
+    public function lastFiveBlogsByUser($user_id)
+    {
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $blogs = Blog::where('user_id', $user_id)
+                 ->orderBy('created_at', 'desc')
+                 ->take(5)
+                 ->get(['id', 'title', 'created_at']);
+        return response()->json([
+            'user' => $user,
+            'blogs' => $blogs
+        ], 200);
+    }
+
+    public function allBlogsByUser($user_id)
+    {
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $blogs = Blog::where('user_id', $user_id)
+                 ->orderBy('created_at', 'desc')
+                 ->get(['id', 'title', 'created_at']);
+        return response()->json([
+            'user' => $user,
+            'blogs' => $blogs
+        ], 200);
+    }
+
+    public function userSubmittedProblems($user_id){
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $problems = Problem::where('user_id', $user_id)
+                           ->orderBy('created_at', 'desc')
+                           ->get(['id', 'title', 'tags', 'status']);
+
+        foreach($problems as $problem){
+            $contest = ContestProblem::where('problem_id', $problem->id)->first();
+            if($contest){
+                $problem->contest_id = $contest->contest_id;
+            }
+        }
+
+        return response()->json([
+            'user' => $user,
+            'problems' => $problems
+        ], 200);
+        
+        
+    }
+
+    public function lastFiveContestByUser($user_id){
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $contests = Contest::where('created_by', $user_id)
+                           ->orderBy('created_at', 'desc')
+                           ->take(5)
+                           ->get(['id', 'title', 'created_at']);
+
+        return response()->json([
+            'user' => $user,
+            'contests' => $contests
+        ], 200);
+    }
+
+    public function allContestByUser($user_id){
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $contests = Contest::where('created_by', $user_id)
+                           ->orderBy('created_at', 'desc')
+                           ->get(['id', 'title', 'created_at']);
+
+        return response()->json([
+            'user' => $user,
+            'contests' => $contests
         ], 200);
     }
 }
