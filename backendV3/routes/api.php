@@ -17,6 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaderBoardController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RatingCalculationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -163,6 +164,10 @@ Route::group([
 
     Route::post('contest/problem/add', [ContestController::class, 'addProblem']);
     Route::post('contest/problem/remove', [ContestController::class, 'removeProblem']);
+
+
+    //! Calculate Rating
+    Route::post('rating/calculate', [RatingCalculationController::class, 'calculate']);
 });
 
 
