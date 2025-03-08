@@ -19,6 +19,7 @@ use App\Http\Controllers\LeaderBoardController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RatingCalculationController;
 use App\Http\Controllers\UserPageController;
+use App\Http\Controllers\HomePageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -354,6 +355,16 @@ Route::group(
 
         Route::get('contest/mini/{user_id}', [UserPageController::class, 'lastFiveContestByUser']);
         Route::get('contest/all/{user_id}', [UserPageController::class, 'allContestByUser']);
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'home'
+    ], routes: function ($router) {
+        Route::get('counts', [HomePageController::class, 'generalCounts']);
+        Route::get('notices', [HomePageController::class, 'LatestThreeNotices']);
+        Route::get('top/blogs', [HomePageController::class, 'TopThreeBlogByUpvotes']);
     }
 );
 
