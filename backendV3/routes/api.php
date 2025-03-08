@@ -311,11 +311,24 @@ Route::group(
 
 Route::group(
     [
+        'prefix' => 'rating',
+        'middleware' => 'api'
+    ], routes: function ($router) {
+        Route::post('my', [RatingController::class, 'getMyRating']);
+        Route::post('my/history', [RatingController::class, 'getMyRatingHistory']);
+    }
+);
+
+Route::group(
+    [
         'prefix' => 'rating'
     ], routes: function ($router) {
         Route::get('contest/{contest_id}', [LeaderBoardController::class, 'getContestLeaderboard']);
         Route::get('contest/{contest_id}/user/{user_id}', [LeaderBoardController::class, 'totalPenaltyOfAnUser']);
         
+        Route::get('user/{user_id}', [RatingController::class, 'getRating']);
+        Route::get('history/user/{user_id}', [RatingController::class, 'getRatingHistory']);
+        Route::get('contest/{contest_id}', [RatingController::class, 'ratingsForContest']);
     }
 );
 
