@@ -62,11 +62,56 @@ class HomePageController extends Controller
 
         $top_blogs = [];
         foreach ($blogs as $blog) {
-            $top_blogs[] = Models\Blog::find($blog->blog_id);
+            $top_blogs[] = Models\Blog::where('id', $blog->blog_id)
+                                      ->with('user:id,username')
+                                      ->first(['id', 'title', 'user_id', 'created_at']);
         }
 
         return response()->json([
             'blogs' => $top_blogs
+        ], 200);
+    }
+
+    public function TopThreeProblemBySubmissions()
+    {
+        $problems = Models\Submission::groupBy('problem_id')
+                                    ->selectRaw('problem_id, count(*) as total')
+                                    ->orderBy('total', 'desc')
+                                    ->take(3)
+                                    ->get();
+
+        $top_problems = [];
+        foreach ($problems as $problem) {
+            $this_problem = Models\Problem::where('id', $problem->problem_id)
+                                            ->first(['id', 'title', 'tags', 'created_at']);
+            $this_problem->total_submissions = $problem->total;
+            $top_problems[] = $this_problem;
+                                        
+        }
+
+        return response()->json([
+            'problems' => $top_problems
+        ], 200);
+    }
+
+    public function topThreeUserByRating()
+    {
+        $ratings = Models\Rating::groupBy('user_id')
+                                ->selectRaw('user_id, sum(rating_change) as total')
+                                ->orderBy('total', 'desc')
+                                ->take(3)
+                                ->get();
+
+        $top_users = [];
+        foreach ($ratings as $rating) {
+            $this_user = Models\User::where('id', $rating->user_id)
+                                    ->first(['id', 'username']);
+            $this_user->total_rating = $rating->total;
+            $top_users[] = $this_user;
+        }
+
+        return response()->json([
+            'users' => $top_users
         ], 200);
     }
 }

@@ -365,6 +365,8 @@ Route::group(
         Route::get('counts', [HomePageController::class, 'generalCounts']);
         Route::get('notices', [HomePageController::class, 'LatestThreeNotices']);
         Route::get('top/blogs', [HomePageController::class, 'TopThreeBlogByUpvotes']);
+        Route::get('top/problems', [HomePageController::class, 'TopThreeProblemBySubmissions']);
+        Route::get('top/users', [HomePageController::class, 'TopThreeUserByRating']);
     }
 );
 
