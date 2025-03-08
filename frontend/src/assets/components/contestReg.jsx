@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, Checkbox, FormControlLabel, FormControl, Button, Container } from "@mui/material";
 import axios from "axios"; // Assuming axios is already set up
 import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 
 const ContestRegistration = () => {
   const { id } = useParams(); // Get the dynamic contest ID from URL
@@ -74,33 +77,33 @@ const ContestRegistration = () => {
   fullWidth
   rows={10}
   value={`
-    1. **Eligibility**:
+    1. Eligibility:
        - Open to all registered MathXplorer users with accurate account details.
     
-    2. **Fair Play**:
+    2. Fair Play:
        - Cheating, sharing solutions, or using unauthorized aids is strictly prohibited.
     
-    3. **Contest Structure**:
+    3. Contest Structure:
        - Solve problems within the specified contest duration.
        - Follow the submission format; incorrect formats may result in disqualification.
        - Points are awarded based on correctness and difficulty, with ties broken by submission time.
     
-    4. **Code of Conduct**:
+    4. Code of Conduct:
        - Maintain respectful communication with other participants.
        - Do not share solutions or attempt to exploit the system.
 
-    5. **Disqualification**:
+    5. Disqualification:
        - Plagiarism, multiple accounts, or rule violations may lead to disqualification.
        - Appeals must be submitted within 48 hours of disqualification.
 
-    6. **Prizes and Recognition**:
+    6. Prizes and Recognition:
        - Only rule-compliant participants are eligible for prizes and leaderboard rankings.
 
-    7. **Technical Guidelines**:
+    7. Technical Guidelines:
        - Ensure stable internet connectivity.
        - Report any technical issues promptly; contests may be paused if necessary.
 
-    8. **Final Decision**:
+    8. Final Decision:
        - Administrators’ decisions are final. Rules may be updated before contests.
   `}
   InputProps={{
