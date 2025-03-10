@@ -51,7 +51,7 @@ useEffect(() => {
         console.log("Start Time (Formatted) : ", formatLocalTime(contestStartTime.toISOString()));
 
         // Fetch contest problems
-        const problemsResponse = await axios.get(`/contest/problems/${id}`, {
+        const problemsResponse = await axios.get(`/contest/my/problems/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -216,12 +216,12 @@ useEffect(() => {
             {problems.length > 0 ? (
               problems.map((problem, index) => (
                 <TableRow key={problem.id} sx={{ backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white" }}>
-                  <TableCell>{problem.single_problem.id}</TableCell>
-                  <TableCell>{problem.single_problem.title}</TableCell>
-                  <TableCell>{problem.single_problem.xp}</TableCell>
+                  <TableCell>{problem.problem.id}</TableCell>
+                  <TableCell>{problem.problem.title}</TableCell>
+                  <TableCell>{problem.problem.xp}</TableCell>
                   <TableCell>{problem.points}</TableCell>
                   <TableCell>
-                    {problem.single_problem.tags?.topics?.map((tag, idx) => (
+                    {problem.problem.tags?.topics?.map((tag, idx) => (
                       <Chip key={idx} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
                     )) || "No tags"}
                   </TableCell>
@@ -245,7 +245,7 @@ useEffect(() => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => navigate(`/contests/`)}  // Navigate back to contests list
+          onClick={() => navigate(`/contest/all`)}  // Navigate back to contests list
           sx={{
             fontSize: "12px",
             fontWeight: "bold",
