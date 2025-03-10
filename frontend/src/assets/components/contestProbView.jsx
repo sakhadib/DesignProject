@@ -17,6 +17,10 @@ import {
   CircularProgress,
   Modal
 } from '@mui/material';
+import ReactMarkdown from "react-markdown"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
+import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
 
 const ContestProblemView = () => {
   const { id, contest_id } = useParams();
@@ -118,7 +122,8 @@ const ContestProblemView = () => {
               ))}
             </Box>
             <Typography variant="h5" component="h2" gutterBottom>Problem Statement</Typography>
-            <Typography variant="body1" paragraph>{problem.description}</Typography>
+            <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+               </ReactMarkdown>
             <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>Submit Answer</Typography>
             <form onSubmit={handleSubmit}>
               <TextField fullWidth multiline rows={4} placeholder="Enter your answer here..." value={answer} onChange={(e) => setAnswer(e.target.value)} variant="outlined" sx={{ mb: 2 }} />
