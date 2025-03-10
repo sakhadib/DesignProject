@@ -112,15 +112,15 @@ export default function EditContest() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get(`http://127.0.0.1:8000/api/admin/contest/problem/${id}`, {
+        const response = await axios.get(`http://127.0.0.1:8000/api/contest/my/problems/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         // Extract problem details correctly
         const formattedProblems = response.data.problems.map((problem) => ({
           id: problem.problem_id,
-          title: problem.single_problem?.title || "N/A",
-          xp: problem.single_problem?.xp || 0,
+          title: problem.problem?.title || "N/A",
+          xp: problem.problem?.xp || 0,
         }));
 
         setProblems(formattedProblems);
@@ -148,8 +148,8 @@ export default function EditContest() {
     if (!token) return;
   
     // Debugging: Log raw input before conversion
-    // console.log("Raw Start Time from Form:", formData.startTime);
-    // console.log("Raw End Time from Form:", formData.endTime);
+    console.log("Raw Start Time from Form:", formData.startTime);
+    console.log("Raw End Time from Form:", formData.endTime);
   
     // Convert times to UTC+0 format
     const formattedStartTime = convertLocalToUTC(formData.startTime);
@@ -218,11 +218,10 @@ export default function EditContest() {
     try {
       // First, add the problem to the contest
       await axios.post(
-        "http://127.0.0.1:8000/api/contest/problem/add/",
+        "http://127.0.0.1:8000/api/contest/problem/add",
         {
           contest_id: id,
           problem_id: problem.id,
-          points: problem.xp || 0,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -251,7 +250,7 @@ export default function EditContest() {
 
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/admin/contest/problem/remove/",
+        "http://127.0.0.1:8000/api/contest/problem/remove",
         {
           contest_id: id,  // Contest ID from useParams()
           problem_id: problemId,  // Problem ID to be removed
@@ -349,21 +348,21 @@ export default function EditContest() {
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>XP</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow >
+              <TableCell sx={{ color: "#8d256f", fontWeight: "bold" , textAlign: "center" }}>ID</TableCell>
+              <TableCell sx={{ color: "#8d256f", fontWeight: "bold" , textAlign: "center" }}>Title</TableCell>
+              <TableCell sx={{ color: "#8d256f", fontWeight: "bold" , textAlign: "center" }}>XP</TableCell>
+              <TableCell sx={{ color: "#8d256f", fontWeight: "bold" , textAlign: "center" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {problems.length ? (
               problems.map((problem) => (
                 <TableRow key={problem.id}>
-                  <TableCell>{problem.id}</TableCell>
-                  <TableCell>{problem.title}</TableCell>
-                  <TableCell>{problem.xp}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>{problem.id}</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>{problem.title}</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>{problem.xp}</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
                     <Button color="error" onClick={() => handleRemoveProblem(problem.id)}>Remove</Button>
                   </TableCell>
                 </TableRow>
@@ -405,10 +404,10 @@ export default function EditContest() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>ID</TableCell>
-                      <TableCell>Problem Title</TableCell>
-                      <TableCell>XP</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell sx={{ color: "#1565C0", fontWeight: "bold"}}>ID</TableCell>
+                      <TableCell sx={{ color: "#1565C0", fontWeight: "bold"}}>Problem Title</TableCell>
+                      <TableCell sx={{ color: "#1565C0", fontWeight: "bold"}}>XP</TableCell>
+                      <TableCell align="right" sx={{ color: "#1565C0", fontWeight: "bold"}}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

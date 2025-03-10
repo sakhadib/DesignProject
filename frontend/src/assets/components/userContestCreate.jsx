@@ -158,10 +158,11 @@ const convertLocalToUTC = (localTime) => {
 
       <Box component="form" sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Title</Typography>
+          {/* <Typography sx={{ width: "120px" }}>Title</Typography> */}
           <TextField
             fullWidth
             name="title"
+            label="Title"
             value={formData.title}
             onChange={handleInputChange}
             variant="outlined"
@@ -170,10 +171,11 @@ const convertLocalToUTC = (localTime) => {
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Start Time</Typography>
+          {/* <Typography sx={{ width: "120px" }}>Start Time</Typography> */}
           <TextField
             fullWidth
             name="startTime"
+            label="Start Time"
             type="datetime-local"
             value={formData.startTime}
             onChange={handleInputChange}
@@ -186,10 +188,11 @@ const convertLocalToUTC = (localTime) => {
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>End Time</Typography>
+          {/* <Typography sx={{ width: "120px" }}>End Time</Typography> */}
           <TextField
             fullWidth
             name="endTime"
+            label="End Time"
             type="datetime-local"
             value={formData.endTime}
             onChange={handleInputChange}
@@ -202,10 +205,11 @@ const convertLocalToUTC = (localTime) => {
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-          <Typography sx={{ width: "120px" }}>Description</Typography>
+          {/* <Typography sx={{ width: "120px" }}>Description</Typography> */}
           <TextField
             fullWidth
             name="description"
+            label="Description"
             value={formData.description}
             onChange={handleInputChange}
             variant="outlined"
@@ -215,10 +219,11 @@ const convertLocalToUTC = (localTime) => {
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography sx={{ width: "120px" }}>Password</Typography>
+          {/* <Typography sx={{ width: "120px" }}>Password</Typography> */}
           <TextField
             fullWidth
             name="password"
+            label="Password"
             value={formData.password}
             onChange={handleInputChange}
             variant="outlined"

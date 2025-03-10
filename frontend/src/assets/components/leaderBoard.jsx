@@ -30,7 +30,7 @@ const LeaderboardPage = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get(`/rating/contest/${id}`)
+        const response = await axios.get(`/rating/contest/leaderboard/${id}`)
         
         const uniqueProblems = [
           ...new Set(response.data.participants.flatMap((p) => p.submissions.map((s) => s.problem_id))),
