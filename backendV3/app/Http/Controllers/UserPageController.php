@@ -22,8 +22,21 @@ class UserPageController extends Controller
                 'error' => 'User not found'
             ], 404);
         }
+
+        $blog_count = Blog::where('user_id', $user_id)->count();
+        $problem_count = Problem::where('user_id', $user_id)->count();
+        $created_contest_count = Contest::where('created_by', $user_id)->count();
+        $attempted_problems_count = Submission::where('user_id', $user_id)
+                              ->select('problem_id')
+                              ->distinct()
+                              ->count();
+
         return response()->json([
-            'user' => $user
+            'user' => $user,
+            'blog_count' => $blog_count,
+            'problem_count' => $problem_count,
+            'created_contest_count' => $created_contest_count,
+            'attempted_problems_count' => $attempted_problems_count
         ], 200);
     }
 
