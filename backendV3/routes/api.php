@@ -17,6 +17,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaderBoardController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RatingCalculationController;
+use App\Http\Controllers\UserPageController;
+use App\Http\Controllers\HomePageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -163,6 +166,10 @@ Route::group([
 
     Route::post('contest/problem/add', [ContestController::class, 'addProblem']);
     Route::post('contest/problem/remove', [ContestController::class, 'removeProblem']);
+
+
+    //! Calculate Rating
+    Route::post('rating/calculate', [RatingCalculationController::class, 'calculate']);
 });
 
 
@@ -306,11 +313,60 @@ Route::group(
 
 Route::group(
     [
+        'prefix' => 'rating',
+        'middleware' => 'api'
+    ], routes: function ($router) {
+        Route::post('my', [RatingController::class, 'getMyRating']);
+        Route::post('my/history', [RatingController::class, 'getMyRatingHistory']);
+    }
+);
+
+Route::group(
+    [
         'prefix' => 'rating'
     ], routes: function ($router) {
         Route::get('contest/{contest_id}', [LeaderBoardController::class, 'getContestLeaderboard']);
         Route::get('contest/{contest_id}/user/{user_id}', [LeaderBoardController::class, 'totalPenaltyOfAnUser']);
         
+        Route::get('user/{user_id}', [RatingController::class, 'getRating']);
+        Route::get('history/user/{user_id}', [RatingController::class, 'getRatingHistory']);
+        Route::get('contest/{contest_id}', [RatingController::class, 'ratingsForContest']);
+    }
+);
+
+
+Route::group(
+    [
+        'prefix' => 'user'
+    ], routes: function ($router) {
+        Route::get('details/{user_id}', [UserPageController::class, 'getUserDetails']);
+
+        Route::get('rating/{user_id}', [UserPageController::class, 'getUserRating']);
+        Route::get('rating/history/{user_id}', [UserPageController::class, 'getUserRatingHistory']);
+
+        Route::get('submission/heatmap/{user_id}', [UserPageController::class, 'dateWiseSubmissionCount']);
+        Route::get('submission/mini/{user_id}', [UserPageController::class, 'lastFiveSubmittedProblems']);
+        Route::get('submission/all/{user_id}', [UserPageController::class, 'allSolvedProblems']);
+
+        Route::get('blog/mini/{user_id}', [UserPageController::class, 'lastFiveBlogsByUser']);
+        Route::get('blog/all/{user_id}', [UserPageController::class, 'allBlogsByUser']);
+
+        Route::get('problem/all/{user_id}', [UserPageController::class, 'userSubmittedProblems']);
+
+        Route::get('contest/mini/{user_id}', [UserPageController::class, 'lastFiveContestByUser']);
+        Route::get('contest/all/{user_id}', [UserPageController::class, 'allContestByUser']);
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'home'
+    ], routes: function ($router) {
+        Route::get('counts', [HomePageController::class, 'generalCounts']);
+        Route::get('notices', [HomePageController::class, 'LatestThreeNotices']);
+        Route::get('top/blogs', [HomePageController::class, 'TopThreeBlogByUpvotes']);
+        Route::get('top/problems', [HomePageController::class, 'TopThreeProblemBySubmissions']);
+        Route::get('top/users', [HomePageController::class, 'TopThreeUserByRating']);
     }
 );
 

@@ -27,6 +27,11 @@ class Submission extends Model
         return $this->belongsTo(Problem::class);
     }
 
+    public function shortProblem()
+    {
+        return $this->belongsTo(Problem::class)->select('id', 'title', 'tags');
+    }
+
     public function contest()
     {
         return $this->belongsTo(Contest::class);

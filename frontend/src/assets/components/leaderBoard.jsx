@@ -69,9 +69,9 @@ const LeaderboardPage = () => {
     if (value === minValue) return "#f44336";  // Low value (Red)
     
     if (value >= mediumRange) {
-      return "#FFA500";  // Medium-high value (Yellow)
+      return "#FFA500";  // Medium-high value orange
     } else {
-      return "#ffeb3b";  // Medium-low value (Blue)
+      return "#ffeb3b";  // Medium-low value yellow
     }
   }
   
