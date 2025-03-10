@@ -66,7 +66,7 @@ const SubmissionHeatmap = () => {
   const isMdScreen = useMediaQuery(theme.breakpoints.between("sm", "md"))
 
   // Adjust cell size based on screen size
-  const cellSize = isXsScreen ? 10 : isMdScreen ? 12 : 14
+  const cellSize = isXsScreen ? 14 : isMdScreen ? 16 : 18
   const dayLabelWidth = isXsScreen ? 20 : 30
 
   // Modify the useEffect hook to use demo data if the API fails
@@ -172,154 +172,156 @@ const SubmissionHeatmap = () => {
   const calendarData = generateCalendarData()
 
   return (
-    <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 2 }}>
-      <Typography variant="h6" gutterBottom>
+    <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 2 , boxShadow: "none"}}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f", ml: 8}}>
         Submission Activity
       </Typography>
-
+  
       {data && (
-        <Box sx={{ mt: 2 }}>
-          {/* Scrollable container for the entire calendar */}
-          <Box
-            ref={scrollRef}
-            sx={{
-              overflowX: "auto",
-              WebkitOverflowScrolling: "touch", // For smooth scrolling on iOS
-              pb: 1, // Add padding to show scrollbar
-              "::-webkit-scrollbar": {
-                height: "8px",
-              },
-              "::-webkit-scrollbar-thumb": {
-                backgroundColor: "rgba(0,0,0,0.2)",
-                borderRadius: "4px",
-              },
-            }}
-          >
-            <Box sx={{ minWidth: "max-content", display: "flex", flexDirection: "column" }}>
-              {/* Month labels */}
-              <Box sx={{ display: "flex", mb: 1 }}>
-                <Box sx={{ width: dayLabelWidth }} /> {/* Space for day labels */}
-                {calendarData.map((month, i) => (
+        <Box
+          ref={scrollRef}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS
+            pb: 1, // Padding for scrollbar space
+            "::-webkit-scrollbar": {
+              height: "8px",
+            },
+            "::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(0,0,0,0.2)",
+              borderRadius: "4px",
+            },
+          }}
+        >
+          <Box sx={{ minWidth: "max-content", display: "flex", flexDirection: "column" }}>
+            {/* Month labels */}
+            <Box sx={{ display: "flex", mb: 1 }}>
+              <Box sx={{ width: dayLabelWidth }} /> {/* Space for day labels */}
+              {calendarData.map((month, i) => (
+                <Typography
+                  key={i}
+                  variant="caption"
+                  sx={{
+                    flex: `0 0 ${month.weeks.length * cellSize}px`,
+                    textAlign: "center",
+                    fontSize: isXsScreen ? "0.6rem" : "0.75rem",
+                  }}
+                >
+                  {month.name}
+                </Typography>
+              ))}
+            </Box>
+  
+            {/* Calendar grid */}
+            <Box sx={{ display: "flex" }}>
+              {/* Day of week labels */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  pr: 1,
+                  height: 7 * cellSize,
+                  width: dayLabelWidth,
+                }}
+              >
+                {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
                   <Typography
                     key={i}
                     variant="caption"
                     sx={{
-                      flex: `0 0 ${month.weeks.length * cellSize}px`,
-                      textAlign: "center",
-                      fontSize: isXsScreen ? "0.6rem" : "0.75rem",
+                      fontSize: isXsScreen ? "0.5rem" : "0.6rem",
+                      height: cellSize,
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    {month.name}
+                    {day}
                   </Typography>
                 ))}
               </Box>
-
-              {/* Calendar grid */}
+  
+              {/* Calendar cells */}
               <Box sx={{ display: "flex" }}>
-                {/* Day of week labels */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-around",
-                    pr: 1,
-                    height: 7 * cellSize,
-                    width: dayLabelWidth,
-                  }}
-                >
-                  {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-                    <Typography
-                      key={i}
-                      variant="caption"
-                      sx={{
-                        fontSize: isXsScreen ? "0.5rem" : "0.6rem",
-                        height: cellSize,
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      {day}
-                    </Typography>
-                  ))}
-                </Box>
-
-                {/* Calendar cells */}
-                <Box sx={{ display: "flex" }}>
-                  {calendarData.map((month, monthIndex) => (
-                    <Box key={monthIndex} sx={{ display: "flex" }}>
-                      {month.weeks.map((week, weekIndex) => (
-                        <Box key={weekIndex} sx={{ display: "flex", flexDirection: "column" }}>
-                          {week.map((day, dayIndex) => (
-                            <Tooltip
-                              key={dayIndex}
-                              title={day ? `${day.date}: ${day.count} submissions` : "No data"}
-                              arrow
-                              enterTouchDelay={50}
-                              leaveTouchDelay={1500}
-                            >
-                              <Box
-                                sx={{
-                                  width: cellSize,
-                                  height: cellSize,
-                                  bgcolor: day ? getColorIntensity(day.count) : greenColors.empty,
-                                  border: "1px solid #1b1f2326",
-                                  borderRadius: 0,
-                                  transition: "transform 0.2s",
-                                  "&:hover": {
+                {calendarData.map((month, monthIndex) => (
+                  <Box key={monthIndex} sx={{ display: "flex" }}>
+                    {month.weeks.map((week, weekIndex) => (
+                      <Box key={weekIndex} sx={{ display: "flex", flexDirection: "column" }}>
+                        {week.map((day, dayIndex) => (
+                          <Tooltip
+                            key={dayIndex}
+                            title={day ? `${day.date}: ${day.count} submissions` : "No data"}
+                            arrow
+                            enterTouchDelay={50}
+                            leaveTouchDelay={1500}
+                          >
+                            <Box
+                              sx={{
+                                width: cellSize,
+                                height: cellSize,
+                                bgcolor: day ? getColorIntensity(day.count) : greenColors.empty,
+                                border: "1px solid #1b1f2326",
+                                borderRadius: 0,
+                                transition: "transform 0.2s",
+                                "&:hover": {
+                                  transform: "scale(1.1)",
+                                  zIndex: 1,
+                                },
+                                "@media (hover: none)": {
+                                  "&:active": {
                                     transform: "scale(1.1)",
-                                    zIndex: 1,
                                   },
-                                  "@media (hover: none)": {
-                                    "&:active": {
-                                      transform: "scale(1.1)",
-                                    },
-                                  },
-                                }}
-                              />
-                            </Tooltip>
-                          ))}
-                        </Box>
-                      ))}
-                    </Box>
-                  ))}
-                </Box>
+                                },
+                              }}
+                            />
+                          </Tooltip>
+                        ))}
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
               </Box>
             </Box>
           </Box>
-
-          {/* Legend */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mt: 2,
-              flexWrap: "wrap",
-              justifyContent: isXsScreen ? "center" : "flex-start",
-            }}
-          >
-            <Typography variant="caption" sx={{ mr: 1 }}>
-              Less
-            </Typography>
-            {[0, 1, 3, 5, 7, 9].map((count, i) => (
-              <Box
-                key={i}
-                sx={{
-                  width: cellSize,
-                  height: cellSize,
-                  bgcolor: getColorIntensity(count),
-                  border: "1px solid #1b1f2326",
-                  borderRadius: 0,
-                }}
-              />
-            ))}
-            <Typography variant="caption" sx={{ ml: 1 }}>
-              More
-            </Typography>
-          </Box>
         </Box>
       )}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mt: 2,
+          flexWrap: "wrap",
+          ml: 16,
+          justifyContent: isXsScreen ? "center" : "flex-start",
+        }}
+      >
+        <Typography variant="caption" sx={{ mr: 1 }}>
+          Less
+        </Typography>
+  
+        {[0, 1, 3, 5, 7, 9].map((count, i) => (
+          <Box
+            key={i}
+            sx={{
+              width: cellSize,
+              height: cellSize,
+              bgcolor: getColorIntensity(count),
+              border: "1px solid #1b1f2326",
+              borderRadius: 0,
+            }}
+          />
+        ))}
+        <Typography variant="caption" sx={{ ml: 1 }}>
+          More
+        </Typography>
+      </Box>
     </Paper>
   )
+  
 }
 
 export default SubmissionHeatmap

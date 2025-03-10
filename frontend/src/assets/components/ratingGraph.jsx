@@ -163,12 +163,16 @@ export default function MuiRatingHistoryChart() {
     <StyledCard>
       <CardHeader
   title={`Rating History for ${user?.username || "User"}`}
-  titleTypographyProps={{ variant: "h4" }}
+  titleTypographyProps={{
+    variant: "h4",
+    sx: {
+      fontWeight: "bold", // Apply bold font weight directly to the title
+    },
+  }}
   sx={{
-     marginLeft: "70px" ,// Add left margin
-     fontWeight: "bold",
-     color : "#8d256f",
-     }} 
+    marginLeft: "70px", // Add left margin
+    color: "#8d256f",
+  }}
 />
 
       <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
