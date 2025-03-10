@@ -316,7 +316,13 @@ export default function AllContests() {
                 <TableRow 
                 hover
                 key={contest.id}
-                onClick={() => navigate(`/contest/single/${contest.id}`)} // Navigate on row click
+                onClick={() => {
+                  if (type === "My") {
+                    navigate(`/contests/private/${contest.id}`);
+                  } else {
+                    navigate(`/contest/single/${contest.id}`);
+                  }
+                }}
                 sx={{
                     cursor: "pointer",
                     backgroundColor: index % 2 === 0 ? "#f4f4f4" : "#ffffff", // Alternate row colors

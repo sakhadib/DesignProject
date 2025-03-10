@@ -325,7 +325,7 @@ Route::group(
     [
         'prefix' => 'rating'
     ], routes: function ($router) {
-        Route::get('contest/{contest_id}', [LeaderBoardController::class, 'getContestLeaderboard']);
+        Route::get('contest/leaderboard/{contest_id}', [LeaderBoardController::class, 'getContestLeaderboard']);
         Route::get('contest/{contest_id}/user/{user_id}', [LeaderBoardController::class, 'totalPenaltyOfAnUser']);
         
         Route::get('user/{user_id}', [RatingController::class, 'getRating']);
