@@ -40,6 +40,7 @@
     "react-split-pane": "^0.1.92",
     "react-split-pane-next": "^1.0.6",
     "react-splitter-layout": "^4.0.0",
+    "recharts": "^2.15.1",
     "rehype-katex": "^7.0.1",
     "rehype-mathjax": "^6.0.0",
     "remark-math": "^6.0.0",
