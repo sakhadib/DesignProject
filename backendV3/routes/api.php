@@ -379,6 +379,7 @@ Route::group(
     ], routes: function ($router) {
         Route::post('send', [ChatController::class, 'send']);
         Route::get('history/{problem_id}', [ChatController::class, 'getHistory']);
+        Route::get('export/{problem_id}', [ChatController::class, 'exportChat']);
     }
 );
 
