@@ -173,7 +173,7 @@ const SubmissionHeatmap = () => {
 
   return (
     <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 2 , boxShadow: "none"}}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f", ml: 8}}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f", ml: 8,mt:8, mb: 4}}>
         Submission Activity
       </Typography>
   
