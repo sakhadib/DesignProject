@@ -12,11 +12,15 @@ import {
   TableRow,
   CircularProgress,
   Chip,
+  Card,
+  CardContent,
+  Divider,
   TextField,
   Container,
   Button, // Import Button
 } from "@mui/material";
 import axios from "../../api";
+import FlipTimer from "./flip-timer";
 
 export default function ContestDetails() {
   const { id } = useParams();
@@ -26,6 +30,10 @@ export default function ContestDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [canEdit, setCanEdit] = useState(true); // State to track if Edit button should be visible
+  const [contestStatus, setContestStatus] = useState("upcoming");
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [meUser, setMeUser] = useState(null);
+
 
 
 useEffect(() => {
@@ -38,7 +46,17 @@ useEffect(() => {
         return;
       }
 
+      // Fetch user details
+      const userResponse = await axios.post("/auth/me/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (userResponse.data.id) {
+        setMeUser(userResponse.data.id);
+      }
+
       // Fetch contest details
+
       const contestResponse = await axios.get(`/contest/single/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -50,10 +68,24 @@ useEffect(() => {
         const contestStartTime = new Date(contestData.start_time.replace(' ', 'T') + 'Z'); // Convert to ISO format
         console.log("Start Time (Formatted) : ", formatLocalTime(contestStartTime.toISOString()));
 
+        const contestEndTime = new Date(contestData.end_time.replace(' ', 'T') + 'Z'); // Convert to ISO format
+        console.log("End Time (Formatted) : ", formatLocalTime(contestEndTime.toISOString()));
+
         // Fetch contest problems
-        const problemsResponse = await axios.get(`/contest/problems/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+
+        let problemsResponse;
+
+        if(userResponse.data.id && userResponse.data.id == contestData.created_by) {          
+          problemsResponse = await axios.get(`/contest/my/problems/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });        
+        }
+        else {
+          problemsResponse = await axios.get(`/contest/problems/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+        
 
         if (problemsResponse.data.problems) {
           setProblems(problemsResponse.data.problems);
@@ -67,9 +99,38 @@ useEffect(() => {
         const diff = currentTime - contestStartTime;
         console.log("Difference: ", diff);
 
-        if (contestStartTime < currentTime) {
-          setCanEdit(false); // Disable edit if the contest start time is in the past
+        const timefin = contestEndTime - currentTime;
+
+        // Calculate time remaining for the timer
+        const timeRemaining = contestStartTime - currentTime;
+
+        // Set contest status based on current time
+        if (diff > 0) {
+          if (timefin > 0) {
+            setContestStatus("active");
+            setTimeRemaining(Math.floor(timefin / 1000));
+          } else {
+            setContestStatus("finished");
+          }
+        } else {
+          setContestStatus("upcoming");
+          setTimeRemaining(Math.floor(timeRemaining / 1000));
         }
+        
+        // Check if the current user is the creator of the contest
+        console.log("Contest Creator: ", contestData.created_by);
+        console.log("Current User: ", userResponse.data.id);
+
+        if (contestStartTime > currentTime) {
+          if(userResponse.data.id && userResponse.data.id !== contestData.created_by) {
+            setCanEdit(false); // Disable edit if the user is not the creator
+          }
+        }
+        else {
+          setCanEdit(false); // Disable edit if the contest has started
+        }
+
+        
 
       } else {
         setError("Contest not found.");
@@ -107,7 +168,7 @@ useEffect(() => {
         timeZone: userTimezone
       }).format(utcDate);
     } catch (e) {
-      console.error("Error formatting date:", e);
+      // console.error("Error formatting date:", e);
       return "Invalid date format";
     }
   };
@@ -159,44 +220,85 @@ useEffect(() => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography align="center" sx={{ fontSize: "2rem", fontWeight: 600, mb: 3 }}>
-        Contest Details
-      </Typography>
-
-      <Paper sx={{ padding: 3, mb: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-          Contest Information
+      <Typography variant="h3" component="h1" align="center" gutterBottom>
+          {contest?.title || ""}
         </Typography>
-
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField label="Title" value={contest?.title || ""} fullWidth variant="outlined" InputProps={{ readOnly: true }} />
-          <TextField 
-            label="Start Time" 
-            value={contest ? formatLocalTime12H(contest.start_time) : "Loading..."} 
-            fullWidth 
-            variant="outlined" 
-            InputProps={{ readOnly: true }} 
-          />
-          <TextField 
-            label="End Time" 
-            value={contest ? formatLocalTime12H(contest.end_time) : "Loading..."} 
-            fullWidth 
-            variant="outlined" 
-            InputProps={{ readOnly: true }} 
-          />
-
-          <TextField
-            label="Description"
-            value={contest?.description || "No description available."}
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={4}
-            InputProps={{ readOnly: true }}
+        <Typography variant="subtitle1" align="center" gutterBottom>
+          Created by: {contest.user?.username || "Unknown"}
+        </Typography>
+        <Box display="flex" justifyContent="center" mb={2}>
+          <Chip
+            label={contestStatus.charAt(0).toUpperCase() + contestStatus.slice(1)}
+            sx={{
+              backgroundColor:
+                contestStatus === "active" ? "#6AA121" : contestStatus === "upcoming" ? "#8d256f" : "#B0BEC5",
+              color: "#fff",
+            }}
           />
         </Box>
-      </Paper>
+    
+        {/* Display local start and end times */}
+        <Box sx={{ textAlign: "center", mb: 2 }}>
+          <Typography variant="body1">
+            <strong>Start Time:</strong> {contest ? formatLocalTime12H(contest.start_time) : "Loading..."}
+          </Typography>
+    
+          <Typography variant="body1">
+            <strong>End Time:</strong> {contest ? formatLocalTime12H(contest.end_time) : "Loading..."}
+          </Typography>
+        </Box>
+    
+        {/* Show timer for active or upcoming contests */}
+        {(contestStatus === "upcoming" || contestStatus === "active") && (
+          <Box mb={2}>
+            <FlipTimer initialTime={timeRemaining} />
+            <Typography variant="subtitle1" align="center">
+              {contestStatus === "upcoming" ? "Time to start" : "Time remaining"}
+            </Typography>
+          </Box>
+        )}
+        
+        {/* <Typography variant="h6" gutterBottom sx={{ color: "#1565C0", fontSize: "2rem", textAlign: "justify" }}>
+          Description
+        </Typography> */}
+        <Box sx={{ minHeight:"10vh", textAlign: "justify", mb: 2, p: 2, border: "1px solid #1565C0", borderRadius: "5px" }}>
+          <Typography variant="body1">{contest?.description || "No description available."}</Typography>
+        </Box>
 
+
+
+
+        {canEdit && (
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <TextField
+              fullWidth
+              label="Contest URL"
+              variant="outlined"
+              value={`http://localhost:5173/contest/registration/${id}`}
+              InputProps={{
+                readOnly: true,
+              }}
+              
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigator.clipboard.writeText(`http://localhost:5173/contest/registration/${id}`)}
+              sx={{ width: "20vh", ml: 2,
+                "&:hover": {
+                  backgroundColor: "#8d256f",
+                },
+              }}
+              
+            >
+              Copy
+            </Button>
+            
+          </Box>
+        )}
+
+        <Divider sx={{ my: 4 }} />
+      
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
         Problem Set
       </Typography>
@@ -216,12 +318,12 @@ useEffect(() => {
             {problems.length > 0 ? (
               problems.map((problem, index) => (
                 <TableRow key={problem.id} sx={{ backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white" }}>
-                  <TableCell>{problem.single_problem.id}</TableCell>
-                  <TableCell>{problem.single_problem.title}</TableCell>
-                  <TableCell>{problem.single_problem.xp}</TableCell>
+                  <TableCell>{problem.problem.id}</TableCell>
+                  <TableCell>{problem.problem.title}</TableCell>
+                  <TableCell>{problem.problem.xp}</TableCell>
                   <TableCell>{problem.points}</TableCell>
                   <TableCell>
-                    {problem.single_problem.tags?.topics?.map((tag, idx) => (
+                    {problem.problem.tags?.topics?.map((tag, idx) => (
                       <Chip key={idx} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
                     )) || "No tags"}
                   </TableCell>
@@ -245,7 +347,7 @@ useEffect(() => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => navigate(`/contests/`)}  // Navigate back to contests list
+          onClick={() => navigate(`/contest/all`)}  // Navigate back to contests list
           sx={{
             fontSize: "12px",
             fontWeight: "bold",
