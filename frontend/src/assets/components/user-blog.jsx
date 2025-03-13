@@ -111,11 +111,12 @@ const UserBlogs = () => {
 
       {/* View All Button - Positioned Bottom Right */}
       {blogs.length > 0 && (
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mr: { xs: 2, md: 10 }, mb: 3 ,mt:4}}>
-                <Button variant="contained" color="primary">
-                  View All
-                </Button>
-              </Box>
+        <Link to={`/user/blog/all/${id}`} style={{ textDecoration: "none"}}>
+        <Button variant="contained" color="primary" alignItems="right" sx={{ mt: 2, float: "right" }}>
+          View All
+        </Button>
+      </Link>
+      
       )}
     </Box>
   )
