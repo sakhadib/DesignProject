@@ -16,7 +16,7 @@ function Home() {
                 <HeroSection />
                 <Stats />
                 <NoticeSection />
-                <Landing />
+                {/* <Landing /> */}
 
             </main>
             <Footer />

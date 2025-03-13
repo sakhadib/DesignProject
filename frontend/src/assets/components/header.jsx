@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import api from '../../api'; // Import your configured axios instance
-import logo from '../img/logo.png'; // Import the new logo image
+import logo from '../img/tp_mini@4x.png'; // Import the new logo image
 
 const NavLink = styled(Link)({
   textDecoration: 'none',
