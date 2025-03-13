@@ -157,15 +157,17 @@ function Header() {
             </>
           ) : (
             <>
-              <Avatar
-                alt={user?.username}
-                src={user?.profileImage || ''}
-                sx={{ width: 32, height: 32, marginRight: 1 }}
-                component={Link}
-                to={"/profile/${user?.id}"}
-              >
-                {user?.username ? user.username[0].toUpperCase() : ''}
-              </Avatar>
+            <Avatar
+            alt={user?.username}
+            src={user?.profileImage || ''}
+            sx={{ width: 32, height: 32, marginRight: 1 }}
+            component={Link}
+            to={`/profile/${user?.id}`} // Corrected
+            >
+            {user?.username ? user.username[0].toUpperCase() : ''}
+            </Avatar>
+
+
               <Typography variant="body1" sx={{ marginRight: 2 }}>{user?.username}</Typography>
               <Button
                 variant="contained"

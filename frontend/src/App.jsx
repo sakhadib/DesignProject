@@ -24,6 +24,7 @@ import UserContestDetails from './assets/pages/userContestView';
 import UserContestEdits from './assets/pages/userContestEdit';
 import UserProfile from './assets/pages/profile';
 import BlogallUser from './assets/pages/userAllBlog';
+import UserSuball from './assets/pages/userAllSubmission';
 
 
 
@@ -68,7 +69,7 @@ function App() {
         <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
         <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/user/blog/all/:id" element={<BlogallUser />} />
-
+        <Route path="/user/submission/all/:id" element={<UserSuball />} />
 
       </Routes>
     </Router>

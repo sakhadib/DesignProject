@@ -174,11 +174,15 @@ const UserSubmissions = () => {
         )}
       </Paper>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mr: { xs: 2, md: 10 }, mb: 3 }}>
-        <Button variant="contained" color="primary">
-          View All
-        </Button>
-      </Box>
+<Box sx={{ display: "flex", justifyContent: "flex-end", mr: { xs: 2, md: 10 }, mb: 3 }}>
+{user?.id && (
+  <Link to={`/user/submission/all/${user.id}`} style={{ textDecoration: "none" }}>
+  <Button variant="contained" color="primary">
+  View All
+  </Button>
+  </Link>
+)}
+</Box>
     </Container>
   )
 }
