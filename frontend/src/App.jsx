@@ -29,6 +29,7 @@ import UserSuball from './assets/pages/userAllSubmission';
 
 
 
+
 function App() {
   return (
     <Router>
@@ -70,7 +71,7 @@ function App() {
         <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/user/blog/all/:id" element={<BlogallUser />} />
         <Route path="/user/submission/all/:id" element={<UserSuball />} />
-
+       
       </Routes>
     </Router>
   );

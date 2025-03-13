@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Button,
   TextField,
@@ -17,300 +17,607 @@ import {
   IconButton,
   Chip,
   Modal,
+  CircularProgress,
 } from "@mui/material"
 import SendIcon from "@mui/icons-material/Send"
+import CloseIcon from "@mui/icons-material/Close"
+import StarIcon from "@mui/icons-material/Star"
 import ReactMarkdown from "react-markdown"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
 import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
-import axios from "../../api"
+import api from "../../api" // Using your existing API setup with authentication
 import { useParams } from "react-router-dom"
-import CloseIcon from "@mui/icons-material/Close";
 
+// For development/testing when API is not available
+const MOCK_CHAT_HISTORY = [
+  { sender: "bot", message: "How can I help you today?" },
+  { sender: "user", message: "I don't understand this problem." },
+  {
+    sender: "bot",
+    message:
+      "Let me explain it step by step. This problem is asking you to solve a linear equation. You need to find the value of x that makes the equation true.",
+  },
+]
 
 const ProblemView = () => {
-  const { id } = useParams()
+  const { id: problemId } = useParams() // Explicitly name the parameter for clarity
   const [open, setOpen] = useState(false)
   const [problem, setProblem] = useState(null)
   const [answer, setAnswer] = useState("")
   const [message, setMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState("")
-  
-  const handleOpen = () => setOpen(true)
+  const [chatMessages, setChatMessages] = useState([])
+  const [loadingChat, setLoadingChat] = useState(false)
+  const [apiError, setApiError] = useState(false)
+  const chatContainerRef = useRef(null)
+
+  const handleOpen = async () => {
+    setOpen(true)
+    await fetchChatHistory()
+  }
+
   const handleClose = () => setOpen(false)
   const handleModalOpen = () => setModalOpen(true)
   const handleModalClose = () => setModalOpen(false)
-  
+
+  const fetchChatHistory = async () => {
+    if (!problemId) return
+
+    setLoadingChat(true)
+    setApiError(false)
+
+    try {
+      // Use problemId directly from URL params
+      const response = await api.get(`/chat/history/${problemId}`)
+
+      if (response.data && Array.isArray(response.data)) {
+        setChatMessages(response.data)
+      } else {
+        // If response is not as expected, set default message
+        setChatMessages([{ sender: "bot", message: "How can I help you today?" }])
+      }
+    } catch (error) {
+      console.error("Error fetching chat history:", error)
+
+      // Check if it's a CORS or network error
+      if (error.message?.includes("Network Error") || error.code === "ERR_NETWORK") {
+        setApiError(true)
+        // Use mock data for development/testing
+        setChatMessages(MOCK_CHAT_HISTORY)
+      } else if (error.response?.status === 401) {
+        // Handle authentication error
+        console.error("Authentication error. Please log in again.")
+        // You might want to redirect to login page or show a login modal
+        setChatMessages([{ sender: "bot", message: "Please log in to use the chat feature." }])
+      } else {
+        // For other errors, just show a welcome message
+        setChatMessages([{ sender: "bot", message: "How can I help you today?" }])
+      }
+    } finally {
+      setLoadingChat(false)
+    }
+  }
+
   useEffect(() => {
     const fetchProblem = async () => {
+      if (!problemId) return
+
       try {
-        const response = await axios.get(`/problem/single/${id}`)
+        const response = await api.get(`/problem/single/${problemId}`)
         setProblem(response.data.problem)
       } catch (error) {
         console.error("Error fetching the problem:", error)
+        // For demo purposes, create a mock problem if API fails
+        setProblem({
+          id: problemId,
+          title: "Sample Problem",
+          description: "This is a sample problem description.",
+          xp: 100,
+          tags: {
+            topics: ["Math", "Algebra"],
+            target: "Beginner",
+          },
+        })
       }
     }
-    
+
     fetchProblem()
-  }, [id])
-  
+  }, [problemId]) // Dependency on problemId
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!answer.trim()) {
       setModalContent("Please enter an answer before submitting.")
       handleModalOpen()
       return
     }
-    
+
     try {
-      const response = await axios.post("/problem/submit/", {
-        problem_id: problem.id,
+      const response = await api.post("/problem/submit/", {
+        problem_id: problemId, // Use problemId from URL params
         answer: answer,
-        contest_id: problem.contest_id || null,
+        contest_id: problem?.contest_id || null,
       })
-      
+
       const { message, xp_recieved } = response.data
-      
+
       setModalContent(`${message}\nXP Received: ${xp_recieved}`)
       handleModalOpen()
       setAnswer("")
     } catch (error) {
       console.error("Error submitting answer:", error)
-      setModalContent("Submission failed. Please try again.")
+
+      if (error.response?.status === 401) {
+        setModalContent("Authentication error. Please log in again.")
+      } else {
+        setModalContent("Submission failed. Please try again.")
+      }
+
       handleModalOpen()
     }
   }
-  
-  const handleSendMessage = (e) => {
+
+  const handleSendMessage = async (e) => {
     e.preventDefault()
-    if (message.trim()) {
-      console.log("Sent message:", message)
-      setMessage("")
+    if (!message.trim()) return
+
+    // Add user message to chat
+    const userMessage = { sender: "user", message: message }
+    setChatMessages((prev) => [...prev, userMessage])
+
+    // Store message to clear input field
+    const sentMessage = message
+    setMessage("")
+
+    try {
+      if (apiError) {
+        // If we know the API is not working, simulate a response
+        setTimeout(() => {
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              sender: "bot",
+              message:
+                "I understand your question. This is a simulated response since the API is currently unavailable. In a real environment, you would receive a helpful answer from the server.",
+            },
+          ])
+        }, 1000)
+        return
+      }
+
+      // Call the chat API with problemId from URL params
+      console.log("Sending message to API:", { problem_id: problemId, message: sentMessage })
+      const response = await api.post("/chat/send", {
+        problem_id: problemId, // Use problemId from URL params
+        message: sentMessage,
+      })
+
+      console.log("API response:", response.data)
+
+      // Add bot response to chat
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          message: response.data.message,
+        },
+      ])
+    } catch (error) {
+      console.error("Error sending message:", error)
+
+      // If it's a network error, mark API as unavailable for future requests
+      if (error.message?.includes("Network Error") || error.code === "ERR_NETWORK") {
+        setApiError(true)
+      }
+
+      // Handle authentication errors
+      if (error.response?.status === 401) {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            message: "Authentication error. Please log in to continue the conversation.",
+          },
+        ])
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            message: "Sorry, I couldn't process your message. The server might be unavailable. Please try again later.",
+          },
+        ])
+      }
     }
   }
-  
-  if (!problem) return <Typography>Loading...</Typography>
-  
+
+  useEffect(() => {
+    // Scroll to the bottom of the chat when new messages arrive
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      })
+    }
+  }, [chatMessages])
+
+  // Check if user is authenticated
+  const isAuthenticated = !!localStorage.getItem("token")
+
+  if (!problem) return <Typography>Loading problem {problemId}...</Typography>
+
   const statistics = [
     { label: "XP", value: problem.xp },
-    { label: "Topics", value: problem.tags.topics.join(", ") },
-    { label: "Target", value: problem.tags.target },
+    { label: "Topics", value: Array.isArray(problem.tags?.topics) ? problem.tags.topics.join(", ") : "N/A" },
+    { label: "Target", value: problem.tags?.target || "N/A" },
   ]
-  
+
   return (
     <Box sx={{ padding: 3, maxWidth: 1200, margin: "0 auto" }}>
-    {/* Main content */}
-    <Box sx={{ display: "flex", gap: 3, marginTop: "100px", marginBottom: "60px" }}>
-    <Card sx={{ flex: 1 }}>
-    <CardContent>
-    <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-    {problem.title}
-    </Typography>
-    <Typography variant="subtitle1" gutterBottom>
-    <Box component="span" sx={{ display: "inline-flex", gap: 1, ml: 1 }}>
-    {problem.tags.topics.map((tag) => (
-      <Chip
-      key={tag}
-      label={tag}
-      sx={{
-        cursor: "pointer",
-        borderRadius: "16px",
-        fontSize: "14px",
-        color: "white",
-        backgroundColor: "#007FFF",
-      }}
-      />
-    ))}
-    </Box>
-    </Typography>
-    <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
-    Problem Statement
-    </Typography>
-    
-    <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-   
-    </ReactMarkdown>
-    
-    
-    <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
-    Submit Answer
-    </Typography>
-    <Box component="form" onSubmit={handleSubmit}>
-    <TextField
-    fullWidth
-    placeholder="Enter your answer here..."
-    value={answer}
-    onChange={(e) => setAnswer(e.target.value)}
-    sx={{ mb: 2 }}
-    />
-    <Button fullWidth variant="contained" type="submit" sx={{ bgcolor: "#1976d2" }}>
-    SUBMIT
-    </Button>
-    </Box>
-    </CardContent>
-    </Card>
-    
-    {/* Statistics Card */}
-    <Card sx={{ width: 300 }}>
-    <CardContent>
-    <Typography variant="h5" gutterBottom>
-    Statistics
-    </Typography>
-    <Table>
-    <TableBody>
-    {statistics.map((stat) => (
-      <TableRow key={stat.label}>
-      <TableCell component="th" scope="row">
-      {stat.label}
-      </TableCell>
-      <TableCell align="right">{stat.value}</TableCell>
-      </TableRow>
-    ))}
-    </TableBody>
-    </Table>
-    </CardContent>
-    </Card>
-    </Box>
-    
-    {/* Help Button */}
-    <Button
-    variant="contained"
-    color="primary"
-    onClick={handleOpen}
-    sx={{
-      position: "fixed",
-      bottom: 16,
-      right: 16,
-      zIndex: 10,
-    }}
-    >
-    HELP
-    </Button>
-    
-    {/* Chat Dialog */}
-    <Dialog fullScreen open={open} onClose={handleClose}>
-    <Box sx={{ height: "100vh", display: "flex", marginTop: "80px" }}>
-    <Button
-    onClick={handleClose}
-    sx={{
-      position: "absolute",
-      right: 8,
-      top: 8,
-      zIndex: 1,
-    }}
-    >
-    Close
-    </Button>
-    
-    {/* Left Panel - Problem */}
-    <Box
-    sx={{
-      width: "50%",
-      backgroundColor: "#f0f0f0",
-      padding: "20px",
-      overflow: "auto",
-    }}
-    >
-    <Typography variant="h5" gutterBottom>
-    {problem.title}
-    </Typography>
-    <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
-    <Box sx={{ mt: 4 }}>
-    <Typography variant="subtitle1" gutterBottom>
-    Statistic
-    </Typography>
-    <Table>
-    <TableBody>
-    {statistics.map((stat) => (
-      <TableRow key={stat.label}>
-      <TableCell>{stat.label}</TableCell>
-      <TableCell align="right">{stat.value}</TableCell>
-      </TableRow>
-    ))}
-    </TableBody>
-    </Table>
-    </Box>
-    </Box>
-    
-    {/* Right Panel - Chat */}
-    <Box
-    sx={{
-      width: "50%",
-      backgroundColor: "#ffffff",
-      display: "flex",
-      flexDirection: "column",
-      padding: "20px",
-      overflow: "auto",
-    }}
-    >
-    <Typography
-    variant="h4"
-    sx={{
-      p: 2,
-      borderBottom: 1,
-      borderColor: "divider",
-    }}
-    >
-    Welcome to ChatBot
-    </Typography>
-    
-    <Box
-    sx={{
-      flex: 1,
-      overflow: "auto",
-      p: 2,
-    }}
-    >
-    <Paper
-    elevation={1}
-    sx={{
-      p: 2,
-      bgcolor: "#f5f5f5",
-      maxWidth: "80%",
-    }}
-    >
-    How can I help you today?
-    </Paper>
-    </Box>
-    
-    <Box
-    component="form"
-    onSubmit={handleSendMessage}
-    sx={{
-      p: 2,
-      borderTop: 1,
-      borderColor: "divider",
-      bgcolor: "#f5f5f5",
-      display: "flex",
-      gap: 1,
-    }}
-    >
-    <TextField
-    fullWidth
-    placeholder="Write here..."
-    size="small"
-    value={message}
-    onChange={(e) => setMessage(e.target.value)}
-    />
-    <IconButton type="submit" disabled={!message.trim()}>
-    <SendIcon />
-    </IconButton>
-    </Box>
-    </Box>
-    </Box>
-    </Dialog>
-    
-    {/* Modal for submission feedback */}
-    <Modal open={modalOpen} onClose={handleModalClose}>
-    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, textAlign: 'center' }}>
-    <Typography variant="h6" sx={{ mb: 2 }}>{modalContent}</Typography>
-    <Button variant="contained" onClick={handleModalClose}>OK</Button>
-    </Box>
-    </Modal>
-    
-    
+      {/* Main content */}
+      <Box sx={{ display: "flex", gap: 3, marginTop: "100px", marginBottom: "60px" }}>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+              {problem.title}
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              <Box component="span" sx={{ display: "inline-flex", gap: 1, ml: 1 }}>
+                {Array.isArray(problem.tags?.topics) &&
+                  problem.tags.topics.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      sx={{
+                        cursor: "pointer",
+                        borderRadius: "16px",
+                        fontSize: "14px",
+                        color: "white",
+                        backgroundColor: "#007FFF",
+                      }}
+                    />
+                  ))}
+              </Box>
+            </Typography>
+            <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
+              Problem Statement
+            </Typography>
+
+            <ReactMarkdown
+              children={problem.description}
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            ></ReactMarkdown>
+
+            <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
+              Submit Answer
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                placeholder="Enter your answer here..."
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Button fullWidth variant="contained" type="submit" sx={{ bgcolor: "#1976d2" }}>
+                SUBMIT
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Statistics Card */}
+        <Card sx={{ width: 300 }}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Statistics
+            </Typography>
+            <Table>
+              <TableBody>
+                {statistics.map((stat) => (
+                  <TableRow key={stat.label}>
+                    <TableCell component="th" scope="row">
+                      {stat.label}
+                    </TableCell>
+                    <TableCell align="right">{stat.value}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Help Button with Star Icons */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}
+       
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: 10,
+          paddingLeft: 1,
+        }}
+      >
+        HELP
+      </Button>
+
+      {/* Chat Dialog */}
+      <Dialog fullScreen open={open} onClose={handleClose}>
+        <Box sx={{ height: "100vh", display: "flex", marginTop: "80px" }}>
+          {/* Close Icon Button */}
+          <IconButton
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              zIndex: 1,
+              color: "#333",
+              bgcolor: "rgba(255, 255, 255, 0.8)",
+              "&:hover": {
+                bgcolor: "rgba(255, 255, 255, 0.9)",
+              },
+            }}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+
+          {/* Left Panel - Problem */}
+          <Box
+            sx={{
+              width: "50%",
+              backgroundColor: "#ffffff",
+              padding: "20px",
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2 }}>
+              {problem.title}
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 1, mb: 4 }}>
+              {Array.isArray(problem.tags?.topics) &&
+                problem.tags.topics.map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    sx={{
+                      borderRadius: "16px",
+                      fontSize: "14px",
+                      color: "white",
+                      backgroundColor: "#007FFF",
+                    }}
+                  />
+                ))}
+            </Box>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Problem Statement
+            </Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <ReactMarkdown
+                children={problem.description}
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              />
+            </Box>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Submit Answer
+            </Typography>
+
+            <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+              <TextField
+                fullWidth
+                placeholder="Enter your answer here..."
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                sx={{ mb: 2 }}
+                multiline
+                rows={4}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                sx={{
+                  bgcolor: "#1976d2",
+                  textTransform: "uppercase",
+                  py: 1.5,
+                }}
+              >
+                SUBMIT
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Right Panel - Chat */}
+          <Box
+            sx={{
+              width: "50%",
+              background: "linear-gradient(135deg, #1976d2, #64b5f6)",
+              display: "flex",
+              flexDirection: "column",
+              height: "calc(100vh - 80px)",
+              color: "#ffffff",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                p: 2,
+                borderBottom: 1,
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ display: "flex", mr: 1 }}>
+                  
+                </Box>
+                Welcome to ChatBot
+              </Box>
+              <Box>
+                {!isAuthenticated && (
+                  <Chip
+                    label="Not Logged In"
+                    size="small"
+                    sx={{
+                      mr: 1,
+                      bgcolor: "rgba(255, 200, 200, 0.3)",
+                      color: "white",
+                    }}
+                  />
+                )}
+                {apiError && (
+                  <Chip
+                    label="Offline Mode"
+                    size="small"
+                    sx={{
+                      bgcolor: "rgba(255, 255, 255, 0.2)",
+                      color: "white",
+                    }}
+                  />
+                )}
+              </Box>
+            </Typography>
+
+            {/* Chat Messages Container - Scrollable */}
+            <Box
+              ref={chatContainerRef}
+              sx={{
+                flex: 1,
+                overflowY: "auto",
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                "&::-webkit-scrollbar": {
+                  width: "8px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "10px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "rgba(255, 255, 255, 0.3)",
+                  borderRadius: "10px",
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  background: "rgba(255, 255, 255, 0.5)",
+                },
+                scrollbarWidth: "thin",
+                scrollbarColor: "rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              {loadingChat ? (
+                <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+                  <CircularProgress sx={{ color: "white" }} />
+                </Box>
+              ) : chatMessages.length === 0 ? (
+                <Box sx={{ textAlign: "center", my: 4 }}>
+                  <Typography>No messages yet. Start a conversation!</Typography>
+                </Box>
+              ) : (
+                chatMessages.map((msg, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
+                      width: "100%",
+                    }}
+                  >
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        p: 2,
+                        bgcolor: msg.sender === "user" ? "rgba(255, 255, 255, 0.9)" : "rgba(230, 240, 255, 0.9)",
+                        color: "#333",
+                        maxWidth: "80%",
+                        borderRadius: msg.sender === "user" ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                        {msg.message}
+                      </Typography>
+                    </Paper>
+                  </Box>
+                ))
+              )}
+            </Box>
+
+            {/* Message Input - Fixed at bottom */}
+            <Box
+              component="form"
+              onSubmit={handleSendMessage}
+              sx={{
+                p: 2,
+                borderTop: 1,
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                bgcolor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                gap: 1,
+              }}
+            >
+              <TextField
+                fullWidth
+                placeholder="Write here..."
+                size="small"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: "rgba(255, 255, 255, 0.9)",
+                  },
+                }}
+              />
+              <IconButton type="submit" disabled={!message.trim()} sx={{ color: "#ffffff" }}>
+                <SendIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+      </Dialog>
+
+      {/* Modal for submission feedback */}
+      <Modal open={modalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            {modalContent}
+          </Typography>
+          <Button variant="contained" onClick={handleModalClose}>
+            OK
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   )
 }
