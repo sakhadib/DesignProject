@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log; // Added for logging
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Response;
 use App\Models\Chat;
 use App\Models\Problem;
 use Illuminate\Http\Request;
@@ -103,4 +105,45 @@ class ChatController extends Controller
 
         return response()->json($chats);
     }
+
+
+    public function exportChat($problem_id)
+    {
+        // $user_id = auth()->id();
+        $user_id = 1;
+        
+        $problem = Problem::find($problem_id);
+        if (!$problem) {
+            return response()->json(['message' => 'Problem not found'], 404);
+        }
+
+        $chats = Chat::where('user_id', $user_id)
+                    ->where('problem_id', $problem_id)
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+
+
+        // Process LaTeX equations before passing to view
+        foreach ($chats as $chat) {
+            // This is where you would convert LaTeX equations to HTML or MathML
+            $chat->message = $this->convertLatexToHtml($chat->message);
+        }
+
+        $pdf = Pdf::loadView('chat_export', [
+            'problem' => $problem,
+            'chats' => $chats
+        ]);
+
+        return $pdf->stream('chat-export-'.$problem_id.'.pdf');
+    }
+
+
+
+    private function convertLatexToHtml($text)
+    {
+        // Use a LaTeX-to-HTML converter here or KaTeX / MathJax API if available
+        // Example placeholder for conversion process
+        return preg_replace('/\$(.*?)\$/', '<span class="math">$1</span>', $text);
+    }
+    
 }
