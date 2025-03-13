@@ -20,6 +20,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RatingCalculationController;
 use App\Http\Controllers\UserPageController;
 use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -367,6 +368,18 @@ Route::group(
         Route::get('top/blogs', [HomePageController::class, 'TopThreeBlogByUpvotes']);
         Route::get('top/problems', [HomePageController::class, 'TopThreeProblemBySubmissions']);
         Route::get('top/users', [HomePageController::class, 'TopThreeUserByRating']);
+    }
+);
+
+
+Route::group(
+    [
+        'prefix' => 'chat',
+        'middleware' => 'api'
+    ], routes: function ($router) {
+        Route::post('send', [ChatController::class, 'send']);
+        Route::get('history/{problem_id}', [ChatController::class, 'getHistory']);
+        Route::get('export/{problem_id}', [ChatController::class, 'exportChat']);
     }
 );
 
