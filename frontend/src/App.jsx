@@ -23,6 +23,7 @@ import Leaderboard from './assets/pages/leaderBoard';
 import UserContestDetails from './assets/pages/userContestView';
 import UserContestEdits from './assets/pages/userContestEdit';
 import UserProfile from './assets/pages/profile';
+import BlogallUser from './assets/pages/userAllBlog';
 
 
 
@@ -66,6 +67,7 @@ function App() {
         <Route path="/contest/:contest_id/problem/:id" element={ <ContestProblem/>} />
         <Route path="/contest/:id/leaderboard" element={< Leaderboard />}/>
         <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/user/blog/all/:id" element={<BlogallUser />} />
 
 
       </Routes>
