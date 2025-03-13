@@ -161,6 +161,8 @@ function Header() {
                 alt={user?.username}
                 src={user?.profileImage || ''}
                 sx={{ width: 32, height: 32, marginRight: 1 }}
+                component={Link}
+                to={"/profile/${user?.id}"}
               >
                 {user?.username ? user.username[0].toUpperCase() : ''}
               </Avatar>
