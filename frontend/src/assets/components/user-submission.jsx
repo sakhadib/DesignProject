@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import axios from "../../api"
 import {
   Paper,
@@ -36,13 +36,13 @@ const UserSubmissions = () => {
     const fetchUserProblems = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/user/submission/mini/${id}`)
+        const { data } = await axios.get(`/user/submission/mini/${id}`)
 
-        setUser(response.data.user)
-        setProblems(response.data.problems || [])
-        setLoading(false)
+        setUser(data.user)
+        setProblems(data.problems || [])
       } catch (err) {
         setError(err.message)
+      } finally {
         setLoading(false)
       }
     }
@@ -50,12 +50,9 @@ const UserSubmissions = () => {
     fetchUserProblems()
   }, [id])
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-
+  const handleChangePage = (_, newPage) => setPage(newPage)
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(Number.parseInt(event.target.value, 10))
+    setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
 
@@ -82,7 +79,7 @@ const UserSubmissions = () => {
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f" }}>
             {user.username}'s Problems
           </Typography>
-          <Typography variant="body1" color="text.secondary" gutterBottom>
+          <Typography variant="body1" color="text.secondary">
             Viewing all problems attempted by the user
           </Typography>
         </Box>
@@ -125,19 +122,27 @@ const UserSubmissions = () => {
                     key={problem.id}
                     sx={{
                       "&:nth-of-type(odd)": { backgroundColor: alpha(theme.palette.primary.light, 0.05) },
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      transition: "background-color 0.2s",
                       "&:hover": { backgroundColor: alpha(theme.palette.primary.light, 0.1) },
                     }}
                   >
                     <TableCell sx={{ whiteSpace: "nowrap" }}>{problem.id}</TableCell>
-                    <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
-                      <Typography variant="body2" fontWeight="medium">
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight="medium"
+                        component={Link}
+                        to={`/problem/single/${problem.id}`}
+                        sx={{
+                          textDecoration: "none",
+                          color: theme.palette.primary.main,
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
                         {problem.title}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {problem.tags.topics.map((tag, index) => (
+                      {problem.tags?.topics?.map((tag, index) => (
                         <Chip key={index} label={tag} color="primary" size="small" variant="outlined" sx={{ mr: 0.5 }} />
                       ))}
                     </TableCell>

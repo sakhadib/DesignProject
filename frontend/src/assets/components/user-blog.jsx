@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
-import { Container, Card, CardContent, Typography, Grid, Box, CircularProgress, Divider, Button, Alert } from "@mui/material"
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  CircularProgress,
+  Divider,
+  Button,
+  Alert,
+  Avatar,
+  CardActions,
+} from "@mui/material"
 import { format } from "date-fns"
 import axios from "../../api" // Ensure axios is properly configured
 
@@ -41,7 +54,7 @@ const UserBlogs = () => {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), "MMM dd, yyyy")
+      return format(new Date(dateString), "M/d/yyyy")
     } catch {
       return "Invalid Date"
     }
@@ -70,27 +83,59 @@ const UserBlogs = () => {
             {blogs.length > 0 ? (
               blogs.map((blog) => (
                 <Grid item xs={12} sm={6} md={4} key={blog.id}>
-                  <Card
-                    sx={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      "&:hover": {
-                        transform: "translateY(-5px)",
-                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                      },
-                    }}
-                  >
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6" component="h2" gutterBottom noWrap sx={{ textAlign: "left" }}>
-                        {blog.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: "left" }}>
-                        Posted on {formatDate(blog.created_at)}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                  <Link to={`/blog/${id}`} style={{ textDecoration: "none" }}>
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        "&:hover": {
+                          transform: "translateY(-5px)",
+                          boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+                        },
+                        border: "1px solid #e0e0e0",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <CardContent sx={{ p: 3, pb: 1 }}>
+                        <Typography
+                          variant="h5"
+                          component="h2"
+                          gutterBottom
+                          sx={{
+                            fontWeight: "bold",
+                            fontSize: "1.5rem",
+                            mb: 1,
+                            color: "#333",
+                          }}
+                        >
+                          {blog.title}
+                        </Typography>
+
+                        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+                          <Avatar sx={{ bgcolor: "#673ab7", width: 36, height: 36, mr: 1.5 }}>
+                            {user?.username?.charAt(0).toUpperCase() || "U"}
+                          </Avatar>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: "medium", lineHeight: 1.2 }}>
+                              {user?.username}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
+                              {formatDate(blog.created_at)}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </CardContent>
+
+                      <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-start" }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
+                          Comments: 4 | Votes: 0
+                        </Typography>
+                      </CardActions>
+                    </Card>
+                  </Link>
                 </Grid>
               ))
             ) : (
