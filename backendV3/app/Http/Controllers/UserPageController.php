@@ -203,7 +203,7 @@ class UserPageController extends Controller
         }
         $blogs = Blog::where('user_id', $user_id)
                  ->orderBy('created_at', 'desc')
-                 ->get(['id', 'title', 'created_at']);
+                 ->get(['id', 'title', 'content', 'category', 'created_at']);
         return response()->json([
             'user' => $user,
             'blogs' => $blogs
