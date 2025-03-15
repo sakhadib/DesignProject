@@ -162,11 +162,35 @@ class ProblemController extends Controller
     }
 
 
-    // public function viewMyUnsolvedProblems()
-    // {
-    //     $user = auth()->user();
-    //     $submissions = Submission::where('user_id', $user->id)
-    //                              ->groupBy('problem_id')
-    //                              ->selectRaw('problem_id, max(xp) as xp, count(xp) as submission_count')
-    // }
+    public function myUnsolvedProblems()
+    {
+        $user = auth()->user();
+        $submissions = Submission::where('user_id', $user->id)
+                                 ->groupBy(['problem_id', 'user_id'])
+                                 ->selectRaw('problem_id, max(xp) as xp, count(xp) as submission_count')
+                                 ->get();
+
+        $problems = [];
+        foreach($submissions as $submission) {
+            $problem = Problem::where('id', $submission->problem_id)
+                              ->select('id', 'title', 'xp', 'tags')
+                              ->first();
+
+            $problem->recieved_max_xp = $submission->xp;
+            $problem->total_submissions = $submission->submission_count;
+            if ($submission->xp <= ($problem->xp * 0.4)) {
+                $problems[] = $problem;
+            }
+        }
+
+        if(count($problems) === 0) {
+            return response()->json([
+                'message' => 'No unsolved problems found'
+            ], 404);
+        }
+
+        return response()->json([
+            'problems' => $problems
+        ]);
+    }
 }
