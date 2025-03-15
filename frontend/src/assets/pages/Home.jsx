@@ -7,6 +7,7 @@ import HeroSection from "../components/hero-section";
 import Stats from "../components/stats";
 import NoticeSection from "../components/notice-section";
 import TopUsers from "../components/topusers";
+import TopBlogs from "../components/topblogs";
 
 function Home() {
     return (
@@ -18,6 +19,7 @@ function Home() {
                 <Stats />
                 <NoticeSection />
                 <TopUsers />
+                <TopBlogs />
                 {/* <Landing /> */}
 
             </main>

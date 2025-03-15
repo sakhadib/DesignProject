@@ -1,122 +1,230 @@
-import React, { useState } from 'react';
-import { Avatar, Box, Card, Typography, Container } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    useMediaQuery,
+    Avatar,
+    Card,
+    CardContent,
+    Stack
+} from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { Link } from 'react-router-dom'; // Import Link component
+import megaphoneVideo from '../img/writing.mp4';
 
-// Sample Blogs Data
-const blogs = [
-  {
-    id: 1,
-    title: "Exploring Series: The Building Blocks of Mathematics",
-    description: "A series is the sum of terms in a sequence. It can be finite or infinite, with infinite series playing an important role in modern mathematics.",
-    author: "mama",
-    date: "1/22/2025",
-    comments: 0,
-    votes: 0,
-    avatar: "/placeholder.svg?height=100&width=100" // Placeholder avatar
-  },
-  {
-    id: 2,
-    title: "Introduction to Calculus",
-    description: "Calculus is the branch of mathematics that studies continuous change. It has applications in a variety of fields like physics, economics, and engineering.",
-    author: "john_doe",
-    date: "2/14/2025",
-    comments: 3,
-    votes: 5,
-    avatar: "/placeholder.svg?height=100&width=100"
-  },
-  {
-    id: 3,
-    title: "Understanding Algebraic Structures",
-    description: "Algebraic structures like groups, rings, and fields provide a framework for solving many mathematical problems in abstract ways.",
-    author: "alice_smith",
-    date: "3/10/2025",
-    comments: 5,
-    votes: 12,
-    avatar: "/placeholder.svg?height=100&width=100"
-  },
-  {
-    id: 4,
-    title: "Real Analysis: A Deeper Dive",
-    description: "Real analysis is the study of real-valued sequences and functions, focusing on limits, continuity, and differentiability in calculus.",
-    author: "charles_wang",
-    date: "4/12/2025",
-    comments: 2,
-    votes: 8,
-    avatar: "/placeholder.svg?height=100&width=100"
-  },
-  {
-    id: 5,
-    title: "Discrete Mathematics: The Essentials",
-    description: "Discrete mathematics is the study of mathematical structures that are fundamentally discrete rather than continuous. It includes topics like graphs, combinatorics, and logic.",
-    author: "jane_doe",
-    date: "5/20/2025",
-    comments: 6,
-    votes: 7,
-    avatar: "/placeholder.svg?height=100&width=100"
-  }
-];
-
-// Styled Components for Card
-const BlogCard = styled(Card)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(2),
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  minWidth: 250,
-  maxWidth: 350,
-  marginRight: theme.spacing(3),
-  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-  transition: 'transform 0.3s ease',
-  '&:hover': {
-    transform: 'scale(1.05)',
-  },
-}));
-
-// Styled Components for auto-scroll
 const ScrollContainer = styled(Box)({
-  display: 'flex',
-  overflowX: 'auto',
-  scrollBehavior: 'smooth',
-  animation: 'scroll 30s linear infinite',
-  '@keyframes scroll': {
-    '0%': {
-      transform: 'translateX(0)',
-    },
-    '100%': {
-      transform: 'translateX(-100%)',
-    },
-  },
+    height: '400px',
+    overflowY: 'hidden',
+    position: 'relative',
 });
 
-const TopBlogSection = () => {
-  return (
-    <Container maxWidth="xl" sx={{ py: 8 }}>
-      <Typography variant="h4" align="center" color="black" gutterBottom>
-        Top Blogs
-      </Typography>
+const VideoContainer = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    opacity: 1, // Set to 1 initially to avoid low opacity on load
+    transform: 'translateY(0)', // Set initial transform to 0 for immediate positioning
+    transition: 'opacity 1s ease-in-out, transform 1s ease-in-out', // Smooth transition
+    '& video': {
+        maxWidth: '100%',
+        maxHeight: '300px',
+        objectFit: 'contain',
+        borderRadius: theme.shape.borderRadius,
+    },
+    [theme.breakpoints.down('md')]: {
+        marginBottom: theme.spacing(4),
+    }
+}));
 
-      <ScrollContainer>
-        {blogs.map((blog) => (
-          <BlogCard key={blog.id}>
-            <Avatar alt={blog.author} src={blog.avatar} sx={{ width: 40, height: 40, marginBottom: 2 }} />
-            <Typography variant="h6" color="black" gutterBottom>
-              {blog.title}
+const BlogCard = styled(Card)(({ theme }) => ({
+    position: 'relative',
+    marginBottom: theme.spacing(3),
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)', // Adding a subtle shadow
+    borderRadius: '12px', // Rounded corners
+    overflow: 'hidden', // Ensuring the contents stay within the rounded corners
+    backgroundColor: '#fff', // White background for the card
+    '&:hover': {
+        boxShadow: '0 8px 12px rgba(0,0,0,0.2)', // Darker shadow on hover
+    },
+}));
+
+const BlogCardContent = styled(CardContent)(({ theme }) => ({
+    padding: theme.spacing(2),
+}));
+
+const BlogSection = () => {
+    const [blogs, setBlogs] = useState([]);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isVisible, setIsVisible] = useState(true); // Start with visibility true
+    const [isVideoVisible, setIsVideoVisible] = useState(true); // Start with visibility true
+    const sectionRef = useRef(null); // Ref to the section
+    const videoRef = useRef(null); // Ref to the video container
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+    useEffect(() => {
+        axios.get('http://127.0.0.1:8000/api/home/top/blogs')
+            .then(response => {
+                const filteredBlogs = response.data.blogs.filter(blog => blog !== null);
+                setBlogs(filteredBlogs);
+            })
+            .catch(error => {
+                console.error('Error fetching blogs', error);
+            });
+
+        const timer = setInterval(() => {
+            setActiveIndex((current) => 
+                current === blogs.length - 1 ? 0 : current + 1
+            );
+        }, 5000);
+
+        return () => clearInterval(timer);
+    }, [blogs.length]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true); // Fade in when section is in view
+                } else {
+                    setIsVisible(false); // Fade out when section is out of view
+                }
+            },
+            { threshold: 0.2 } // Lower threshold for quicker visibility trigger
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => {
+            if (sectionRef.current) {
+                observer.unobserve(sectionRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const videoObserver = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVideoVisible(true); // Fade in the video when it is in view
+                } else {
+                    setIsVideoVisible(false); // Fade out the video when it is out of view
+                }
+            },
+            { threshold: 0.2 } // Lower threshold for quicker video visibility trigger
+        );
+
+        if (videoRef.current) {
+            videoObserver.observe(videoRef.current);
+        }
+
+        return () => {
+            if (videoRef.current) {
+                videoObserver.unobserve(videoRef.current);
+            }
+        };
+    }, []);
+
+    const truncateContent = (content) => {
+        return content.length > 100 ? content.substring(0, 100) + "..." : content;
+    };
+
+    return (
+        <Container maxWidth="lg" sx={{ py: 8 }} ref={sectionRef}>
+            <Typography 
+                variant="h4" 
+                component="h2" 
+                gutterBottom 
+                sx={{ 
+                    fontWeight: 'bold',
+                    mb: 4,
+                    textAlign: 'center'
+                }}
+            >
+                Latest Blogs
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {blog.description.substring(0, 100)}...
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {blog.author} | {blog.date}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Comments: {blog.comments} | Votes: {blog.votes}
-            </Typography>
-          </BlogCard>
-        ))}
-      </ScrollContainer>
-    </Container>
-  );
+
+            <Grid container spacing={4} alignItems="center">
+                <Grid item xs={12} md={5}>
+                    <VideoContainer
+                        ref={videoRef}
+                        sx={{
+                            opacity: isVideoVisible ? 1 : 0.1,
+                            transform: isVideoVisible ? 'translateY(0)' : 'translateY(20px)',
+                        }}
+                    >
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            src={megaphoneVideo}
+                            alt="Blog Writing"
+                        >
+                            Your browser does not support the video tag.
+                        </video>
+                    </VideoContainer>
+                </Grid>
+
+                <Grid item xs={12} md={7}>
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            opacity: isVisible ? 1 : 0.1,
+                            transition: 'opacity 1s ease-in-out',
+                        }}
+                    >
+                        <ScrollContainer>
+                            <Box
+                                sx={{
+                                    transform: `translateY(-${activeIndex * 82}px)`,
+                                    transition: 'transform 0.5s ease-in-out',
+                                }}
+                            >
+                                {blogs.map((blog, index) => (
+                                    <Link to={`/blog/${blog.id}`} key={blog.id} style={{ textDecoration: 'none' }}>
+                                        <BlogCard>
+                                            <BlogCardContent>
+                                                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 'bold' }} >
+                                                    {blog.title}
+                                                </Typography>
+                                                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                                    <Avatar sx={{ bgcolor: '#ff5252', width: 30, height: 30 }}>
+                                                        {blog.user.username[0].toUpperCase()}
+                                                    </Avatar>
+                                                    <Box>
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            {blog.user.username}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            {new Date(blog.created_at).toLocaleDateString()}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                                    Comments: 1 | Votes: 2
+                                                </Typography>
+                                            </BlogCardContent>
+                                        </BlogCard>
+                                    </Link>
+                                ))}
+                            </Box>
+                        </ScrollContainer>
+                    </Box>
+                </Grid>
+            </Grid>
+        </Container>
+    );
 };
 
-export default TopBlogSection;
+export default BlogSection;

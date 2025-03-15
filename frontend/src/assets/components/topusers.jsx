@@ -97,7 +97,7 @@ const LeaderboardPodium = () => {
       maxWidth="xl"
       sx={{
         py: 8,
-        background: 'linear-gradient(135deg, #6a1b9a, #d32f2f)', // Keeping gradient background
+        // background: 'linear-gradient(135deg, #6a1b9a, #d32f2f)', // Keeping gradient background
         borderRadius: 1,
         width: '100%', // Full width of the screen
         height: '90vh', // 90% of the viewport height
@@ -122,7 +122,7 @@ const LeaderboardPodium = () => {
               onHoverStart={() => setHoveredPlayer(player.id)}
               onHoverEnd={() => setHoveredPlayer(null)}
             >
-              <PodiumCard>
+              <PodiumCard sx={{backgroundColor: "#1565C0"}}>
                 <Avatar
                   sx={{
                     width: player.position === 1 ? 96 : 80,
@@ -147,7 +147,7 @@ const LeaderboardPodium = () => {
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
                   >
-                    <Crown className="w-8 h-8 text-yellow-400 drop-shadow-lg" />
+                    <Crown className="w-8 h-8 text-yellow-400 drop-shadow-lg"/>
                   </motion.div>
                 )}
 
@@ -157,7 +157,7 @@ const LeaderboardPodium = () => {
 
                 <PodiumBar>
                   <Typography variant="body2" color="text.primary">
-                    {player.points} QP
+                    {player.points}
                   </Typography>
                 </PodiumBar>
 
