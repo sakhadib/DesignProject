@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\Rating;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -42,6 +43,11 @@ class AuthController extends Controller
         ]);
 
         // $token = JWTAuth::fromUser($user);
+
+        $rating = new Rating();
+        $rating->user_id = $user->id;
+        $rating->rating = 1500;
+        $rating->save();
 
         return response()->json([
             'message' => 'User successfully registered',
