@@ -130,18 +130,22 @@ class LeaderBoardController extends Controller
     public function getTotalLeaderBoard()
     {
         $ratings = Rating::groupBy('user_id')
-                        ->selectRaw('user_id, sum(rating) as total_rating')
+                        ->selectRaw('user_id, sum(rating_change) as total_rating')
                         ->orderBy('total_rating', 'desc')
                         ->get();
 
+        
+        $users = [];
         foreach($ratings as $rating)
         {
             $user = User::find($rating->user_id);
             $user->rating = $rating->total_rating;
+
+            $users[] = $user;
         }
 
         return response()->json([
-            'users' => $ratings
+            'users' => $users
         ], 200);
     }
 }
