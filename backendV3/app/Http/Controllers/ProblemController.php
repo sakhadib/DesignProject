@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Submission;
 use Illuminate\Http\Request;
 
 use App\Models\Problem;
@@ -159,4 +160,13 @@ class ProblemController extends Controller
             'problems' => $problems
         ]);
     }
+
+
+    // public function viewMyUnsolvedProblems()
+    // {
+    //     $user = auth()->user();
+    //     $submissions = Submission::where('user_id', $user->id)
+    //                              ->groupBy('problem_id')
+    //                              ->selectRaw('problem_id, max(xp) as xp, count(xp) as submission_count')
+    // }
 }
