@@ -13,10 +13,11 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import axios from 'axios'; // Import axios
 import api from '../../api'; // Import your configured axios instance
 import logo from '../img/tp_mini@4x.png'; // Import the new logo image
 
-const NavLink = styled(Link)({
+const NavLink = styled(Link)( {
   textDecoration: 'none',
   color: '#333',
   fontWeight: '500',
@@ -33,12 +34,22 @@ function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
+  // Fetch user data from the /api/auth/me endpoint after checking token
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    setIsAuthenticated(!!token);
-    if (storedUser) {
-      setUser(storedUser);
+    if (token) {
+      setIsAuthenticated(true);
+      axios.post('http://127.0.0.1:8000/api/auth/me/', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(response => {
+          setUser(response.data); // Set user data from response
+        })
+        .catch(error => {
+          console.error('Error fetching user data', error);
+        });
+    } else {
+      setIsAuthenticated(false);
     }
   }, []);
 
@@ -157,18 +168,27 @@ function Header() {
             </>
           ) : (
             <>
-            <Avatar
-            alt={user?.username}
-            src={user?.profileImage || ''}
-            sx={{ width: 32, height: 32, marginRight: 1 }}
-            component={Link}
-            to={`/profile/${user?.id}`} // Corrected
-            >
-            {user?.username ? user.username[0].toUpperCase() : ''}
-            </Avatar>
+              <Box sx={{ display: 'flex', alignItems: 'center' , mr: 2}}>
+              <Avatar
+                alt={user?.username}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  marginRight: 1,
+                  fontSize: '16px', // Adjust font size for letter in Avatar
+                  backgroundColor: '#1565C0', // Set a background color for the Avatar
+                }}
+                component={Link}
+                to={`/profile/${user?.id}`}
+              >
+                {user?.username ? user.username[0].toUpperCase() : ''}
+              </Avatar>
 
+              <Typography variant="body1" color='#1565C0' sx={{ marginRight: 2 }}>
+                {user?.username}
+              </Typography>
+              </Box>
 
-              <Typography variant="body1" sx={{ marginRight: 2 }}>{user?.username}</Typography>
               <Button
                 variant="contained"
                 color="primary"

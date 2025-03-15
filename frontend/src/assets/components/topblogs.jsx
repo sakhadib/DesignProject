@@ -47,12 +47,13 @@ const VideoContainer = styled(Box)(({ theme }) => ({
 const BlogCard = styled(Card)(({ theme }) => ({
     position: 'relative',
     marginBottom: theme.spacing(3),
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)', // Adding a subtle shadow
+    border: '1px solid #EEFBFF', // Add a 1px border with color #EEFBFF
     borderRadius: '12px', // Rounded corners
     overflow: 'hidden', // Ensuring the contents stay within the rounded corners
-    backgroundColor: '#fff', // White background for the card
+    backgroundColor: '#e1e1e8', // Change background color to #f9f9f9
     '&:hover': {
-        boxShadow: '0 8px 12px rgba(0,0,0,0.2)', // Darker shadow on hover
+        // Removed box-shadow on hover
+        border: '1px solid #1565C0', // Optional: add border color on hover
     },
 }));
 
@@ -98,7 +99,7 @@ const BlogSection = () => {
                     setIsVisible(false); // Fade out when section is out of view
                 }
             },
-            { threshold: 0.2 } // Lower threshold for quicker visibility trigger
+            { threshold: 0.5 } // Lower threshold for quicker visibility trigger
         );
 
         if (sectionRef.current) {
@@ -121,7 +122,7 @@ const BlogSection = () => {
                     setIsVideoVisible(false); // Fade out the video when it is out of view
                 }
             },
-            { threshold: 0.2 } // Lower threshold for quicker video visibility trigger
+            { threshold: 0.5 } // Lower threshold for quicker video visibility trigger
         );
 
         if (videoRef.current) {
@@ -195,15 +196,15 @@ const BlogSection = () => {
                                     <Link to={`/blog/${blog.id}`} key={blog.id} style={{ textDecoration: 'none' }}>
                                         <BlogCard>
                                             <BlogCardContent>
-                                                <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 'bold' }} >
+                                                <Typography variant="subtitle2" color="#1565C0" sx={{ fontWeight: 'bold', fontSize: "24px" }} >
                                                     {blog.title}
                                                 </Typography>
-                                                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                                <Stack direction="row" spacing={2} alignItems="center">
                                                     <Avatar sx={{ bgcolor: '#ff5252', width: 30, height: 30 }}>
                                                         {blog.user.username[0].toUpperCase()}
                                                     </Avatar>
                                                     <Box>
-                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: "12px" }}>
                                                             {blog.user.username}
                                                         </Typography>
                                                         <Typography variant="caption" color="text.secondary">
@@ -211,9 +212,6 @@ const BlogSection = () => {
                                                         </Typography>
                                                     </Box>
                                                 </Stack>
-                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                                                    Comments: 1 | Votes: 2
-                                                </Typography>
                                             </BlogCardContent>
                                         </BlogCard>
                                     </Link>
