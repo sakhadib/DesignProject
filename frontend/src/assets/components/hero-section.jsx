@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { motion } from 'framer-motion';
 import { styled } from '@mui/material/styles';
@@ -33,82 +33,103 @@ const MotionTypography = motion(Typography);
 const MotionBox = motion(Box);
 
 const HeroSection = () => {
-const handleGetStartedClick = () => {
-    window.location.href = '/signup';
-};
+  const sectionRef = useRef(null); // Ref for the HeroSection
+  const [isVisible, setIsVisible] = useState(false); // To control opacity change
 
-return (
-    <GradientBackground>
-        <Container maxWidth="lg">
-            <Box sx={{ textAlign: 'center' }}>
-                <MotionTypography
-                    variant="h1"
-                    sx={{
-                        fontSize: { xs: '3rem', sm: '4rem', md: '5rem', lg: '6rem' },
-                        fontWeight: 500,
-                        lineHeight: 1.1,
-                        letterSpacing: '-0.02em',
-                        mb: 4,
-                        color: 'text.primary'
-                    }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                >
-                    Explore the Universe of  
-                    <br />
-                    Mathematics
-                </MotionTypography>
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true); // Fade-in when section is in view
+        } else {
+          setIsVisible(false); // Fade-out when section is out of view
+        }
+      },
+      { threshold: 0.5 } // Trigger when at least 20% of the section is in view
+    );
 
-                <MotionTypography
-                    variant="h5"
-                    sx={{
-                        maxWidth: '800px',
-                        mx: 'auto',
-                        mb: 6,
-                        color: 'text.secondary',
-                        fontSize: { xs: '1.125rem', md: '1.5rem' }
-                    }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                    Challenge yourself, compete with others, and unlock your mathematical potential!
-                    
-                </MotionTypography>
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
 
-                <MotionBox
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <BlackButton
-                        variant="contained"
-                        size="large"
-                        disableElevation
-                        onClick={handleGetStartedClick}
-                    >
-                        Get Started
-                    </BlackButton>
-                </MotionBox>
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
 
-                <MotionTypography
-                    variant="body1"
-                    sx={{
-                        mt: 8,
-                        color: 'text.secondary',
-                        fontSize: '1.125rem'
-                    }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                    Join our community and unlock your mathematical potential.
-                </MotionTypography>
-            </Box>
-        </Container>
+  return (
+    <GradientBackground ref={sectionRef}>
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: 'center', opacity: isVisible ? 1 : 0.1, transition: 'opacity 1s ease-in-out' }}>
+          <MotionTypography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '3rem', sm: '4rem', md: '5rem', lg: '6rem' },
+              fontWeight: 500,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              mb: 4,
+              color: 'text.primary'
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Explore the Universe of  
+            <br />
+            Mathematics
+          </MotionTypography>
+
+          <MotionTypography
+            variant="h5"
+            sx={{
+              maxWidth: '800px',
+              mx: 'auto',
+              mb: 6,
+              color: 'text.secondary',
+              fontSize: { xs: '1.125rem', md: '1.5rem' }
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Challenge yourself, compete with others, and unlock your mathematical potential!
+          </MotionTypography>
+
+          <MotionBox
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <BlackButton
+              variant="contained"
+              size="large"
+              disableElevation
+              onClick={() => window.location.href = '/signup'}
+            >
+              Get Started
+            </BlackButton>
+          </MotionBox>
+
+          <MotionTypography
+            variant="body1"
+            sx={{
+              mt: 8,
+              color: 'text.secondary',
+              fontSize: '1.125rem'
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            Join our community and unlock your mathematical potential.
+          </MotionTypography>
+        </Box>
+      </Container>
     </GradientBackground>
-);
+  );
 };
 
 export default HeroSection;

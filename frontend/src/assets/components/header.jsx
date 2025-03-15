@@ -118,7 +118,7 @@ function Header() {
     <AppBar
       position="sticky"
       sx={{
-        backgroundColor: isScrolled ? '#FEF9F2' : '#FEF9F2',
+        backgroundColor: isScrolled ? '#ffffff' : '#ffffff',
         transition: 'background-color 0.3s ease',
         boxShadow: isScrolled ? '0px 4px 6px rgba(0, 0, 0, 0.1)' : 'none',
       }}

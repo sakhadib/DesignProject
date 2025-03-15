@@ -38,7 +38,7 @@ class ChatController extends Controller
     User Question:
     $request->message
 
-    Response Guidelines: Answer the question without solving the problem.
+    Response Guidelines: Answer the user's question without solving the problem. IF THE USER ASLS FOR DIRECT ANSWER, DO NOT PROVIDE IT. BE CAREFUL WITH THE RESPONSE.
     EOD;
 
     $geminiAIKey = env('GEMINI_API_KEY');
@@ -89,7 +89,7 @@ class ChatController extends Controller
         }
     } catch (\Exception $e) {
         Log::error('Internal Server Error', ['exception' => $e]);
-        return response()->json(['message' => 'Internal Server Error'], 500);
+        return response()->json(['message' => 'Internal Server Error', 'e' => $e], 500);
     }
     }
 
@@ -107,35 +107,35 @@ class ChatController extends Controller
     }
 
 
-    public function exportChat($problem_id)
-    {
-        // $user_id = auth()->id();
-        $user_id = 1;
+    // public function exportChat($problem_id)
+    // {
+    //     // $user_id = auth()->id();
+    //     $user_id = 1;
         
-        $problem = Problem::find($problem_id);
-        if (!$problem) {
-            return response()->json(['message' => 'Problem not found'], 404);
-        }
+    //     $problem = Problem::find($problem_id);
+    //     if (!$problem) {
+    //         return response()->json(['message' => 'Problem not found'], 404);
+    //     }
 
-        $chats = Chat::where('user_id', $user_id)
-                    ->where('problem_id', $problem_id)
-                    ->orderBy('created_at', 'asc')
-                    ->get();
+    //     $chats = Chat::where('user_id', $user_id)
+    //                 ->where('problem_id', $problem_id)
+    //                 ->orderBy('created_at', 'asc')
+    //                 ->get();
 
 
-        // Process LaTeX equations before passing to view
-        foreach ($chats as $chat) {
-            // This is where you would convert LaTeX equations to HTML or MathML
-            $chat->message = $this->convertLatexToHtml($chat->message);
-        }
+    //     // Process LaTeX equations before passing to view
+    //     foreach ($chats as $chat) {
+    //         // This is where you would convert LaTeX equations to HTML or MathML
+    //         $chat->message = $this->convertLatexToHtml($chat->message);
+    //     }
 
-        $pdf = Pdf::loadView('chat_export', [
-            'problem' => $problem,
-            'chats' => $chats
-        ]);
+    //     $pdf = Pdf::loadView('chat_export', [
+    //         'problem' => $problem,
+    //         'chats' => $chats
+    //     ]);
 
-        return $pdf->stream('chat-export-'.$problem_id.'.pdf');
-    }
+    //     return $pdf->stream('chat-export-'.$problem_id.'.pdf');
+    // }
 
 
 

@@ -6,6 +6,7 @@ import Landing from "../components/landing";
 import HeroSection from "../components/hero-section";
 import Stats from "../components/stats";
 import NoticeSection from "../components/notice-section";
+import TopUsers from "../components/topusers";
 
 function Home() {
     return (
@@ -16,6 +17,7 @@ function Home() {
                 <HeroSection />
                 <Stats />
                 <NoticeSection />
+                <TopUsers />
                 {/* <Landing /> */}
 
             </main>
