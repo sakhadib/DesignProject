@@ -27,12 +27,27 @@ import BlogallUser from './assets/pages/userAllBlog';
 import UserSuball from './assets/pages/userAllSubmission';
 
 
+// Import at the top of your theme configuration file or app entry file
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+// Load the Poppins font in your public/index.html or similar
+
+// Create a theme with Poppins as the primary font
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Poppins, sans-serif',
+  },
+});
+
+
+
 
 
 
 function App() {
   return (
-    <Router>
+    <ThemeProvider theme={theme}>
+      <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/signup" />} />
         <Route path="/signup" element={<Signup />} />
@@ -71,9 +86,10 @@ function App() {
         <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/user/blog/all/:id" element={<BlogallUser />} />
         <Route path="/user/submission/all/:id" element={<UserSuball />} />
-       
       </Routes>
     </Router>
+    </ThemeProvider>
+    
   );
 }
 
