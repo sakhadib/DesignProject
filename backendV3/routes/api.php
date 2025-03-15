@@ -332,6 +332,8 @@ Route::group(
         Route::get('user/{user_id}', [RatingController::class, 'getRating']);
         Route::get('history/user/{user_id}', [RatingController::class, 'getRatingHistory']);
         Route::get('contest/{contest_id}', [RatingController::class, 'ratingsForContest']);
+
+        Route::get('total', [LeaderBoardController::class, 'getTotalLeaderBoard']);
     }
 );
 
