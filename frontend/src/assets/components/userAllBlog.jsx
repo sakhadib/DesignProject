@@ -9,13 +9,15 @@ import {
   CardActionArea,
   Typography,
   Grid,
-  Divider,
   CircularProgress,
   Paper,
   Avatar,
   useTheme,
+  Button,
+  TextField,
+  InputAdornment,
 } from "@mui/material"
-import { Person as PersonIcon } from "@mui/icons-material"
+import { Person as PersonIcon, Search as SearchIcon, Add as AddIcon, NoEncryption } from "@mui/icons-material"
 import { format } from "date-fns"
 import { alpha } from "@mui/material/styles"
 import axios from "../../api"
@@ -27,6 +29,10 @@ const UserBlogsPage = () => {
   const [error, setError] = useState(null)
   const { id } = useParams()
   const theme = useTheme()
+
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const filteredBlogs = blogs.filter((blog) => blog.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
   useEffect(() => {
     const fetchUserBlogs = async () => {
@@ -55,7 +61,7 @@ const UserBlogsPage = () => {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), "MMM dd, yyyy")
+      return format(new Date(dateString), "M/d/yyyy")
     } catch (e) {
       return dateString
     }
@@ -93,39 +99,132 @@ const UserBlogsPage = () => {
           sx={{
             p: 3,
             mb: 4,
-            borderRadius: 2,
-            background: `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.background.paper, 0.7)})`,
+            boxShadow: "none",
             display: "flex",
             alignItems: "center",
             gap: 2,
           }}
         >
-          <Avatar sx={{ width: 60, height: 60, bgcolor: theme.palette.primary.main }}>
+          <Avatar sx={{ width: 70, height: 70, bgcolor: theme.palette.primary.main , fontSize: 30 }}>
             {user?.username ? user.username[0].toUpperCase() : <PersonIcon />}
           </Avatar>
-          <Typography variant="h5" fontWeight="bold">
+          <Typography variant="h4" fontWeight="bold">
             {user?.username}'s Blogs
           </Typography>
         </Paper>
       )}
 
+      {/* Action Bar with Search and New Button */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+        }}
+      >
+        <TextField
+          placeholder="Search blogs by title..."
+          variant="outlined"
+          size="small"
+          fullWidth
+          sx={{ maxWidth: { sm: "400px" } }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+  variant="contained"
+  color="primary"
+  startIcon={<AddIcon />}
+  href="/blog/write"
+  sx={{
+    minWidth: "100px",
+    alignSelf: { xs: "flex-end", sm: "auto" },
+    borderRadius: 2,
+    mr: { xs: 0, md: 4 }, // 20px margin-right for md and larger screens
+  }}
+>
+  New
+</Button>
+
+      </Box>
+
       {/* Blogs Grid */}
-      {blogs.length > 0 ? (
+      {filteredBlogs.length > 0 ? (
         <Grid container spacing={3}>
-          {blogs.map((blog) => (
+          {filteredBlogs.map((blog) => (
             <Grid item xs={12} sm={6} md={4} key={blog.id}>
-              <Card sx={{ height: "100%", display: "flex", flexDirection: "column", borderRadius: 2 }}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRadius: 1,
+                  border: "1px solid #e0e0e0",
+                  boxShadow: "none",
+                  overflow: "visible",
+                }}
+              >
                 <CardActionArea component="a" href={`/blog/${blog.id}`} sx={{ flexGrow: 1 }}>
-                  <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                    <Typography variant="h6" component="h2" gutterBottom>
+                  <CardContent sx={{ p: 3 }}>
+                    {/* Category label */}
+                    <Typography variant="body2" component="div" sx={{ mb: 0.5, color: "text.secondary" }}>
+                      Test
+                    </Typography>
+
+                    {/* Blog title */}
+                    <Typography
+                      variant="h6"
+                      component="h2"
+                      sx={{
+                        fontWeight: "bold",
+                        mb: 1.5,
+                        fontSize: "1.5rem",
+                      }}
+                    >
                       {blog.title}
                     </Typography>
-                    <Box sx={{ mt: "auto", pt: 2 }}>
-                      <Divider sx={{ mb: 2 }} />
-                      <Typography variant="body2" color="text.secondary">
-                        {formatDate(blog.created_at)}
-                      </Typography>
+
+                    {/* Blog excerpt */}
+                    <Typography variant="body1" color="text.primary" sx={{ mb: 2 }}>
+                      {blog.content?.substring(0, 100) }
+                    </Typography>
+
+                    {/* Author info and date */}
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Avatar
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          bgcolor: "#673ab7",
+                          mr: 1.5,
+                        }}
+                      >
+                        {user?.username ? user.username[0].toUpperCase() : "S"}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: "medium" }}>
+                          {user?.username || "sakhadib"}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {formatDate(blog.created_at)}
+                        </Typography>
+                      </Box>
                     </Box>
+
+                    {/* Stats */}
+                    <Typography variant="body2" color="text.secondary">
+                      Comments: {blog.comments_count || 4} | Votes: {blog.votes_count || 0}
+                    </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -145,3 +244,4 @@ const UserBlogsPage = () => {
 }
 
 export default UserBlogsPage
+
