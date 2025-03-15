@@ -65,8 +65,6 @@ class HomePageController extends Controller
             $blog = Models\Blog::where('id', $b->blog_id)
                                       ->with('user:id,username')
                                       ->first(['id', 'title', 'content', 'user_id', 'created_at']);
-
-            $blog->total_upvotes = $b->total;
             $top_blogs[] = $blog;
         }
 
