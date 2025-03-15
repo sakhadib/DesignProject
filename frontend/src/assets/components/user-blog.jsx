@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
-import { Card, CardContent, Typography, Grid, Box, CircularProgress, Divider, Button } from "@mui/material"
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  CircularProgress,
+  Divider,
+  Button,
+  Alert,
+  Avatar,
+  CardActions,
+} from "@mui/material"
 import { format } from "date-fns"
 import axios from "../../api" // Ensure axios is properly configured
 
@@ -17,24 +30,12 @@ const UserBlogs = () => {
     const fetchUserBlogs = async () => {
       try {
         setLoading(true)
-        const { data } = await axios.get(`/api/user/blog/mini/${id}`)
+        const { data } = await axios.get(`/user/blog/mini/${id}`)
         setUser(data.user)
-        setBlogs(data.blogs.slice(0, 3)) // Limit to the last 3 blogs
+        setBlogs(data.blogs || []) // Handle cases where blogs might be empty or undefined
       } catch (err) {
-        console.error("API fetch failed, using demo data", err)
-        setError("Failed to fetch user blogs, displaying demo data.")
-
-        // Fallback demo data
-        setUser({
-          id: 1,
-          username: "demo_user",
-          email: "demo@example.com",
-        })
-        setBlogs([
-          { id: 1, title: "Test Blog", created_at: "2025-01-07T19:21:49.000000Z" },
-          { id: 2, title: "Fun of Primes (Edited)", created_at: "2025-01-07T15:34:15.000000Z" },
-          { id: 3, title: "Demo Blog 3", created_at: "2025-03-06T08:45:10.000Z" },
-        ])
+        console.error("API fetch error:", err)
+        setError("Failed to fetch user blogs. Please try again later.")
       } finally {
         setLoading(false)
       }
@@ -53,72 +54,111 @@ const UserBlogs = () => {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), "MMM dd, yyyy")
+      return format(new Date(dateString), "M/d/yyyy")
     } catch {
       return "Invalid Date"
     }
   }
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="left" justifyContent="left" width="95%" mt={4}>
-      {user && (
-        <Box mb={3} width="100%" textAlign="left" ml={12}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f" }}>
-          {user.username}'s Recent Blogs
-        </Typography>
-        <Divider sx={{ width: "90%", marginLeft: 0 }} />
-      </Box>
-      
-      )}
+    <Container maxWidth="lg">
+      <Box display="flex" flexDirection="column" alignItems="left" justifyContent="left" width="100%" mt={4}>
+        {error && (
+          <Box mb={3} width="100%" textAlign="center">
+            <Alert severity="error">{error}</Alert>
+          </Box>
+        )}
 
-      <Box display="flex" justifyContent="center" width="100%">
-        <Grid container spacing={3} justifyContent="center" sx={{ maxWidth: "1200px" }}>
-          {blogs.length > 0 ? (
-            blogs.map((blog) => (
-              <Grid item xs={12} sm={6} md={4} key={blog.id}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    "&:hover": {
-                      transform: "translateY(-5px)",
-                      boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                    },
-                  }}
-                >
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" component="h2" gutterBottom noWrap sx={{ textAlign: "left" }}>
-                      {blog.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "left" }}>
-                      Posted on {formatDate(blog.created_at)}
-                    </Typography>
-                  </CardContent>
-                </Card>
+        {user && (
+          <Box mb={3} width="100%" textAlign="left">
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f" }}>
+              {user.username}'s Recent Blogs
+            </Typography>
+            <Divider sx={{ width: "100%" }} />
+          </Box>
+        )}
+
+        <Box display="flex" justifyContent="center" width="100%">
+          <Grid container spacing={3} justifyContent="center">
+            {blogs.length > 0 ? (
+              blogs.map((blog) => (
+                <Grid item xs={12} sm={6} md={4} key={blog.id}>
+                  <Link to={`/blog/${id}`} style={{ textDecoration: "none" }}>
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        "&:hover": {
+                          transform: "translateY(-5px)",
+                          boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+                        },
+                        border: "1px solid #e0e0e0",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <CardContent sx={{ p: 3, pb: 1 }}>
+                        <Typography
+                          variant="h5"
+                          component="h2"
+                          gutterBottom
+                          sx={{
+                            fontWeight: "bold",
+                            fontSize: "1.5rem",
+                            mb: 1,
+                            color: "#333",
+                          }}
+                        >
+                          {blog.title}
+                        </Typography>
+
+                        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+                          <Avatar sx={{ bgcolor: "#673ab7", width: 36, height: 36, mr: 1.5 }}>
+                            {user?.username?.charAt(0).toUpperCase() || "U"}
+                          </Avatar>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: "medium", lineHeight: 1.2 }}>
+                              {user?.username}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
+                              {formatDate(blog.created_at)}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </CardContent>
+
+                      <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-start" }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
+                          Comments: 4 | Votes: 0
+                        </Typography>
+                      </CardActions>
+                    </Card>
+                  </Link>
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="body1" align="center">
+                  No blogs found for this user.
+                </Typography>
               </Grid>
-            ))
-          ) : (
-            <Grid item xs={12}>
-              <Typography variant="body1" align="center">
-                No blogs found for this user.
-              </Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+            )}
+          </Grid>
+        </Box>
 
-      {/* View All Button - Positioned Bottom Right */}
-      {blogs.length > 0 && (
-        <Link to={`/user/blog/all/${id}`} style={{ textDecoration: "none"}}>
-        <Button variant="contained" color="primary" alignItems="right" sx={{ mt: 2, float: "right" }}>
-          View All
-        </Button>
-      </Link>
-      
-      )}
-    </Box>
+        {blogs.length > 0 && (
+          <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Link to={`/user/blog/all/${id}`} style={{ textDecoration: "none" }}>
+              <Button variant="contained" color="primary">
+                View All
+              </Button>
+            </Link>
+          </Box>
+        )}
+      </Box>
+    </Container>
   )
 }
 
