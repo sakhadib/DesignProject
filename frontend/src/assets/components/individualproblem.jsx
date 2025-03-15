@@ -28,6 +28,8 @@ import rehypeKatex from "rehype-katex"
 import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
 import api from "../../api" // Using your existing API setup with authentication
 import { useParams } from "react-router-dom"
+import { BlockMath, InlineMath } from "react-katex";
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 // For development/testing when API is not available
 const MOCK_CHAT_HISTORY = [
@@ -261,7 +263,7 @@ const ProblemView = () => {
       <Box sx={{ display: "flex", gap: 3, marginTop: "100px", marginBottom: "60px" }}>
         <Card sx={{ flex: 1 }}>
           <CardContent>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold"}}>
               {problem.title}
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
@@ -333,25 +335,39 @@ const ProblemView = () => {
       </Box>
 
       {/* Help Button with Star Icons */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpen}
-       
-        sx={{
-          position: "fixed",
-          bottom: 16,
-          right: 16,
-          zIndex: 10,
-          paddingLeft: 1,
-        }}
-      >
-        HELP
-      </Button>
+<Button
+  onClick={handleOpen}
+  sx={{
+    position: "fixed",
+    bottom: 16,
+    right: 16,
+    zIndex: 10,
+    height: 64,
+    width: "auto", // Adjust width based on content
+    minWidth: 120, // Ensure enough space
+    borderRadius: "30px",
+    paddingX: 2, // Add some padding
+    boxShadow: 3,
+    transition: "transform 0.2s ease-in-out",
+    background: "linear-gradient(135deg, #82095B 0%,#c40464 100%)",
+    "&:hover": {
+      transform: "scale(1.05)",
+      boxShadow: 5,
+      background: "linear-gradient(135deg, #6a094b 0%, rgb(188, 3, 96) 100%)",
+    },
+  }}
+>
+  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "white" }}>
+    <AutoAwesomeIcon sx={{ fontSize: 24 }} />
+    <span style={{ fontSize: "16px", fontWeight: "500" }}>Chat</span>
+  </div>
+</Button>
+
 
       {/* Chat Dialog */}
-      <Dialog fullScreen open={open} onClose={handleClose}>
-        <Box sx={{ height: "100vh", display: "flex", marginTop: "80px" }}>
+      <Dialog fullScreen open={open} onClose={handleClose} >
+      <Box sx={{ height: "100%", width: "100vw", display: "flex", overflow: "hidden" }}>
+
           {/* Close Icon Button */}
           <IconButton
             onClick={handleClose}
@@ -376,13 +392,14 @@ const ProblemView = () => {
             sx={{
               width: "50%",
               backgroundColor: "#ffffff",
-              padding: "20px",
-              overflow: "auto",
+              padding: "30px",
+              height: "100vh",
               display: "flex",
               flexDirection: "column",
+              overflowY: "auto", 
             }}
           >
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2, marginTop: "100px" }}>
               {problem.title}
             </Typography>
 
@@ -450,7 +467,7 @@ const ProblemView = () => {
               background: "linear-gradient(135deg, #1976d2, #64b5f6)",
               display: "flex",
               flexDirection: "column",
-              height: "calc(100vh - 80px)",
+              height: "100vh",
               color: "#ffffff",
             }}
           >
@@ -499,32 +516,19 @@ const ProblemView = () => {
 
             {/* Chat Messages Container - Scrollable */}
             <Box
-              ref={chatContainerRef}
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                "&::-webkit-scrollbar": {
-                  width: "8px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  background: "rgba(255, 255, 255, 0.1)",
-                  borderRadius: "10px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "rgba(255, 255, 255, 0.3)",
-                  borderRadius: "10px",
-                },
-                "&::-webkit-scrollbar-thumb:hover": {
-                  background: "rgba(255, 255, 255, 0.5)",
-                },
-                scrollbarWidth: "thin",
-                scrollbarColor: "rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1)",
-              }}
+            ref={chatContainerRef}
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              mb: 4, // Ensure no extra margin at the bottom
+            }}
             >
+
+
               {loadingChat ? (
                 <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
                   <CircularProgress sx={{ color: "white" }} />
@@ -553,9 +557,17 @@ const ProblemView = () => {
                         borderRadius: msg.sender === "user" ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
                       }}
                     >
-                      <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-                        {msg.message}
-                      </Typography>
+                    <ReactMarkdown 
+                    components={{
+                      math: ({ value }) => <BlockMath math={value} />,
+                      inlineMath: ({ value }) => <InlineMath math={value} />,
+                    }}
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    >
+                    {msg.message}
+                    </ReactMarkdown>
+
                     </Paper>
                   </Box>
                 ))
@@ -573,6 +585,7 @@ const ProblemView = () => {
                 bgcolor: "rgba(255, 255, 255, 0.2)",
                 display: "flex",
                 gap: 1,
+                mb: 2,
               }}
             >
               <TextField
