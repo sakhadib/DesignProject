@@ -61,10 +61,13 @@ class HomePageController extends Controller
                             ->get();
 
         $top_blogs = [];
-        foreach ($blogs as $blog) {
-            $top_blogs[] = Models\Blog::where('id', $blog->blog_id)
+        foreach ($blogs as $b) {
+            $blog = Models\Blog::where('id', $b->blog_id)
                                       ->with('user:id,username')
-                                      ->first(['id', 'title', 'user_id', 'created_at']);
+                                      ->first(['id', 'title', 'content', 'user_id', 'created_at']);
+
+            $blog->total_upvotes = $b->total;
+            $top_blogs[] = $blog;
         }
 
         return response()->json([

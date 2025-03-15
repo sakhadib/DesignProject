@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Contest;
 use App\Models\ContestParticipant;
+use App\Models\Rating;
 use App\Models\Submission;
 use App\Models\User;
 
@@ -117,6 +118,30 @@ class LeaderBoardController extends Controller
                 'attempted_problems' => $attempted_problems
             ],
             "submissions" => $submissions
+        ], 200);
+    }
+
+
+
+
+    /**
+     * Get Total LeaderBoard Based on Rating in Rating Table
+     */
+    public function getTotalLeaderBoard()
+    {
+        $ratings = Rating::groupBy('user_id')
+                        ->selectRaw('user_id, sum(rating) as total_rating')
+                        ->orderBy('total_rating', 'desc')
+                        ->get();
+
+        foreach($ratings as $rating)
+        {
+            $user = User::find($rating->user_id);
+            $user->rating = $rating->total_rating;
+        }
+
+        return response()->json([
+            'users' => $ratings
         ], 200);
     }
 }
