@@ -45,7 +45,7 @@ const HeroSection = () => {
           setIsVisible(false); // Fade-out when section is out of view
         }
       },
-      { threshold: 0.2 } // Trigger when at least 20% of the section is in view
+      { threshold: 0.5 } // Trigger when at least 20% of the section is in view
     );
 
     if (sectionRef.current) {

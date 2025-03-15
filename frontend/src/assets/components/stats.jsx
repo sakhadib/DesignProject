@@ -103,21 +103,22 @@ const CountSection = () => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        const items = sectionRef.current.querySelectorAll('div'); // Select all CountItem divs
         if (entry.isIntersecting) {
-          const items = sectionRef.current.querySelectorAll('div'); // Select all CountItem divs
+          // When section comes into view (scrolling down)
           items.forEach(item => {
             item.style.opacity = '1';
             item.style.transform = 'translateY(0)'; // Slide up to final position
           });
         } else {
-          const items = sectionRef.current.querySelectorAll('div');
+          // When section goes out of view (scrolling up)
           items.forEach(item => {
             item.style.opacity = '0.1';
-            item.style.transform = 'translateY(50px)'; // Reset position when out of view
+            item.style.transform = 'translateY(50px)'; // Slide down to start position
           });
         }
       },
-      { threshold: 0.2 } // Trigger when at least 20% of the section is in view
+      { threshold: 0.5 } // Trigger when at least 20% of the section is in view
     );
 
     if (sectionRef.current) {
