@@ -5,7 +5,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import logo from '../img/logo.png'; // Import the new logo image
+import logo from '../img/tp_mini@4x.png'; // Import the new logo image
 
 const FooterLink = ({ href, children }) => (
 <Link href={href} color="inherit" sx={{ display: 'block', mb: 1 }}>
