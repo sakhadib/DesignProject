@@ -1,220 +1,208 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Box,
-  Container,
+  Button,
   TextField,
   Typography,
-  Select,
-  MenuItem,
+  Paper,
+  Box,
   FormControl,
   InputLabel,
-  Paper,
-  Button,
-} from '@mui/material';
-import MDEditor from '@uiw/react-md-editor';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+  Select,
+  MenuItem,
+} from "@mui/material";
+import MDEditor from "@uiw/react-md-editor";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import axios from "../../api";
+import { useNavigate } from "react-router-dom";
 
 export default function AddProblem() {
-  const [setterId, setSetterId] = useState('');
-  const [setterName, setSetterName] = useState('');
-  const [contestId, setContestId] = useState('');
-  const [contestName, setContestName] = useState('');
-  const [questionTitle, setQuestionTitle] = useState('');
-  const [questionId, setQuestionId] = useState('');
-  const [xp, setXp] = useState('');
-  const [questionBody, setQuestionBody] = useState('');
-  const [answer, setAnswer] = useState('');
-  const [note, setNote] = useState('');
-  const [tags, setTags] = useState('number theory, math, addition'); // Default example tags
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [xp, setXp] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [note, setNote] = useState("");
+  const [topics, setTopics] = useState("");
+  const [target, setTarget] = useState(""); // Separate state for target
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requestBody = [
-      { key: "title", value: questionTitle },
-      { key: "description", value: questionBody },
-      { key: "xp", value: xp },
-      { key: "answer", value: answer },
-      { key: "note", value: note },
-      {
-        key: "tags",
-        value: JSON.stringify({
-          target: "v5",
-          topics: tags.split(',').map((tag) => tag.trim()),
-        }),
-      },
-    ];
+    const formattedTopics = topics.split(",").map((topic) => topic.trim()).join(", ");
+
+    const requestBody = {
+      title: title,
+      description: description,
+      xp: parseInt(xp, 10),
+      answer: answer,
+      note: note,
+      topics: formattedTopics,
+      target: target, // Include target in the request body
+    };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/problem/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Access token is missing");
+        return;
+      }
 
-      const data = await response.json();
-      if (response.ok) {
-        alert(`Success: ${data.message}`);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/problem/create/",
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert(`Success: ${response.data.message}`);
+        navigate("/problem/all");
       } else {
-        alert(`Error: ${data.message || "Something went wrong"}`);
+        alert(`Error: ${response.data.message || "Something went wrong"}`);
       }
     } catch (error) {
       console.error("Error submitting the problem:", error);
-      alert("Failed to submit the problem. Please try again.");
+      if (error.response) {
+        console.error("Response from server:", error.response.data);
+        alert(
+          `Error: ${error.response.data.message || "Failed to submit the problem. Please try again."}`
+        );
+      } else {
+        alert("Failed to submit the problem. Please try again.");
+      }
     }
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" sx={{ mb: 4, color: 'primary.main' }}>
-        Add New Question
+    <Box sx={{ padding: 3, maxWidth: 1200, margin: "0 auto" }}>
+      <Typography variant="h3" component="h1" sx={{ mb: 4, color: "primary.main" }}>
+        Add New Problem
       </Typography>
 
       <form onSubmit={handleSubmit}>
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
-            Problem Setter Details
+          <Typography variant="h5" sx={{ mb: 3 }}>
+            Problem Details
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-            <TextField
-              fullWidth
-              label="Setter ID"
-              variant="outlined"
-              value={setterId}
-              onChange={(e) => setSetterId(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              label="Setter Name"
-              variant="outlined"
-              value={setterName}
-              onChange={(e) => setSetterName(e.target.value)}
-            />
-          </Box>
+
+          {/* ... Other form fields remain the same ... */}
+          <TextField
+            fullWidth
+            label="Title"
+            variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Description"
+            variant="outlined"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            multiline
+            rows={4}
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            fullWidth
+            label="XP"
+            variant="outlined"
+            value={xp}
+            onChange={(e) => setXp(e.target.value)}
+            type="number"
+            sx={{ mb: 3 }}
+          />
+          
+          <TextField
+            fullWidth
+            label="Answer"
+            variant="outlined"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Note"
+            variant="outlined"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            multiline
+            rows={4}
+            sx={{ mb: 3 }}
+          />
+
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Target</InputLabel>
+            <Select
+              label="Target"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+            >
+              <MenuItem value="v0">v0</MenuItem>
+              <MenuItem value="v1">v1</MenuItem>
+              <MenuItem value="v2">v2</MenuItem>
+              <MenuItem value="v3">v3</MenuItem>
+              <MenuItem value="v4">v4</MenuItem>
+              <MenuItem value="v5">v5</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* ... Rest of the form remains the same ... */}
+
+          <TextField
+            fullWidth
+            label="Topics (comma-separated)"
+            variant="outlined"
+            value={topics}
+            onChange={(e) => setTopics(e.target.value)}
+            sx={{ mb: 3 }}
+          />
         </Paper>
 
-        <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
-            Contest Details
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-            <FormControl fullWidth>
-              <InputLabel>Contest ID</InputLabel>
-              <Select
-                label="Contest ID"
-                value={contestId}
-                onChange={(e) => setContestId(e.target.value)}
-              >
-                <MenuItem value="">Select contest ID</MenuItem>
-                <MenuItem value="1">Contest 1</MenuItem>
-                <MenuItem value="2">Contest 2</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              fullWidth
-              label="Contest Name"
-              variant="outlined"
-              value={contestName}
-              onChange={(e) => setContestName(e.target.value)}
-            />
-          </Box>
-        </Paper>
-
-        <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
-            Question Details
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              fullWidth
-              label="Question Title"
-              variant="outlined"
-              value={questionTitle}
-              onChange={(e) => setQuestionTitle(e.target.value)}
-            />
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                fullWidth
-                label="Question ID"
-                variant="outlined"
-                value={questionId}
-                onChange={(e) => setQuestionId(e.target.value)}
-              />
-              <TextField
-                fullWidth
-                label="XP"
-                variant="outlined"
-                value={xp}
-                onChange={(e) => setXp(e.target.value)}
-                type="number"
-              />
-            </Box>
-            <Box sx={{ my: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Question Body
-              </Typography>
-              <MDEditor
-                value={questionBody}
-                onChange={setQuestionBody}
-                preview="edit"
-                height={400}
-              />
-            </Box>
-            <TextField
-              fullWidth
-              label="Answer"
-              variant="outlined"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              label="Note"
-              variant="outlined"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              multiline
-              rows={4}
-            />
-            <TextField
-              fullWidth
-              label="Tags (comma-separated)"
-              variant="outlined"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
-          </Box>
-        </Paper>
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 4, mb: 4 }}
-        >
-          Submit Question
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 4, mb: 4 }}>
+          Submit Problem
         </Button>
       </form>
 
+      {/* Preview Section remains the same */}
       <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" sx={{ mb: 2 }}>
           Preview
         </Typography>
-        <Typography variant="h5" gutterBottom>
-          {questionTitle || 'Your Question Title Here'}
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          {title || "Your Problem Title Here"}
         </Typography>
         <ReactMarkdown
+          children={description || "Your description will be displayed here in Markdown format..."}
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex]}
-        >
-          {questionBody || 'Your question content will be displayed here in Markdown format...'}
-        </ReactMarkdown>
+        />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Answer
+        </Typography>
+        <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+          {answer || "Answer goes here..."}
+        </Typography>
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Notes
+        </Typography>
+        <ReactMarkdown
+          children={note || "Your notes will be displayed here in Markdown format..."}
+          remarkPlugins={[remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+        />
       </Paper>
-    </Container>
+    </Box>
   );
 }
