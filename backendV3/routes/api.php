@@ -158,7 +158,8 @@ Route::group([
     Route::post('problem/unpublish', [Admin_controller::class, 'unpublishProblem']);
     Route::post('problem/remove', [Admin_controller::class, 'removeProblem']);
 
-    Route::get('problem/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
+    Route::get('problem/single/{problem_id}', [Admin_controller::class, 'getSingleProblem']);
+    Route::post('problem/edit', [Admin_controller::class, 'editProblem']);
 
     Route::get('contest/single/{contest_id}', [Admin_controller::class, 'getSingleContest']);
 
