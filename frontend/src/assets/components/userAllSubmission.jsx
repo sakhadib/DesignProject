@@ -100,11 +100,9 @@ export default function SubmissionTable() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
+        
         <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f" }}>
-          Submission History
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          User: {data.user.username}
+          Submission History for {data.user.username}
         </Typography>
 
         {data.problems.map((problemData) => (
