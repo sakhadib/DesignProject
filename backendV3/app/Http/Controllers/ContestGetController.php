@@ -336,8 +336,10 @@ class ContestGetController extends Controller
 
 
 
-    Public function userUpcomingRegisteredPrivateContest($user_id)
+    Public function userUpcomingRegisteredPrivateContest()
     {
+        $user_id = auth()->user()->id;
+        
         $user = User::find($user_id);
 
         if(!$user){
@@ -367,8 +369,10 @@ class ContestGetController extends Controller
     }
 
 
-    public function userPastRegisteredPrivateContest($user_id)
+    public function userPastRegisteredPrivateContest()
     {
+        $user_id = auth()->user()->id;
+
         $user = User::find($user_id);
 
         if(!$user){
