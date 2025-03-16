@@ -107,6 +107,7 @@ export default function AddProblem() {
             variant="outlined"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            helperText="Use $ ... $ for inline equations or $$ ... $$ for centered equations"
             multiline
             rows={4}
             sx={{ mb: 3 }}
