@@ -18,10 +18,19 @@ class ProblemController extends Controller
             'xp' => 'required|integer',
             'answer' => 'required|string',
             'note' => 'nullable|string',
-            'tags' => 'nullable|string'
+            'topics' => 'nullable|string',
+            'target' => 'nullable|string'
         ]);
 
         $user = auth()->user();
+
+        $topics = explode(',', $request->topics);
+        $tags = [
+            'target' => $request->target,
+            'topics' => $topics
+        ];
+
+        $assignable_tags = json_encode($tags);
         
         $problem = new Problem();
         $problem->title = $request->title;
@@ -29,7 +38,7 @@ class ProblemController extends Controller
         $problem->xp = $request->xp;
         $problem->answer = $request->answer;
         $problem->note = $request->note;
-        $problem->tags = $request->tags;
+        $problem->tags = $assignable_tags;
         $problem->user_id = $user->id;
         $problem->save();
 
@@ -48,7 +57,8 @@ class ProblemController extends Controller
             'xp' => 'required|integer',
             'answer' => 'required|string',
             'note' => 'nullable|string',
-            'tags' => 'nullable|string'
+            'topics' => 'nullable|string',
+            'target' => 'nullable|string'
         ]);
 
         $user = auth()->user();
@@ -73,12 +83,24 @@ class ProblemController extends Controller
             ], 401);
         }
 
+        $topics = explode(',', $request->topics);
+        $tags = [
+            'target' => $request->target,
+            'topics' => $topics
+        ];
+
+        $savable_tags = json_encode($tags);
+
+        return response()->json([
+            'tags' => $savable_tags
+        ]);
+
         $problem->title = $request->title;
         $problem->description = $request->description;
         $problem->xp = $request->xp;
         $problem->answer = $request->answer;
         $problem->note = $request->note;
-        $problem->tags = $request->tags;
+        $problem->tags = $savable_tags;
         $problem->save();
 
         return response()->json([
