@@ -108,8 +108,10 @@ const AllProblems = () => {
         return matchesSearchTerm && matchesCategory;
       })
       .sort((a, b) => {
-        if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
-        if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+        const aValue = orderBy.split('.').reduce((o, i) => o[i], a);
+        const bValue = orderBy.split('.').reduce((o, i) => o[i], b);
+        if (aValue < bValue) return order === "asc" ? -1 : 1;
+        if (aValue > bValue) return order === "asc" ? 1 : -1;
         return 0;
       });
   }, [problems, searchTerm, selectedCategories, order, orderBy]);
