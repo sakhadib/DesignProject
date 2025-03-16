@@ -26,6 +26,7 @@ import UserProfile from './assets/pages/profile';
 import BlogallUser from './assets/pages/userAllBlog';
 import UserSuball from './assets/pages/userAllSubmission';
 import PrivateContest from './assets/pages/AllPrivateContests';
+import UserCreatProb from './assets/pages/UserCreateProb';
 
 
 // Import at the top of your theme configuration file or app entry file
@@ -87,7 +88,7 @@ function App() {
         <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/user/blog/all/:id" element={<BlogallUser />} />
         <Route path="/user/submission/all/:id" element={<UserSuball />} />
-
+        <Route path="/problem/create/:id" element={<UserCreatProb />} />
         <Route path="/contest/private/all" element={<PrivateContest />} />
       </Routes>
     </Router>
