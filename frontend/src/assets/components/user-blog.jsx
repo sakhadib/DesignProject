@@ -83,7 +83,7 @@ const UserBlogs = () => {
             {blogs.length > 0 ? (
               blogs.map((blog) => (
                 <Grid item xs={12} sm={6} md={4} key={blog.id}>
-                  <Link to={`/blog/${id}`} style={{ textDecoration: "none" }}>
+                  <Link to={`/blog/${blog.id}`} style={{ textDecoration: "none" }}>
                     <Card
                       sx={{
                         height: "100%",
