@@ -82,8 +82,9 @@ return (
             </Grid>
             <Box mt={5}>
             <Typography variant="body2" color="text.secondary" align="center">
-                © 2024 Your Company, Inc. All rights reserved.
+            © {new Date().getFullYear()} Your Company, Inc. All rights reserved.
             </Typography>
+
             </Box>
         </Container>
         </Box>

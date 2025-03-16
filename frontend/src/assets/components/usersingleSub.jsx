@@ -15,6 +15,7 @@ import {
   Card,
   CardContent,
   Chip,
+  Container,  // Import Container
 } from "@mui/material";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
@@ -82,88 +83,91 @@ export default function SubmissionsTable() {
 
   if (error) {
     return (
-      <Paper sx={{ p: 3, bgcolor: "#fff8f8", color: "#d32f2f", my: 2 }}>
-        <Typography>{error}</Typography>
-      </Paper>
+      <Container>
+        <Paper sx={{ p: 3, bgcolor: "#fff8f8", color: "#d32f2f", my: 2 }}>
+          <Typography>{error}</Typography>
+        </Paper>
+      </Container>
     );
   }
 
   if (!submissionData || !submissionData.problem) {
     return (
-      <Paper sx={{ p: 3, my: 2 }}>
-        <Typography>No submission data available.</Typography>
-      </Paper>
+      <Container>
+        <Paper sx={{ p: 3, my: 2 }}>
+          <Typography>No submission data available.</Typography>
+        </Paper>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>Your Submissions</Typography>
+    <Container maxWidth="md">  {/* Wrapped entire content inside Container */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" gutterBottom>Your Submissions</Typography>
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="h6">Problem: {submissionData.problem.title}</Typography>
-            <Box>
-              {submissionData.problem.tags?.topics?.map((topic) => (
-                <Chip key={topic} label={topic} size="small" sx={{ ml: 1, bgcolor: "#007FFF", color: "white" }} />
-              ))}
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+              <Typography variant="h6">Problem: {submissionData.problem.title}</Typography>
+              <Box>
+                {submissionData.problem.tags?.topics?.map((topic) => (
+                  <Chip key={topic} label={topic} size="small" sx={{ ml: 1, bgcolor: "#007FFF", color: "white" }} />
+                ))}
+              </Box>
             </Box>
-          </Box>
 
-          <Box sx={{ display: "flex", gap: 4 }}>
-            <Box>
-              <Typography variant="body2" color="text.secondary">Total Submissions</Typography>
-              <Typography variant="h6">{submissionData.submissions.length}</Typography>
+            <Box sx={{ display: "flex", gap: 4 }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Submissions</Typography>
+                <Typography variant="h6">{submissionData.submissions.length}</Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="body2" color="text.secondary">Highest XP</Typography>
+                <Typography variant="h6">{getHighestXP()} / {submissionData.problem.xp}</Typography>
+              </Box>
             </Box>
-            <Box>
-              <Typography variant="body2" color="text.secondary">Total XP Earned</Typography>
-              <Typography variant="h6">{calculateTotalXP()} / {submissionData.problem.xp * submissionData.submissions.length}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="body2" color="text.secondary">Highest XP</Typography>
-              <Typography variant="h6">{getHighestXP()} / {submissionData.problem.xp}</Typography>
-            </Box>
-          </Box>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead sx={{ bgcolor: "#f5f5f5" }}>
-            <TableRow>
-              <TableCell>Submission ID</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>XP Earned</TableCell>
-              <TableCell>Contest</TableCell>
-              <TableCell>Performance</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {submissionData.submissions.length === 0 ? (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead sx={{ bgcolor: "#f5f5f5" }}>
               <TableRow>
-                <TableCell colSpan={5} align="center">No submissions found</TableCell>
+                <TableCell>Submission ID</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>XP Earned</TableCell>
+                <TableCell>Contest</TableCell>
+                <TableCell>Performance</TableCell>
               </TableRow>
-            ) : (
-              submissionData.submissions.map((submission) => (
-                <TableRow key={submission.id}>
-                  <TableCell>#{submission.id}</TableCell>
-                  <TableCell>{formatDate(submission.created_at)}</TableCell>
-                  <TableCell>{submission.xp} / {submissionData.problem.xp}</TableCell>
-                  <TableCell>{submission.contest_id ? `#${submission.contest_id}` : "N/A"}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={submission.xp === submissionData.problem.xp ? "Perfect" : submission.xp >= submissionData.problem.xp * 0.8 ? "Good" : "Partial"}
-                      size="small"
-                      sx={{ bgcolor: submission.xp === submissionData.problem.xp ? "#4caf50" : submission.xp >= submissionData.problem.xp * 0.8 ? "#2196f3" : "#ff9800", color: "white" }}
-                    />
-                  </TableCell>
+            </TableHead>
+            <TableBody>
+              {submissionData.submissions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">No submissions found</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+              ) : (
+                submissionData.submissions.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell>#{submission.id}</TableCell>
+                    <TableCell>{formatDate(submission.created_at)}</TableCell>
+                    <TableCell>{submission.xp} / {submissionData.problem.xp}</TableCell>
+                    <TableCell>{submission.contest_id ? `#${submission.contest_id}` : "N/A"}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={submission.xp === submissionData.problem.xp ? "Perfect" : submission.xp >= submissionData.problem.xp * 0.8 ? "Good" : "Partial"}
+                        size="small"
+                        sx={{ bgcolor: submission.xp === submissionData.problem.xp ? "#4caf50" : submission.xp >= submissionData.problem.xp * 0.8 ? "#2196f3" : "#ff9800", color: "white" }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Container>
   );
 }
