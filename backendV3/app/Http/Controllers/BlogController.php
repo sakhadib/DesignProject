@@ -101,7 +101,7 @@ class BlogController extends Controller
             ->with('myvote')
             ->get(['id', 'title', 'category', 'created_at', 'updated_at']);
 
-        $user_id = auth()->user()->id;
+        // $user_id = auth()->user()->id;
 
 
         return response()->json([

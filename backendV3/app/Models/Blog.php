@@ -43,7 +43,12 @@ class Blog extends Model
 
     public function myVote()
     {
-        return $this->votes()->where('user_id', auth()->user()->id);
+        if(auth()->user()){
+            return $this->votes()->where('user_id', auth()->user()->id);
+        }
+        else{
+            return $this->votes()->where('user_id', 0);
+        }
     }
 
     public function scopeBlogVotesCount($query)
