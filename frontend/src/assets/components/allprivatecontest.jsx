@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   CircularProgress,
   Button,
   Tabs,
@@ -18,26 +17,29 @@ import {
   TablePagination,
 } from "@mui/material";
 import axios from '../../api';
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom"; // Import for navigation
-
-
+import { Link, useNavigate } from "react-router-dom";
 
 // Function to get user's local timezone
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const formatLocalTime = (utcTime) => {
-  const utcDate = new Date(utcTime + " UTC");
-  return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-    timeZone: userTimezone,
-  }).format(utcDate);
+  if (!utcTime) return "Invalid Date";  // Validate that utcTime is provided
+  try {
+    const utcDate = new Date(utcTime + " UTC");
+    return new Intl.DateTimeFormat(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: userTimezone,
+    }).format(utcDate);
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid Date";  // Return default error message
+  }
 };
 
 // =======================|| ALL CONTESTS COMPONENT ||======================= //
@@ -58,14 +60,12 @@ export default function AllContests() {
 
   const navigate = useNavigate(); // Initialize useNavigate
 
-
   // Fetching upcoming contests
   const fetchUpcomingContests = async () => {
     setIsLoadingUpcoming(true);
     try {
-      const response = await axios.get(`/contest/upcoming/private/user/${currentUserId}`);
+      const response = await axios.get(`/contest/upcoming/private/my`);
       setUpcomingContests(response.data.contests);
-      // setActiveContest(response.data.contests.find((contest) => contest.status === "active") || null);
     } catch (error) {
       console.error("Error fetching upcoming contests:", error);
     }
@@ -76,7 +76,7 @@ export default function AllContests() {
   const fetchPreviousContests = async () => {
     setIsLoadingPrevious(true);
     try {
-      const response = await axios.get("/contest/all/ended");
+      const response = await axios.get("/contest/past/private/my");
       setPreviousContests(response.data.contests);
     } catch (error) {
       console.error("Error fetching previous contests:", error);
@@ -109,19 +109,11 @@ export default function AllContests() {
   };
 
   useEffect(() => {
-    getCurrentUserId();
     fetchUpcomingContests();
     fetchPreviousContests(); 
     fetchActiveContests();
     fetchMyContests();   
   }, []);
-
-  
-
-
-
-
-
 
   // =======================|| HEADS UP SECTION ||======================= //
 
@@ -145,7 +137,6 @@ export default function AllContests() {
           border: 3,
           borderColor: "#1E2761",
           borderRadius: 2,
-          // boxShadow: 3,
           transition: "all 0.3s ease-in-out",
           "&:hover": {
             boxShadow: 6,
@@ -195,9 +186,7 @@ export default function AllContests() {
     );
   };
 
-
-
-  // =======================|| Active Contest SECTION ||======================= //
+  // =======================|| ACTIVE CONTEST SECTION ||======================= //
 
   const ActiveContest = () => {
     const buttonStyle = {
@@ -220,7 +209,6 @@ export default function AllContests() {
           borderColor: "#1E2761",
           borderRadius: 2,
           mb: 3,
-          // boxShadow: 3,
           transition: "all 0.3s ease-in-out",
           "&:hover": {
             boxShadow: 6,
@@ -280,110 +268,144 @@ export default function AllContests() {
         </Box>
       );
     }
-
+  
+    // Log the contests array to inspect data structure
+    console.log("Contest Data:", contests);
+  
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
     };
-    
+  
     const handleChangeRowsPerPage = (event) => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
-
-
+  
+    const getContestData = (contest) => {
+      // Handle both the "my contests" structure and the "upcoming/past" structure
+      if (contest.contest) {
+        // For "upcoming" and "past" contests (nested structure)
+        return contest.contest;
+      }
+      // For "my created contests" (flat structure)
+      return contest;
+    };
+  
     return (
       <Paper sx={{ width: "100%", mt: 2, mb: 4 }}>
-        <TableContainer component={Paper} sx={{ mt: 2}}>
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
           <Typography variant="h6" sx={{ p: 2, color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>
             {type} Contest Table
             <Typography variant="body2" sx={{ color: "gray", textAlign: "center" }}>
-            Your Timezone: {userTimezone}
+              Your Timezone: {userTimezone}
             </Typography>
-          </Typography>        
+          </Typography>
           <Table>
             <TableHead>
               <TableRow sx={{ color: "white" }}>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>ID</TableCell>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Contest Name</TableCell>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Start Time</TableCell>            
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Duration</TableCell>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Organizer</TableCell>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Participated</TableCell>
-                <TableCell sx={{ color: "#1565C0", fontWeight: "bold" , textAlign: "center" }}>Action</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>ID</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Contest Name</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Start Time</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Duration</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Organizer</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Participated</TableCell>
+                <TableCell sx={{ color: "#1565C0", fontWeight: "bold", textAlign: "center" }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {contests.length > 0 ? (
-                contests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((contest, index) => (
-                <TableRow 
-                hover
-                key={contest.id}
-                onClick={() => {
-                  if (type === "My") {
-                    navigate(`/contests/private/${contest.id}`);
-                  } else {
-                    navigate(`/contest/single/${contest.id}`);
-                  }
-                }}
-                sx={{
-                    cursor: "pointer",
-                    backgroundColor: index % 2 === 0 ? "#f4f4f4" : "#ffffff", // Alternate row colors
-                    "&:hover": {
-                    backgroundColor: "#f1f1f1",
-                    },
-                }}>
-                  <TableCell sx={{textAlign: "center"}}>{contest.id}</TableCell>
-                  <TableCell sx={{textAlign: "center"}}>{contest.title}</TableCell>
-                  <TableCell sx={{textAlign: "center"}}>{formatLocalTime(contest.start_time)}</TableCell>
-                  <TableCell sx={{textAlign: "center"}}>
-                  {Math.round((new Date(contest.end_time) - new Date(contest.start_time)) / 60000)} minutes
-                  </TableCell>
-                  <TableCell sx={{textAlign: "center"}}>{contest.user.username}</TableCell>
-                  <TableCell sx={{textAlign: "center"}}>{contest.participants_count}</TableCell>
-                  <TableCell sx={{textAlign: "center"}}><Button variant="contained" size="small" color="primary">View</Button></TableCell>
-                </TableRow>
-                ))
+                contests
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((contestData, index) => {
+                    // Get the correct contest object based on the structure
+                    const contest = getContestData(contestData);
+  
+                    // Check if contest and necessary fields exist
+                    if (!contest || !contest.id || !contest.title || !contest.user) {
+                      console.log("Invalid Contest Data:", contest); // Log invalid contests
+                      return (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            cursor: "not-allowed",
+                            backgroundColor: "#f9f9f9",
+                          }}
+                        >
+                          <TableCell colSpan={7} sx={{ textAlign: "center" }}>
+                            Invalid Contest Data
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+  
+                    return (
+                      <TableRow
+                        hover
+                        key={contest.id}  // Use contest.id directly
+                        onClick={() => {
+                          if (type === "My") {
+                            navigate(`/contests/private/${contest.id}`);
+                          } else {
+                            navigate(`/contest/single/${contest.id}`);
+                          }
+                        }}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: index % 2 === 0 ? "#f4f4f4" : "#ffffff",
+                          "&:hover": {
+                            backgroundColor: "#f1f1f1",
+                          },
+                        }}
+                      >
+                        <TableCell sx={{ textAlign: "center" }}>{contest.id}</TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>{contest.title}</TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {formatLocalTime(contest.start_time)}
+                        </TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {Math.round((new Date(contest.end_time) - new Date(contest.start_time)) / 60000)}{" "}
+                          minutes
+                        </TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {contest.user ? contest.user.username : "Unknown"}
+                        </TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>{contest.participants_count}</TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          <Button variant="contained" size="small" color="primary">
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
               ) : (
                 <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No contest available now
-                </TableCell>
-              </TableRow>
-            )}
+                  <TableCell colSpan={6} align="center">
+                    No contest available now
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
-          </TableContainer>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 25, 50, 100]}
-            component="div"
-            count={contests.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            sx={{
-            backgroundColor: "#ffffff",
-            color: "#1565C0",
-            "& .MuiTablePagination-actions": {
-                color: "#1565C0",
-            },
-            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                color: "#1565C0",
-            },
-            "& .MuiTablePagination-select": {
-                color: "#1565C0",
-            },
-            "& .MuiTablePagination-selectIcon": {
-                color: "#1565C0",
-            },
-            }}
-          />
+        </TableContainer>
+  
+        <TablePagination
+          rowsPerPageOptions={[5, 25, 50, 100]}
+          component="div"
+          count={contests.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
     );
   };
-
+  
+  
+  
+  
+  
   return (
     <Box sx={{ width: "95%", p: 3 }}>
       <Grid container spacing={2}>
@@ -396,9 +418,7 @@ export default function AllContests() {
             </Tabs>
 
             {activeTab === 0 && (
-              <>
-                <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
-              </>
+              <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
             )}
             {activeTab === 1 && (
               <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
@@ -416,4 +436,3 @@ export default function AllContests() {
     </Box>
   );
 }
-

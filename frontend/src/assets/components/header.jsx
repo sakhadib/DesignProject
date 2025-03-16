@@ -18,6 +18,7 @@ import api from '../../api'; // Import your configured axios instance
 import logo from '../img/tp_mini@4x.png'; // Import the new logo image
 
 const NavLink = styled(Link)( {
+  fontFamily: "'Poppins', sans-serif",
   textDecoration: 'none',
   color: '#333',
   fontWeight: '500',
@@ -172,7 +173,7 @@ function Header() {
             </>
           ) : (
             <>
-              <Box sx={{ display: 'flex', alignItems: 'center' , mr: 2}}>
+              <Box sx={{ display: 'flex', alignItems: 'center' , mr: 2, textDecoration: "none"}} component={Link} to={`/profile/${user?.id}`}>
               <Avatar
                 alt={user?.username}
                 sx={{
@@ -181,16 +182,14 @@ function Header() {
                   marginRight: 1,
                   fontSize: '16px', // Adjust font size for letter in Avatar
                   backgroundColor: '#1565C0', // Set a background color for the Avatar
+                  
                 }}
-                component={Link}
-                to={`/profile/${user?.id}`}
+                
               >
                 {user?.username ? user.username[0].toUpperCase() : ''}
               </Avatar>
 
-              <Typography variant="body1" color='#1565C0' sx={{ marginRight: 2 }}>
-                {user?.username}
-              </Typography>
+              
               </Box>
 
               <Button

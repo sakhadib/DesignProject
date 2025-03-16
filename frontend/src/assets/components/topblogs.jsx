@@ -122,7 +122,7 @@ const BlogSection = () => {
                     setIsVideoVisible(false); // Fade out the video when it is out of view
                 }
             },
-            { threshold: 0.5 } // Lower threshold for quicker video visibility trigger
+            { threshold: 0.8 } // Lower threshold for quicker video visibility trigger
         );
 
         if (videoRef.current) {
