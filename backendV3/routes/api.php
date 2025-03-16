@@ -116,6 +116,8 @@ Route::group([
     Route::post('edit', [ProblemController::class, 'editProblem']);
 
     Route::post('submit', [SubmissionController::class, 'submit']);
+
+    Route::get('my/unsolved', [ProblemController::class, 'myUnsolvedProblems']);
     
 });
 
