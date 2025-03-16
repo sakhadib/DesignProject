@@ -354,7 +354,7 @@ class ContestGetController extends Controller
         $upcoming_contests = [];
 
         foreach($contests as $contest){
-            $contest->contest = Contest::where('contest_id', $contest->contest_id)
+            $contest->contest = Contest::where('id', $contest->contest_id)
                                        ->with('user:id,username')
                                        ->first();
 
@@ -389,7 +389,7 @@ class ContestGetController extends Controller
         $past_contests = [];
 
         foreach($contests as $contest){
-            $contest->contest = Contest::where('contest_id', $contest->contest_id)
+            $contest->contest = Contest::where('id', $contest->contest_id)
                                        ->with('user:id,username')
                                        ->first();
 
