@@ -20,6 +20,12 @@ class ContestParticipant extends Model
     }
 
 
+    public function privateContest()
+    {
+        return $this->belongsTo(Contest::class)->where('type', 'user-created')->withCount(['participants', 'problems']);
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

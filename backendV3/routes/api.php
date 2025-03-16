@@ -263,6 +263,12 @@ Route::group(
     Route::get('problems/{contest_id}', [ContestGetController::class, 'getProblems']);
 
     Route::get('my/problems/{contest_id}', [ContestGetController::class, 'getContestProblemsOfMyContest']);
+
+
+    // New
+    Route::get('upcoming/private/user/{user_id}', [ContestGetController::class, 'userUpcomingRegisteredPrivateContest']);
+    Route::get('past/private/user/{user_id}', [ContestGetController::class, 'userPastRegisteredPrivateContest']);
+
 });
 
 

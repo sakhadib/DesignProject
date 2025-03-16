@@ -336,6 +336,69 @@ class ContestGetController extends Controller
 
 
 
+    Public function userUpcomingRegisteredPrivateContest($user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user){
+            return response()->json([
+                "message" => "Not Found"
+            ]);
+        }
+
+        $contests = ContestParticipant::where('user_id', $user_id)
+                                      ->get('contest_id');
+
+        $upcoming_contests = [];
+
+        foreach($contests as $contest){
+            $contest->contest = Contest::find($contest->contest_id);
+
+            if($contest->contest->start_time > now() && $contest->contest->type == 'user-created'){
+                $upcoming_contests[] = $contest;
+            }
+        }
+        
+        return response()->json([
+            'message' => 'User upcoming registered contests',
+            'user' => $user,
+            'contests' => $upcoming_contests
+        ]);
+    }
+
+
+    public function userPastRegisteredPrivateContest($user_id)
+    {
+        $user = User::find($user_id);
+
+        if(!$user){
+            return response()->json([
+                "message" => "Not Found"
+            ]);
+        }
+
+        $contests = ContestParticipant::where('user_id', $user_id)
+                                      ->get('contest_id');
+
+        $past_contests = [];
+
+        foreach($contests as $contest){
+            $contest->contest = Contest::find($contest->contest_id);
+
+            if($contest->contest->end_time < now() && $contest->contest->type == 'user-created'){
+                $past_contests[] = $contest;
+            }
+        }
+        
+        return response()->json([
+            'message' => 'User past registered contests',
+            'user' => $user,
+            'contests' => $past_contests
+        ]);
+    }
+
+
+
     /**
      * Summary of amIregistered
      * 
