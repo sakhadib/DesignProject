@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
-import AllContests from "../components/";
+import AllContests from "../components/allprivatecontest";
 import Footer from "../components/footer";
 
 
