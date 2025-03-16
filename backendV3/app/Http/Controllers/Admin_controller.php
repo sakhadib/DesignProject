@@ -302,6 +302,59 @@ class Admin_controller extends Controller
 
 
     /**
+     * * Edit a problem
+     */
+    public function editProblem(Request $request){
+        $request->validate([
+            'id' => 'required|integer',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'xp' => 'required|integer',
+            'answer' => 'required|string',
+            'note' => 'nullable|string',
+            'tags' => 'nullable|string'
+        ]);
+
+        $user = auth()->user();
+
+        $is_this_user_admin = User::find($user->id)->isAdmin();
+        if(!$is_this_user_admin){
+            return response()->json([
+                'message' => 'You do not have permission to edit a problem'
+            ]);
+        }
+        
+        $problem = Problem::find($request->id);
+
+        if (!$problem) {
+            return response()->json([
+                'message' => 'Problem not found'
+            ], 404);
+        }
+
+        if ($problem->isPublished()) {
+            return response()->json([
+                'message' => 'You cannot edit a problem that is published'
+            ], 401);
+        }
+
+        $problem->title = $request->title;
+        $problem->description = $request->description;
+        $problem->xp = $request->xp;
+        $problem->answer = $request->answer;
+        $problem->note = $request->note;
+        $problem->tags = $request->tags;
+        $problem->save();
+
+        return response()->json([
+            'message' => 'Problem edited successfully',
+            'problem' => $problem
+        ]);
+    }
+
+
+
+    /**
      * * Get single contest
      * 
      * @param $contest_id
