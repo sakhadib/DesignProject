@@ -13,6 +13,7 @@ import {
     Container,
     Collapse,
     Chip,
+    CircularProgress,
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 import { useTheme, useMediaQuery } from '@mui/material';
@@ -35,6 +36,7 @@ const BlogLayout = () => {
     const [expanded, setExpanded] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
     const postsPerPage = 10;
 
     // Check if user is signed in
@@ -52,6 +54,8 @@ const BlogLayout = () => {
                 setBlogPosts(sortedPosts);
             } catch (error) {
                 console.error('Error fetching blog posts:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -225,66 +229,74 @@ const BlogLayout = () => {
                     </Box>
                 </Box>
 
-                <Grid container spacing={4}>
-                    {currentPosts.map((post) => (
-                        <Grid item xs={12} md={6} key={post.id}>
-                            <Card
-                                onClick={() => handleBlogClick(post.id)}
-                                sx={{
-                                    cursor: 'pointer',
-                                    backgroundColor: '#f9f9f9',
-                                }}
-                            >
-                                <CardContent>
-                                    <Typography variant="subtitle2" color="textSecondary">
-                                        {post.category}
-                                    </Typography>
-                                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                        {post.title}
-                                    </Typography>
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkMath]}
-                                        rehypePlugins={[rehypeKatex]}
-                                    >
-                                        {post.content.slice(0, 100) + '...'}
-                                    </ReactMarkdown>
-                                    <Box display="flex" alignItems="center" mt={2}>
-                                        <Avatar
-                                            alt={post.user.username}
-                                            sx={{
-                                                bgcolor: getBackgroundColor(post.user.username.charAt(0)),
-                                                color: 'white',
-                                            }}
-                                        >
-                                            {post.user.username.charAt(0).toUpperCase()}
-                                        </Avatar>
-                                        <Box ml={2}>
-                                            <Typography variant="body2">{post.user.username}</Typography>
-                                            <Typography variant="caption" color="textSecondary">
-                                                {new Date(post.created_at).toLocaleDateString()}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-
-                                    <Typography variant="body2" mt={2}>
-                                        Comments: {post.comments_count} | Votes: {post.votes_count}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-
-                {totalPages > 1 && (
-                    <Box display="flex" justifyContent="center" mt={4}>
-                        <Pagination
-                            count={totalPages}
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            color="primary"
-                            shape="rounded"
-                        />
+                {loading ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+                        <CircularProgress />
                     </Box>
+                ) : (
+                    <>
+                        <Grid container spacing={4}>
+                            {currentPosts.map((post) => (
+                                <Grid item xs={12} md={6} key={post.id}>
+                                    <Card
+                                        onClick={() => handleBlogClick(post.id)}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            backgroundColor: '#f9f9f9',
+                                        }}
+                                    >
+                                        <CardContent>
+                                            <Typography variant="subtitle2" color="textSecondary">
+                                                {post.category}
+                                            </Typography>
+                                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                                {post.title}
+                                            </Typography>
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkMath]}
+                                                rehypePlugins={[rehypeKatex]}
+                                            >
+                                                {post.content.slice(0, 100) + '...'}
+                                            </ReactMarkdown>
+                                            <Box display="flex" alignItems="center" mt={2}>
+                                                <Avatar
+                                                    alt={post.user.username}
+                                                    sx={{
+                                                        bgcolor: getBackgroundColor(post.user.username.charAt(0)),
+                                                        color: 'white',
+                                                    }}
+                                                >
+                                                    {post.user.username.charAt(0).toUpperCase()}
+                                                </Avatar>
+                                                <Box ml={2}>
+                                                    <Typography variant="body2">{post.user.username}</Typography>
+                                                    <Typography variant="caption" color="textSecondary">
+                                                        {new Date(post.created_at).toLocaleDateString()}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+
+                                            <Typography variant="body2" mt={2}>
+                                                Comments: {post.comments_count} | Votes: {post.votes_count}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+
+                        {totalPages > 1 && (
+                            <Box display="flex" justifyContent="center" mt={4}>
+                                <Pagination
+                                    count={totalPages}
+                                    page={currentPage}
+                                    onChange={handlePageChange}
+                                    color="primary"
+                                    shape="rounded"
+                                />
+                            </Box>
+                        )}
+                    </>
                 )}
             </Box>
         </Container>

@@ -205,7 +205,7 @@ function Header() {
         </Box>
 
         <Box display={{ xs: 'flex', md: 'none' }}>
-          <IconButton color="inherit" edge="end" onClick={handleDrawerToggle}>
+          <IconButton color="#1E2761" edge="end" onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
         </Box>
