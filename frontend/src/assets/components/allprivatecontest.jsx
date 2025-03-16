@@ -21,6 +21,8 @@ import axios from '../../api';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom"; // Import for navigation
 
+
+
 // Function to get user's local timezone
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -56,13 +58,14 @@ export default function AllContests() {
 
   const navigate = useNavigate(); // Initialize useNavigate
 
+
   // Fetching upcoming contests
   const fetchUpcomingContests = async () => {
     setIsLoadingUpcoming(true);
     try {
-      const response = await axios.get("/contest/all/upcoming");
+      const response = await axios.get(`/contest/upcoming/private/user/${currentUserId}`);
       setUpcomingContests(response.data.contests);
-      setActiveContest(response.data.contests.find((contest) => contest.status === "active") || null);
+      // setActiveContest(response.data.contests.find((contest) => contest.status === "active") || null);
     } catch (error) {
       console.error("Error fetching upcoming contests:", error);
     }
@@ -106,7 +109,7 @@ export default function AllContests() {
   };
 
   useEffect(() => {
-    
+    getCurrentUserId();
     fetchUpcomingContests();
     fetchPreviousContests(); 
     fetchActiveContests();
