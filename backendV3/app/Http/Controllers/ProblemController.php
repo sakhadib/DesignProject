@@ -91,10 +91,6 @@ class ProblemController extends Controller
 
         $savable_tags = json_encode($tags);
 
-        return response()->json([
-            'tags' => $savable_tags
-        ]);
-
         $problem->title = $request->title;
         $problem->description = $request->description;
         $problem->xp = $request->xp;

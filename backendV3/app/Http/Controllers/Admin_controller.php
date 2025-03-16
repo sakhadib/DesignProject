@@ -312,7 +312,8 @@ class Admin_controller extends Controller
             'xp' => 'required|integer',
             'answer' => 'required|string',
             'note' => 'nullable|string',
-            'tags' => 'nullable|string'
+            'target' => 'nullable|string',
+            'topics' => 'nullable|string'
         ]);
 
         $user = auth()->user();
@@ -338,12 +339,25 @@ class Admin_controller extends Controller
             ], 401);
         }
 
+        if($request->has('topics') && $request->topics != null && $request->has('target') && $request->target != null){
+            $topics = explode(',', $request->topics);
+            $topics = explode(',', $request->topics);
+            $tags = [
+                'target' => $request->target,
+                'topics' => $topics
+            ];
+
+            $savable_tags = json_encode($tags);
+
+            $problem->tags = $savable_tags;
+        }
+
         $problem->title = $request->title;
         $problem->description = $request->description;
         $problem->xp = $request->xp;
         $problem->answer = $request->answer;
         $problem->note = $request->note;
-        $problem->tags = $request->tags;
+
         $problem->save();
 
         return response()->json([

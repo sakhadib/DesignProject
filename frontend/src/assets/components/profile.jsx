@@ -1,12 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import {
   Avatar,
   Box,
   Card,
-  CardContent,
   Container,
   Divider,
   Grid,
@@ -18,7 +17,6 @@ import {
 } from "@mui/material"
 import {
   Person as PersonIcon,
-  Email as EmailIcon,
   DateRange as DateRangeIcon,
   Article as ArticleIcon,
   Code as CodeIcon,
@@ -28,7 +26,8 @@ import {
 import axios from "../../api"
 
 const ProfilePage = () => {
-  const { id: userId } = useParams()  // Get the userId from the URL
+  const { id: userId } = useParams() // Get the userId from the URL
+  const navigate = useNavigate() // For navigation
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -41,28 +40,27 @@ const ProfilePage = () => {
       try {
         const response = await axios.get(`/user/details/${userId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-  
+        })
+
         if (response.status === 200) {
-          setUserData(response.data);  // Assuming data is directly in the response
-          setLoading(false);
+          setUserData(response.data) // Assuming data is directly in the response
+          setLoading(false)
         } else {
-          throw new Error("Failed to fetch user data");
+          throw new Error("Failed to fetch user data")
         }
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        setError(err.message)
+        setLoading(false)
       }
-    };
-  
-    if (userId) {
-      fetchUserData();
-    } else {
-      setError("User ID is missing in the URL");
-      setLoading(false);
     }
-  }, [userId]);
-  
+
+    if (userId) {
+      fetchUserData()
+    } else {
+      setError("User ID is missing in the URL")
+      setLoading(false)
+    }
+  }, [userId])
 
   if (error) {
     return (
@@ -86,7 +84,7 @@ const ProfilePage = () => {
     })
   }
 
-  const StatCard = ({ icon, title, value, color }) => (
+  const StatCard = ({ icon, title, value, color, onClick }) => (
     <Card
       elevation={2}
       sx={{
@@ -98,10 +96,13 @@ const ProfilePage = () => {
         p: 2,
         borderTop: `4px solid ${color}`,
         transition: "transform 0.2s",
+        cursor: "pointer",
         "&:hover": {
           transform: "translateY(-5px)",
+          boxShadow: theme.shadows[8],
         },
       }}
+      onClick={onClick}
     >
       <Box sx={{ color: color, mb: 1 }}>{icon}</Box>
       <Typography variant="h5" component="div" sx={{ fontWeight: "bold" }}>
@@ -122,11 +123,9 @@ const ProfilePage = () => {
           borderRadius: 2,
           overflow: "hidden",
           position: "relative",
-          boxShadow: "none"
+          boxShadow: "none",
         }}
       >
-       
-
         <Grid container spacing={4}>
           {/* Profile Info Section */}
           <Grid item xs={12}>
@@ -160,11 +159,9 @@ const ProfilePage = () => {
               </Avatar>
 
               <Box sx={{ mt: isMobile ? 2 : 4 }}>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color:"#2A52BE" }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color: "#2A52BE" }}>
                   {loading ? <Skeleton width={200} /> : userData?.user?.username || "User"}
                 </Typography>
-
-             
 
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                   <DateRangeIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
@@ -182,50 +179,53 @@ const ProfilePage = () => {
 
           {/* Stats Section */}
           <Grid item xs={12}>
-  <Grid container spacing={2} sx={{ mt: 4, mb: 4 }}> {/* Added margin top and bottom */}
-    <Grid item xs={12} sm={6} md={3}>
-      <StatCard
-        icon={<ArticleIcon fontSize="large" />}
-        title="Blogs"
-        value={userData?.blog_count}
-        color={theme.palette.primary.main}
-      />
-    </Grid>
+            <Grid container spacing={2} sx={{ mt: 4, mb: 4 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  icon={<ArticleIcon fontSize="large" />}
+                  title="Blogs"
+                  value={userData?.blog_count}
+                  color={theme.palette.primary.main}
+                  onClick={() => navigate(`/user/blog/all/${userId}`)}
+                />
+              </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <StatCard
-        icon={<CodeIcon fontSize="large" />}
-        title="Problems"
-        value={userData?.problem_count}
-        color={theme.palette.secondary.main}
-      />
-    </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  icon={<CodeIcon fontSize="large" />}
+                  title="Problems"
+                  value={userData?.problem_count}
+                  color={theme.palette.secondary.main}
+                  onClick={() => navigate(`/problem/create/${userId}`)}
+                />
+              </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <StatCard
-        icon={<EmojiEventsIcon fontSize="large" />}
-        title="Contests Created"
-        value={userData?.created_contest_count}
-        color="#FF9800" // Orange
-      />
-    </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  icon={<EmojiEventsIcon fontSize="large" />}
+                  title="Contests Created"
+                  value={userData?.created_contest_count}
+                  color="#FF9800" // Orange
+                  onClick={() => navigate("/contest/private/all")}
+                />
+              </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <StatCard
-        icon={<AssignmentTurnedInIcon fontSize="large" />}
-        title="Problems Attempted"
-        value={userData?.attempted_problems_count}
-        color="#4CAF50" // Green
-      />
-    </Grid>
-  </Grid>
-</Grid>
-
-
-        </Grid> 
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  icon={<AssignmentTurnedInIcon fontSize="large" />}
+                  title="Problems Attempted"
+                  value={userData?.attempted_problems_count}
+                  color="#4CAF50" // Green
+                  onClick={() => navigate(`/user/submission/all/${userId}`)}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </Paper>
     </Container>
   )
 }
 
 export default ProfilePage
+
