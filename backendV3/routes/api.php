@@ -266,8 +266,8 @@ Route::group(
 
 
     // New
-    Route::get('upcoming/private/user/{user_id}', [ContestGetController::class, 'userUpcomingRegisteredPrivateContest']);
-    Route::get('past/private/user/{user_id}', [ContestGetController::class, 'userPastRegisteredPrivateContest']);
+    Route::get('upcoming/private/my', [ContestGetController::class, 'userUpcomingRegisteredPrivateContest']);
+    Route::get('past/private/my', [ContestGetController::class, 'userPastRegisteredPrivateContest']);
 
 });
 
