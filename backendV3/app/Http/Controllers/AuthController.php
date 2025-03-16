@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         $rating = new Rating();
         $rating->user_id = $user->id;
-        $rating->rating = 1500;
+        $rating->rating_change = 1500;
         $rating->save();
 
         return response()->json([
