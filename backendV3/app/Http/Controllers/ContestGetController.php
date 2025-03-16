@@ -356,6 +356,7 @@ class ContestGetController extends Controller
         foreach($contests as $contest){
             $contest->contest = Contest::where('id', $contest->contest_id)
                                        ->with('user:id,username')
+                                       ->withCount(['participants', 'problems'])
                                        ->first();
 
             if($contest->contest->start_time > now() && $contest->contest->type == 'user-created'){
@@ -391,6 +392,7 @@ class ContestGetController extends Controller
         foreach($contests as $contest){
             $contest->contest = Contest::where('id', $contest->contest_id)
                                        ->with('user:id,username')
+                                       ->withCount(['participants', 'problems'])
                                        ->first();
 
             if($contest->contest->end_time < now() && $contest->contest->type == 'user-created'){
