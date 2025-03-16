@@ -88,7 +88,7 @@ function App() {
         <Route path="/user/blog/all/:id" element={<BlogallUser />} />
         <Route path="/user/submission/all/:id" element={<UserSuball />} />
 
-        <Route path="/contest/private" element={<PrivateContest />} />
+        <Route path="/contest/private/all" element={<PrivateContest />} />
       </Routes>
     </Router>
     </ThemeProvider>
