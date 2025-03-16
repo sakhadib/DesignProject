@@ -17,21 +17,25 @@ export default function AboutSection() {
       name: "Tahsin Islam",
       role: "Software Engineering student",
       description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
-      image: tahsin
+      image: tahsin,
+      github: "https://github.com/tahsinrayshad"
     },
     {
       name: "Takia Farhin",
       role: "Software Engineering student",
       description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
-      image: takia
+      image: takia,
+      github: "https://github.com/Takia03"
     },
     {
       name: "Sakhawat Adib",
       role: "Software Engineering student",
       description: "A Software Engineering student of Islamic University of Technology and developer of MathXplorer.",
-      image: shuvro
+      image: shuvro,
+      github: "https://github.com/sakhadib"
     }
   ];
+  
 
   const values = [
     {
@@ -221,37 +225,43 @@ export default function AboutSection() {
 
       {/* Team Section */}
       <Box>
-        <Typography variant="h3" component="h2" sx={{ color: '#0D1E4C', mb: 4, textAlign: 'center' }}>
-          MAKERS OF MathXplorer
-        </Typography>
-        <Grid container spacing={4}>
-          {teamMembers.map((member, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Card sx={{
-            p: 3,
-            borderRadius: 2,
-            boxShadow: 3,
-            transition: 'transform 0.3s ease',
-            '&:hover': {
-              transform: 'scale(1.05)',
-              boxShadow: 6,
-            },
-            bgcolor: 'grey.50'
-          }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Avatar
-                    src={member.image}
-                    sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
-                  />
-                  <Typography variant="h6" sx={{ mb: 1 }}>{member.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">{member.role}</Typography>
-                  <Typography variant="body2" sx={{ mt: 2 }}>{member.description}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+  <Typography variant="h3" component="h2" sx={{ color: '#0D1E4C', mb: 4, textAlign: 'center' }}>
+    MAKERS OF MathXplorer
+  </Typography>
+  <Grid container spacing={4}>
+    {teamMembers.map((member, index) => (
+      <Grid item xs={12} md={4} key={index}>
+        <a href={member.github} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+          <Card
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 3,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                boxShadow: 6,
+              },
+              bgcolor: 'grey.50',
+              cursor: "pointer",
+            }}
+          >
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Avatar
+                src={member.image}
+                sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
+              />
+              <Typography variant="h6" sx={{ mb: 1 }}>{member.name}</Typography>
+              <Typography variant="body2" color="text.secondary">{member.role}</Typography>
+              <Typography variant="body2" sx={{ mt: 2 }}>{member.description}</Typography>
+            </CardContent>
+          </Card>
+        </a>
+      </Grid>
+    ))}
+  </Grid>
+</Box>
+
     </Container>
   );
 }

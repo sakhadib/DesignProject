@@ -76,7 +76,7 @@ function Header() {
   }, []);
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ width: 250 }}>
+    <Box onClick={handleDrawerToggle} sx={{ width: 250 , fontFamily: "'Poppins', sans-serif" }}>
       <List>
         <ListItem component={Link} to="/home">
           <ListItemText primary="Home" />
