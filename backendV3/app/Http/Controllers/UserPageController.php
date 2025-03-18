@@ -184,6 +184,7 @@ class UserPageController extends Controller
             ], 404);
         }
         $blogs = Blog::where('user_id', $user_id)
+                 ->withCount(['comments', 'votes', 'upVotes', 'downVotes'])
                  ->orderBy('created_at', 'desc')
                  ->take(5)
                  ->get(['id', 'title', 'created_at']);
@@ -202,6 +203,7 @@ class UserPageController extends Controller
             ], 404);
         }
         $blogs = Blog::where('user_id', $user_id)
+                 ->withCount(['comments', 'votes', 'upVotes', 'downVotes'])
                  ->orderBy('created_at', 'desc')
                  ->get(['id', 'title', 'content', 'category', 'created_at']);
         return response()->json([
