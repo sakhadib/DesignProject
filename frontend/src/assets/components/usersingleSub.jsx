@@ -20,6 +20,10 @@ import {
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import api from "../../api";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 export default function SubmissionsTable() {
   const { id: problemId } = useParams();
@@ -108,14 +112,15 @@ export default function SubmissionsTable() {
 
         <Card sx={{ mb: 3 }}>
           <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-              <Typography variant="h6">Problem: {submissionData.problem.title}</Typography>
+            {/* <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+              <Typography variant="h6">Problem: <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                                  {submissionData.problem.title}</ReactMarkdown></Typography>
               <Box>
                 {submissionData.problem.tags?.topics?.map((topic) => (
                   <Chip key={topic} label={topic} size="small" sx={{ ml: 1, bgcolor: "#007FFF", color: "white" }} />
                 ))}
               </Box>
-            </Box>
+            </Box> */}
 
             <Box sx={{ display: "flex", gap: 4 }}>
               <Box>

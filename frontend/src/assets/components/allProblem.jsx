@@ -235,8 +235,7 @@ const AllProblems = () => {
                   >
                     <TableCell>{problem.id}</TableCell>
                     <TableCell><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                    {problem.title}
-                                                                        </ReactMarkdown></TableCell>
+                    {problem.title}</ReactMarkdown></TableCell>
                     <TableCell>{problem.xp}</TableCell>
                     <TableCell>{problem.tags.target}</TableCell>
                     <TableCell>{problem.tags.topics.join(", ")}</TableCell>

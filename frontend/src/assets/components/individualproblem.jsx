@@ -324,7 +324,7 @@ const ProblemView = () => {
     <Card sx={{ flex: 1 }}>
     <CardContent>
     <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-    {problem.title}
+    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{problem.title}</ReactMarkdown>
     </Typography>
     <Typography variant="subtitle1" gutterBottom>
     <Box component="span" sx={{ display: "inline-flex", gap: 1, ml: 1 }}>
@@ -465,7 +465,7 @@ const ProblemView = () => {
       }}
       >
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2, marginTop: "100px" }}>
-      {problem.title}
+      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{problem.title}</ReactMarkdown>
       </Typography>
       
       <Box sx={{ display: "flex", gap: 1, mb: 4 }}>
