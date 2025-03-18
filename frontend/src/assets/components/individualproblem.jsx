@@ -21,15 +21,44 @@ import {
 } from "@mui/material"
 import SendIcon from "@mui/icons-material/Send"
 import CloseIcon from "@mui/icons-material/Close"
-import StarIcon from "@mui/icons-material/Star"
 import ReactMarkdown from "react-markdown"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
 import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
 import api from "../../api" // Using your existing API setup with authentication
 import { useParams } from "react-router-dom"
-import { BlockMath, InlineMath } from "react-katex";
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { BlockMath, InlineMath } from "react-katex"
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome"
+// Add this import at the top of the file, after the other imports
+// import '@fontsource/poppins';
+
+// Add this after imports
+const poppinsFontStyle = `
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+`
+
+const typingAnimationStyle = `
+  .typing-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #666;
+    margin: 0 3px;
+    animation: typing-animation 1.4s infinite ease-in-out both;
+  }
+  
+  @keyframes typing-animation {
+    0%, 80%, 100% { 
+      transform: scale(0.6);
+      opacity: 0.6;
+    }
+    40% { 
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+`
 
 // For development/testing when API is not available
 const MOCK_CHAT_HISTORY = [
@@ -54,6 +83,7 @@ const ProblemView = () => {
   const [loadingChat, setLoadingChat] = useState(false)
   const [apiError, setApiError] = useState(false)
   const chatContainerRef = useRef(null)
+  const [isTyping, setIsTyping] = useState(false)
   
   const handleOpen = async () => {
     setOpen(true)
@@ -180,10 +210,14 @@ const ProblemView = () => {
     const sentMessage = message
     setMessage("")
     
+    // Show typing indicator
+    setIsTyping(true)
+    
     try {
       if (apiError) {
         // If we know the API is not working, simulate a response
         setTimeout(() => {
+          setIsTyping(false) // Hide typing indicator
           setChatMessages((prev) => [
             ...prev,
             {
@@ -205,6 +239,9 @@ const ProblemView = () => {
       
       console.log("API response:", response.data)
       
+      // Hide typing indicator
+      setIsTyping(false)
+      
       // Add bot response to chat
       setChatMessages((prev) => [
         ...prev,
@@ -215,6 +252,9 @@ const ProblemView = () => {
       ])
     } catch (error) {
       console.error("Error sending message:", error)
+      
+      // Hide typing indicator
+      setIsTyping(false)
       
       // If it's a network error, mark API as unavailable for future requests
       if (error.message?.includes("Network Error") || error.code === "ERR_NETWORK") {
@@ -265,11 +305,13 @@ const ProblemView = () => {
   
   return (
     <Box sx={{ padding: 3, maxWidth: 1200, margin: "0 auto" }}>
+    <style>{poppinsFontStyle}</style>
+    <style>{typingAnimationStyle}</style>
     {/* Main content */}
     <Box sx={{ display: "flex", gap: 3, marginTop: "100px", marginBottom: "60px" }}>
     <Card sx={{ flex: 1 }}>
     <CardContent>
-    <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold"}}>
+    <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
     {problem.title}
     </Typography>
     <Typography variant="subtitle1" gutterBottom>
@@ -298,6 +340,7 @@ const ProblemView = () => {
       children={problem.description}
       remarkPlugins={[remarkMath]}
       rehypePlugins={[rehypeKatex]}
+      sx={{ fontSize: "16px", fontFamily: "'Poppins', sans-serif" }}
       ></ReactMarkdown>
       
       <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
@@ -320,7 +363,6 @@ const ProblemView = () => {
       >
       {isSubmitting ? <CircularProgress size={24} sx={{ color: "white" }} /> : "SUBMIT"}
       </Button>
-      
       </Box>
       </CardContent>
       </Card>
@@ -376,11 +418,9 @@ const ProblemView = () => {
       </div>
       </Button>
       
-      
       {/* Chat Dialog */}
-      <Dialog fullScreen open={open} onClose={handleClose} >
+      <Dialog fullScreen open={open} onClose={handleClose}>
       <Box sx={{ height: "100%", width: "100vw", display: "flex", overflow: "hidden" }}>
-      
       {/* Close Icon Button */}
       <IconButton
       onClick={handleClose}
@@ -409,7 +449,7 @@ const ProblemView = () => {
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        overflowY: "auto", 
+        overflowY: "auto",
       }}
       >
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2, marginTop: "100px" }}>
@@ -436,11 +476,18 @@ const ProblemView = () => {
         Problem Statement
         </Typography>
         
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, fontFamily: "'Poppins', sans-serif" }}> 
         <ReactMarkdown
         children={problem.description}
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
+        components={{
+          p: ({ children }) => (
+            <p style={{ fontSize: "16px", fontFamily: "'Poppins', sans-serif", lineHeight: "1.5" }}>
+            {children}
+            </p>
+          ),
+        }}
         />
         </Box>
         
@@ -483,6 +530,7 @@ const ProblemView = () => {
           height: "100vh",
           color: "#ffffff",
         }}
+        className="chat-interface"
         >
         <Typography
         variant="h4"
@@ -497,9 +545,7 @@ const ProblemView = () => {
         }}
         >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Box sx={{ display: "flex", mr: 1 }}>
-        
-        </Box>
+        <Box sx={{ display: "flex", mr: 1 }}></Box>
         Welcome to ChatBot
         </Box>
         <Box>
@@ -540,8 +586,6 @@ const ProblemView = () => {
           mb: 4, // Ensure no extra margin at the bottom
         }}
         >
-        
-        
         {loadingChat ? (
           <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
           <CircularProgress sx={{ color: "white" }} />
@@ -570,20 +614,57 @@ const ProblemView = () => {
               borderRadius: msg.sender === "user" ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
             }}
             >
-            <ReactMarkdown 
+            <ReactMarkdown
             components={{
               math: ({ value }) => <BlockMath math={value} />,
               inlineMath: ({ value }) => <InlineMath math={value} />,
+              p: ({ children }) => (
+                <p
+                style={{
+                  fontSize: "16px",
+                  fontFamily: "'Poppins', sans-serif",
+                  lineHeight: "1.5",
+                }}
+                >
+                {children}
+                </p>
+              ),
             }}
             remarkPlugins={[remarkMath]}
             rehypePlugins={[rehypeKatex]}
             >
             {msg.message}
             </ReactMarkdown>
-            
             </Paper>
             </Box>
           ))
+        )}
+        {isTyping && (
+          <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            width: "100%",
+            mb: 1,
+          }}
+          >
+          <Paper
+          elevation={1}
+          sx={{
+            p: 2,
+            bgcolor: "rgba(230, 240, 255, 0.9)",
+            color: "#333",
+            maxWidth: "80%",
+            borderRadius: "20px 20px 20px 5px",
+          }}
+          >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <span className="typing-dot" style={{ animationDelay: "0s" }}></span>
+          <span className="typing-dot" style={{ animationDelay: "0.2s" }}></span>
+          <span className="typing-dot" style={{ animationDelay: "0.4s" }}></span>
+          </Box>
+          </Paper>
+          </Box>
         )}
         </Box>
         
@@ -610,6 +691,10 @@ const ProblemView = () => {
         sx={{
           "& .MuiOutlinedInput-root": {
             bgcolor: "rgba(255, 255, 255, 0.9)",
+            fontFamily: "'Poppins', sans-serif",
+          },
+          "& .MuiOutlinedInput-input": {
+            fontFamily: "'Poppins', sans-serif",
           },
         }}
         />
@@ -644,9 +729,14 @@ const ProblemView = () => {
         </Button>
         </Box>
         </Modal>
-        </Box>
-      )
-    }
-    
-    export default ProblemView
-    
+        <style jsx global>{`
+        .chat-interface {
+          font-family: 'Poppins', sans-serif;
+        }
+      `}</style>
+          </Box>
+        )
+      }
+      
+      export default ProblemView
+      
