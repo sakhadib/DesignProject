@@ -18,6 +18,10 @@ import {
   Box,
   Collapse,
 } from "@mui/material";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api";
@@ -25,7 +29,7 @@ import axios from "../../api";
 const AllProblems = () => {
   const [problems, setProblems] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("id");
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,9 +123,10 @@ const AllProblems = () => {
   const TableHeader = ({ label, property }) => (
     <TableCell
       sx={{
-        backgroundColor: "#1565C0",
-        color: "white",
+        backgroundColor: "white",
+        color: "#1565C0",
         fontWeight: "bold",
+        borderBottom: "2px solid #1565C0",
       }}
     >
       <TableSortLabel
@@ -130,9 +135,9 @@ const AllProblems = () => {
         onClick={handleRequestSort(property)}
         sx={{
           "& .MuiTableSortLabel-icon": {
-            color: "white !important",
+            color: "#1565C0 !important",
           },
-          color: "white !important",
+          color: "#1565C0 !important",
         }}
       >
         {label}
@@ -143,7 +148,7 @@ const AllProblems = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h4">All Problems</Typography>
+        <Typography variant="h4" sx={{fontWeight:"bold"}}>All Problems</Typography>
         <TextField
           variant="outlined"
           size="small"
@@ -229,7 +234,8 @@ const AllProblems = () => {
                     }}
                   >
                     <TableCell>{problem.id}</TableCell>
-                    <TableCell>{problem.title}</TableCell>
+                    <TableCell><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                    {problem.title}</ReactMarkdown></TableCell>
                     <TableCell>{problem.xp}</TableCell>
                     <TableCell>{problem.tags.target}</TableCell>
                     <TableCell>{problem.tags.topics.join(", ")}</TableCell>
@@ -239,7 +245,7 @@ const AllProblems = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={filteredAndSortedProblems.length}
           rowsPerPage={rowsPerPage}
@@ -247,19 +253,19 @@ const AllProblems = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
-            backgroundColor: "#1565C0",
-            color: "white",
+            backgroundColor: "white",
+            color: "#1565C0",
             "& .MuiTablePagination-actions": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-select": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-selectIcon": {
-              color: "white",
+              color: "#1565C0",
             },
           }}
         />

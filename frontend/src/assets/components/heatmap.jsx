@@ -6,10 +6,6 @@ import { Box, Typography, Container as MuiContainer, Skeleton, Paper } from "@mu
 import { styled } from "@mui/material/styles"
 import axios from "../../api"
 
-// Removed the Container styled component and will use MuiContainer directly
-// with proper styling
-
-// Changed from Box to Paper for better background control
 const HeatmapWrapper = styled(Paper)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -20,14 +16,12 @@ const HeatmapWrapper = styled(Paper)(({ theme }) => ({
   width: "100%",
   marginLeft: 0,
   marginRight: 0,
-  // Explicitly set the width to stretch across the container
   boxSizing: "border-box",
 }))
 
 const MonthsRow = styled(Box)({
   display: "grid",
-  gridTemplateColumns: "repeat(53, 20px)",
-  marginLeft: "50px",
+  gridTemplateColumns: "repeat(54, 1fr)",
   marginBottom: "8px",
   gap: "1px",
 })
@@ -35,14 +29,14 @@ const MonthsRow = styled(Box)({
 const MonthLabel = styled(Typography)({
   fontSize: "12px",
   color: "#57606a",
-  textAlign: "left",
+  textAlign: "center",
   fontWeight: 500,
 })
 
 const GridContainer = styled(Box)({
   display: "flex",
   gap: "8px",
-  width: "100%", // Ensure this container takes full width
+  width: "100%",
 })
 
 const DayLabels = styled(Box)({
@@ -63,7 +57,7 @@ const DayLabel = styled(Typography)({
 
 const Grid = styled(Box)({
   display: "grid",
-  gridTemplateColumns: "repeat(53, 20px)",
+  gridTemplateColumns: "repeat(54, 20px)",
   gridTemplateRows: "repeat(7, 20px)",
   gap: "1px",
 })
@@ -121,8 +115,7 @@ const TooltipBox = styled(Box)({
   },
 })
 
-// These are the first letters of each day
-const DAYS = ["S", "M", "T", "W", "T", "F", "S"]
+const DAYS = [""]
 
 export default function SubmissionHeatmap() {
   const { id } = useParams()
@@ -156,10 +149,6 @@ export default function SubmissionHeatmap() {
     const startDate = new Date(endDate)
     startDate.setFullYear(endDate.getFullYear() - 1)
 
-    // Adjust to start from the beginning of the week
-    const dayOfWeek = startDate.getDay()
-    startDate.setDate(startDate.getDate() - dayOfWeek)
-
     const days = []
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split("T")[0]
@@ -175,14 +164,14 @@ export default function SubmissionHeatmap() {
 
   const getCalendarWeeks = () => {
     const days = generateCalendarData()
-    const weeks = Array(53)
+    const weeks = Array(7)
       .fill()
-      .map(() => Array(7).fill(null))
+      .map(() => Array(54).fill(null))
 
     days.forEach((day, index) => {
-      const weekIndex = Math.floor(index / 7)
-      const dayIndex = day.date.getDay()
-      if (weekIndex < 53) {
+      const weekIndex = day.date.getDay()
+      const dayIndex = Math.floor(index / 7)
+      if (dayIndex < 54) {
         weeks[weekIndex][dayIndex] = day
       }
     })
@@ -197,12 +186,12 @@ export default function SubmissionHeatmap() {
 
     days.forEach((day, index) => {
       const month = day.date.getMonth()
-      const weekIndex = Math.floor(index / 7)
+      const dayIndex = Math.floor(index / 7)
 
       if (month !== currentMonth) {
         months.push({
           name: day.date.toLocaleString("default", { month: "short" }),
-          position: weekIndex,
+          position: dayIndex,
         })
         currentMonth = month
       }
@@ -216,9 +205,9 @@ export default function SubmissionHeatmap() {
 
     const rect = event.currentTarget.getBoundingClientRect()
     const text = `${day.count} submission${day.count !== 1 ? "s" : ""} on ${day.date.toLocaleDateString("en-US", {
-      weekday: "long",
+      weekday: "short",
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     })}`
 
@@ -284,7 +273,6 @@ export default function SubmissionHeatmap() {
           Submission Activity
         </Typography>
 
-        {/* Changed to Paper component with elevation for better background control */}
         <HeatmapWrapper elevation={0}>
           <MonthsRow>
             {monthPositions.map((month, index) => (
@@ -292,7 +280,7 @@ export default function SubmissionHeatmap() {
                 key={index}
                 style={{
                   gridColumnStart: month.position + 1,
-                  gridColumnEnd: index < monthPositions.length - 1 ? monthPositions[index + 1].position + 1 : 54,
+                  gridColumnEnd: index < monthPositions.length - 1 ? monthPositions[index + 1].position + 1 : 55,
                 }}
               >
                 {month.name}
