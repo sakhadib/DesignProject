@@ -28,6 +28,7 @@ import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
 import api from "../../api" // Using your existing API setup with authentication
 import { useParams } from "react-router-dom"
 import { BlockMath, InlineMath } from "react-katex"
+import { useNavigate } from "react-router-dom";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome"
 // Add this import at the top of the file, after the other imports
 // import '@fontsource/poppins';
@@ -84,6 +85,8 @@ const ProblemView = () => {
   const [apiError, setApiError] = useState(false)
   const chatContainerRef = useRef(null)
   const [isTyping, setIsTyping] = useState(false)
+
+  const navigate = useNavigate();
   
   const handleOpen = async () => {
     setOpen(true)
@@ -92,7 +95,10 @@ const ProblemView = () => {
   
   const handleClose = () => setOpen(false)
   const handleModalOpen = () => setModalOpen(true)
-  const handleModalClose = () => setModalOpen(false)
+  const handleModalClose = async () => {
+    setModalOpen(false)
+    navigate(`/problem/all`) // Refresh the page
+  }
   
   const fetchChatHistory = async () => {
     if (!problemId) return
@@ -183,6 +189,8 @@ const ProblemView = () => {
       setModalContent(`${message}\nXP Received: ${xp_recieved}`)
       handleModalOpen()
       setAnswer("")
+      
+
     } catch (error) {
       console.error("Error submitting answer:", error)
       
@@ -295,7 +303,11 @@ const ProblemView = () => {
   // Check if user is authenticated
   const isAuthenticated = !!localStorage.getItem("token")
   
-  if (!problem) return <Typography>Loading problem {problemId}...</Typography>
+  if (!problem) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress />
+    </Box>
+  )
   
   const statistics = [
     { label: "XP", value: problem.xp },
@@ -312,7 +324,7 @@ const ProblemView = () => {
     <Card sx={{ flex: 1 }}>
     <CardContent>
     <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-    {problem.title}
+    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{problem.title}</ReactMarkdown>
     </Typography>
     <Typography variant="subtitle1" gutterBottom>
     <Box component="span" sx={{ display: "inline-flex", gap: 1, ml: 1 }}>
@@ -453,7 +465,7 @@ const ProblemView = () => {
       }}
       >
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2, marginTop: "100px" }}>
-      {problem.title}
+      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{problem.title}</ReactMarkdown>
       </Typography>
       
       <Box sx={{ display: "flex", gap: 1, mb: 4 }}>

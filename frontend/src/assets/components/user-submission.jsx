@@ -21,6 +21,10 @@ import {
   alpha,
   Container,
 } from "@mui/material"
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const UserSubmissions = () => {
   const [problems, setProblems] = useState([])
@@ -137,7 +141,7 @@ const UserSubmissions = () => {
                           "&:hover": { textDecoration: "underline" },
                         }}
                       >
-                        {problem.title}
+                        <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{problem.title}</ReactMarkdown>
                       </Typography>
                     </TableCell>
                     <TableCell>

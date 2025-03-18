@@ -34,6 +34,7 @@ const ContestProblemView = () => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false); // Track submit loading state
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -60,6 +61,9 @@ const ContestProblemView = () => {
       console.error("⚠️ Problem ID is missing. Cannot submit.");
       return;
     }
+
+    setSubmitLoading(true); // Disable submit button when submitting
+
     const payload = {
       problem_id: id,
       answer: answer.trim(),
@@ -67,6 +71,7 @@ const ContestProblemView = () => {
     if (contest_id) {
       payload.contest_id = contest_id;
     }
+
     try {
       const response = await axios.post("/problem/submit/", payload, {
         headers: { "Content-Type": "application/json" },
@@ -77,6 +82,8 @@ const ContestProblemView = () => {
     } catch (error) {
       setModalMessage("Failed to submit answer. Please try again.");
       setModalOpen(true);
+    } finally {
+      setSubmitLoading(false); // Re-enable submit button when done
     }
   };
 
@@ -117,20 +124,22 @@ const ContestProblemView = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>{problem.title}</Typography>
+          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', fontFamily: 'Poppins, sans-serif' }}>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                                {problem.title}</ReactMarkdown></Typography>
             <Box sx={{ mb: 3 }}>
               {problem.tags?.topics?.map((topic, index) => (
                 <Chip key={index} label={topic} sx={{ mr: 1, mb: 1, backgroundColor: '#1976d2', color: 'white', borderRadius: '16px' }} />
               ))}
             </Box>
             <Typography variant="h5" component="h2" gutterBottom>Problem Statement</Typography>
-            <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-               </ReactMarkdown>
+            <ReactMarkdown  children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
             <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>Submit Answer</Typography>
             <form onSubmit={handleSubmit}>
               <TextField fullWidth multiline rows={4} placeholder="Enter your answer here..." value={answer} onChange={(e) => setAnswer(e.target.value)} variant="outlined" sx={{ mb: 2 }} />
-              <Button type="submit" variant="contained" fullWidth sx={{ py: 1.5, backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }}>SUBMIT</Button>
+              <Button type="submit" variant="contained" fullWidth sx={{ py: 1.5, backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }} disabled={submitLoading}>
+                {submitLoading ? 'Submitting...' : 'SUBMIT'}
+              </Button>
             </form>
           </Paper>
         </Grid>

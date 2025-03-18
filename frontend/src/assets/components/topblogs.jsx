@@ -152,7 +152,7 @@ const BlogSection = () => {
                     textAlign: 'center'
                 }}
             >
-                Latest Blogs
+                Top Blogs
             </Typography>
 
             <Grid container spacing={4} alignItems="center">

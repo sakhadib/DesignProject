@@ -23,6 +23,10 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { format } from "date-fns"
 import axios from "../../api"
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 export default function SubmissionTable() {
   const { id } = useParams()
@@ -113,7 +117,8 @@ export default function SubmissionTable() {
               id={`panel-${problemData.problem_id}-header`}
             >
               <Box sx={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "space-between" }}>
-                <Typography sx={{ fontWeight: "medium", flexGrow: 1 }}>{problemData.problem.title}</Typography>
+                <Typography sx={{ fontWeight: "medium", flexGrow: 1 }}><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                {problemData.problem.title}</ReactMarkdown></Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Chip
                     label={`${problemData.submissions.length} submission${problemData.submissions.length !== 1 ? "s" : ""}`}

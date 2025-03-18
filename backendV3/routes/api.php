@@ -163,7 +163,7 @@ Route::group([
 
     Route::get('contest/single/{contest_id}', [Admin_controller::class, 'getSingleContest']);
 
-    Route::get('contest/problem/{problem_id}', [Admin_controller::class, 'getContestProblems']);
+    Route::get('contest/problem/{contest_id}', [Admin_controller::class, 'getContestProblems']);
 
     Route::get('user/all', [Admin_controller::class, 'getUserList']);
     Route::get('user/single/{id}', [Admin_controller::class, 'getUser']);
@@ -391,7 +391,6 @@ Route::group(
     ], routes: function ($router) {
         Route::post('send', [ChatController::class, 'send']);
         Route::get('history/{problem_id}', [ChatController::class, 'getHistory']);
-        Route::get('export/{problem_id}', [ChatController::class, 'exportChat']);
     }
 );
 

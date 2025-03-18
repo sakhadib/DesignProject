@@ -20,6 +20,8 @@ import {
     DialogContent,
     DialogTitle,
     CircularProgress,
+    Menu,
+    MenuItem,
 } from '@mui/material';
 import {
     ThumbUp as ThumbUpIcon,
@@ -27,8 +29,9 @@ import {
     Comment as CommentIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
+    MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../../api';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
@@ -39,6 +42,7 @@ import { deepPurple, deepOrange, blue, green, red } from '@mui/material/colors';
 
 const BlogPostPage = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [blogPost, setBlogPost] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [localComments, setLocalComments] = useState([]);
@@ -50,6 +54,31 @@ const BlogPostPage = () => {
     const [currentUser, setUsername] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+
+    // Add these new handlers for the kebab menu
+    const handleTopMenuOpen = (event) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleTopMenuClose = () => {
+        setMenuAnchorEl(null);
+    };
+
+    const handleEditBlog = () => {
+        navigate(`/blog/edit/${id}`);
+        handleTopMenuClose();
+    };
+
+    const handleDeleteBlog = async () => {
+        try {
+            await axios.post('/blog/delete/', { id: id });
+            navigate('/blog/all');
+        } catch (error) {
+            console.error('Error deleting blog:', error);
+        }
+        handleTopMenuClose();
+    };
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -221,29 +250,52 @@ const BlogPostPage = () => {
                     </Box>
                 ) : (
                     <>
-                        <Typography variant="h2" component="h1" gutterBottom sx={{ fontFamily: 'Raleway, Arial, sans-serif', fontWeight: 700, fontSize: '70px' }}>
-                            {blogPost.title}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="h2" component="h1" gutterBottom sx={{ fontFamily: 'Raleway, Arial, sans-serif', fontWeight: 700, fontSize: '40px' }}>
+                                {blogPost.title}
+                            </Typography>
+                            
+                            {currentUser === blogPost.user.username && (
+                                <>
+                                    <IconButton onClick={handleTopMenuOpen}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={menuAnchorEl}
+                                        open={Boolean(menuAnchorEl)}
+                                        onClose={handleTopMenuClose}
+                                    >
+                                        <MenuItem onClick={handleEditBlog}>Edit</MenuItem>
+                                        <MenuItem onClick={handleDeleteBlog}>Delete</MenuItem>
+                                    </Menu>
+                                </>
+                            )}
+                        </Box>
+
+                        {/* Rest of your existing JSX remains the same... */}
+                        
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Avatar
-                                    sx={{
-                                        mr: 2,
-                                        bgcolor: getBackgroundColor(blogPost.user.username.charAt(0)),
-                                        color: 'white',
-                                    }}
+                                sx={{
+                                    mr: 2,
+                                    bgcolor: getBackgroundColor(blogPost.user.username.charAt(0)),
+                                    color: 'white',
+                                }}
                                 >
                                     {blogPost.author?.[0]?.toUpperCase()}
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="subtitle1">{blogPost.author}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {new Date(blogPost.created_at).toLocaleDateString()}
-                                    </Typography>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, cursor: 'pointer', color: "#0F766E" }} onClick={() => navigate(`/profile/${blogPost.user.id}`)}>{blogPost.author}</Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {new Date(blogPost.created_at).toLocaleDateString()}
+                                        </Typography>
                                 </Box>
                             </Box>
                             <Chip label={`Category: ${blogPost.category}`} />
                         </Box>
+                        
+                        {/* Rest of the component remains unchanged */}
                         <Box sx={{ fontSize: '20px', mb: 4 }}>
                             <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                 {blogPost.content}
@@ -298,28 +350,29 @@ const BlogPostPage = () => {
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            secondary={
+                                            primary={
                                                 <Box display="flex" alignItems="center" justifyContent="space-between">
-                                                    <Typography variant="body2" color="text.primary">
+                                                    <Typography variant="body2" color="#283891" sx={{ fontWeight: 600, cursor: 'pointer' }} onClick={() => navigate(`/profile/${blogPost.user.id}`)}>
                                                         {comment.user?.username || 'Unknown User'}
                                                     </Typography>
                                                     {comment.user?.username === currentUser && (
-                                                        <Box>
-                                                            <IconButton onClick={(e) => handleMenuOpen(e, comment)} color="default">
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                            <IconButton onClick={() => handleDeleteComment(comment.id)} color="error">
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </Box>
+                                                    <Box>
+                                                        <IconButton onClick={(e) => handleMenuOpen(e, comment)} color="default">
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => handleDeleteComment(comment.id)} color="error">
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Box>
                                                     )}
                                                 </Box>
                                             }
-                                            primary={
+                                            secondary={
                                                 <>
-                                                    <Typography component="span" variant="body2" color="text.primary">
+                                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                                         {comment.content}
-                                                    </Typography>
+                                                    </ReactMarkdown>
+                                                    
                                                     <br />
                                                     <Typography variant="caption" color="text.secondary">
                                                         {new Date(comment.created_at).toLocaleString()}

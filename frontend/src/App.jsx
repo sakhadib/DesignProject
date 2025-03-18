@@ -27,6 +27,7 @@ import BlogallUser from './assets/pages/userAllBlog';
 import UserSuball from './assets/pages/userAllSubmission';
 import PrivateContest from './assets/pages/AllPrivateContests';
 import UserCreatProb from './assets/pages/UserCreateProb';
+import Blogedit from './assets/pages/BlogEdit';
 import UserLeader from './assets/pages/UserLeaderBoard';
 
 
@@ -52,7 +53,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/signup" />} />
+        <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/blog/all" element={<BlogHome />} />
@@ -92,6 +93,7 @@ function App() {
         <Route path="/problem/create/:id" element={<UserCreatProb />} />
         <Route path="/contest/private/all" element={<PrivateContest />} />
         <Route path="/user/leaderboard" element={<UserLeader />} />
+        <Route path="/blog/edit/:id" element={<Blogedit />} />
       </Routes>
     </Router>
     </ThemeProvider>
