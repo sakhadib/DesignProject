@@ -20,7 +20,10 @@ import {
 import ReactMarkdown from "react-markdown"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
-import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
+import "katex/dist/katex.min.css" 
+
+
+
 
 const ContestProblemView = () => {
   const { id, contest_id } = useParams();
@@ -168,6 +171,8 @@ const ContestProblemView = () => {
           <Button variant="contained" onClick={handleCloseModal}>OK</Button>
         </Box>
       </Modal>
+
+
     </Container>
   );
 };
