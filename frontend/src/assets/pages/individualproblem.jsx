@@ -27,6 +27,8 @@ function IndividualProblemDisplay() {
             backgroundColor: "#fff",
             alignItems: "start",
             marginLeft: "100px",
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: "16px",
           }}
         >
           <SingleSub />

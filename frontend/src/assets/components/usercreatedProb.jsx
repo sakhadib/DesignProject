@@ -1,7 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import axios from "../../api"
+import { useTheme } from "@mui/material/styles"
+
 import {
+  Container,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +24,7 @@ import {
   InputLabel,
   CircularProgress,
   Pagination,
+  Button,
 } from "@mui/material"
 
 export default function ProblemTable() {
@@ -29,6 +35,8 @@ export default function ProblemTable() {
   const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const rowsPerPage = 10
+  const theme = useTheme()
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,22 +46,18 @@ export default function ProblemTable() {
         // Extract user ID from URL
         const urlParams = new URLSearchParams(window.location.search)
         const userId = urlParams.get("userId") || window.location.pathname.split("/").pop()
+        
 
         if (!userId) {
           throw new Error("User ID not found in URL")
         }
 
-        const response = await fetch(`http://127.0.0.1:8000/api/user/problem/all/${userId}`)
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-
-        const result = await response.json()
-        setData(result)
-        setLoading(false)
+        // Fetch problems using Axios
+        const { data: responseData } = await axios.get(`/user/problem/all/${userId}`)
+        setData(responseData)
       } catch (err) {
-        setError(err.message)
+        setError(err.response?.data?.message || "Failed to fetch data")
+      } finally {
         setLoading(false)
       }
     }
@@ -94,25 +98,35 @@ export default function ProblemTable() {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Typography color="error" variant="h6">
-          Error: {error}
-        </Typography>
-        <Typography>Please check if the API server is running at http://127.0.0.1:8000</Typography>
-      </Box>
+      <Container maxWidth="lg">
+        <Box sx={{ p: 3 }}>
+          <Typography color="error" variant="h6">
+            Error: {error}
+          </Typography>
+          <Typography>Please check if the API server is running correctly.</Typography>
+        </Box>
+      </Container>
     )
   }
 
   return (
-    <Box sx={{ width: "100%", p: 2 }}>
+    <Container maxWidth="lg">
       {data?.user && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            Problems for {data.user.username}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            User ID: {data.user.id} | Email: {data.user.email}
-          </Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+          <Box>
+            <Typography variant="h5" gutterBottom>
+              Problems for {data.user.username}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              User ID: {data.user.id} | Email: {data.user.email}
+            </Typography>
+          </Box>
+          {/* Add Problem Button (Top Right) */}
+          <Link to="/problem/add" style={{ textDecoration: "none" }}>
+            <Button variant="contained" color="primary">
+              Add Problem
+            </Button>
+          </Link>
         </Box>
       )}
 
@@ -150,8 +164,8 @@ export default function ProblemTable() {
 
       <TableContainer component={Paper} sx={{ mb: 2 }}>
         <Table sx={{ minWidth: 650 }} aria-label="problems table">
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+          <TableHead >
+            <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
               <TableCell>ID</TableCell>
               <TableCell>Title</TableCell>
               <TableCell>Target</TableCell>
@@ -167,23 +181,7 @@ export default function ProblemTable() {
                   <TableCell>{problem.id}</TableCell>
                   <TableCell>{problem.title}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={problem.tags.target}
-                      color={
-                        problem.tags.target === "v0"
-                          ? "primary"
-                          : problem.tags.target === "v1"
-                            ? "secondary"
-                            : problem.tags.target === "v2"
-                              ? "success"
-                              : problem.tags.target === "v3"
-                                ? "info"
-                                : problem.tags.target === "v4"
-                                  ? "warning"
-                                  : "error"
-                      }
-                      size="small"
-                    />
+                    <Chip label={problem.tags.target} color="primary" size="small" />
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -226,7 +224,6 @@ export default function ProblemTable() {
           color="primary"
         />
       </Box>
-    </Box>
+    </Container>
   )
 }
-
