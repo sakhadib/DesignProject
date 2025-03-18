@@ -121,7 +121,7 @@ const ContestProblemView = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
+          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', fontFamily: 'Poppins, sans-serif' }}>
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                 {problem.title}</ReactMarkdown></Typography>
             <Box sx={{ mb: 3 }}>
@@ -130,7 +130,7 @@ const ContestProblemView = () => {
               ))}
             </Box>
             <Typography variant="h5" component="h2" gutterBottom>Problem Statement</Typography>
-            <ReactMarkdown children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
+            <ReactMarkdown  children={problem.description} remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} />
             <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>Submit Answer</Typography>
             <form onSubmit={handleSubmit}>
               <TextField fullWidth multiline rows={4} placeholder="Enter your answer here..." value={answer} onChange={(e) => setAnswer(e.target.value)} variant="outlined" sx={{ mb: 2 }} />
