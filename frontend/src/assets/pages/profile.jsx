@@ -7,6 +7,7 @@ import Graph from "../components/ratingGraph"
 import HeatMap from "../components/heatmap"
 import UserBlog from "../components/user-blog"
 import UserSub from "../components/user-submission"
+import LatestSubmit from "../components/latestSubmit"
 
 function UserPage() {
   return (
@@ -17,6 +18,7 @@ function UserPage() {
         <HeatMap />
         <UserBlog />
         <UserSub />
+        <LatestSubmit />
       <Footer />
     </Box>
   )

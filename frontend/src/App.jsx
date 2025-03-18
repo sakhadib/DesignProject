@@ -27,6 +27,7 @@ import BlogallUser from './assets/pages/userAllBlog';
 import UserSuball from './assets/pages/userAllSubmission';
 import PrivateContest from './assets/pages/AllPrivateContests';
 import UserCreatProb from './assets/pages/UserCreateProb';
+import UserLeader from './assets/pages/UserLeaderBoard';
 
 
 // Import at the top of your theme configuration file or app entry file
@@ -90,6 +91,7 @@ function App() {
         <Route path="/user/submission/all/:id" element={<UserSuball />} />
         <Route path="/problem/create/:id" element={<UserCreatProb />} />
         <Route path="/contest/private/all" element={<PrivateContest />} />
+        <Route path="/user/leaderboard" element={<UserLeader />} />
       </Routes>
     </Router>
     </ThemeProvider>
