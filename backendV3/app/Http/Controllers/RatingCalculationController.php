@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\ContestParticipant;
 use App\Models\Submission;
 use App\Models\Rating;
-use App\Models\User;
+use App\Models\Contest;
+use App\Models\ContestProblem;
+use App\Models\Problem;
 
 class RatingCalculationController extends Controller
 {
@@ -46,6 +48,13 @@ class RatingCalculationController extends Controller
         }
 
         $contestId = $request->contest_id;
+        $contest = Contest::find($contestId);
+        if(!$contest) {
+            return response()->json(['message' => 'Contest not found.'], 404);
+        }
+
+        // Publish problems for the contest
+        $this->publishProblems($contestId);
 
         // Fetch all participants for the contest
         $participants = ContestParticipant::where('contest_id', $contestId)
@@ -161,5 +170,17 @@ class RatingCalculationController extends Controller
         }
 
         return response()->json(['message' => 'Ratings updated successfully.']);
+    }
+
+
+
+    private function publishProblems($contestId)
+    {
+        $problem_ids = ContestProblem::where('contest_id', $contestId)->pluck('problem_id');
+        $problems = Problem::whereIn('id', $problem_ids)->get();
+
+        foreach ($problems as $problem) {
+            $problem->publish();
+        }
     }
 }
