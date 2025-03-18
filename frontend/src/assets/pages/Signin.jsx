@@ -6,7 +6,6 @@ import Login from "../components/signin";
 function Signin() {
     return (
         <div>
-            <Header />
             <Login />
         </div>
     );
