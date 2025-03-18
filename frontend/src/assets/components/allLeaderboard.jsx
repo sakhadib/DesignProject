@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import axios from "axios"
 import {
   Table,
   TableBody,
@@ -17,6 +16,7 @@ import {
   Grid,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import axios from "../../api";
 
 const StyledTableCell = styled(TableCell)(({ theme, tableType }) => ({
   "&.MuiTableCell-head": {
@@ -56,7 +56,7 @@ export default function Leaderboard() {
     const fetchLeaderboard = async () => {
       try {
         setLoading(true)
-        const response = await axios.get("http://127.0.0.1:8000/api/rating/total")
+        const response = await axios.get("/rating/total")
 
         const allUsers = response.data.users
 

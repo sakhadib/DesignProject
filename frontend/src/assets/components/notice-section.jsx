@@ -7,13 +7,13 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import axios from 'axios';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import megaphoneVideo from '../img/megaphone.mp4';
+import axios from "../../api";
 
 const NoticeCard = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -61,7 +61,7 @@ const NoticeSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/notice/top')
+    axios.get('/notice/top')
       .then(response => {
         setNotices(response.data.notices);
       })

@@ -22,10 +22,10 @@ import {
   Grid,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import axios from "../../api";
 
 
 // Function to get user's local timezone
@@ -91,7 +91,7 @@ export default function EditContest() {
         const token = localStorage.getItem("token");
         if (!token) return;
     
-        const response = await axios.get(`http://127.0.0.1:8000/api/contest/single/${id}`, {
+        const response = await axios.get(`/contest/single/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
     
@@ -116,7 +116,7 @@ export default function EditContest() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get(`http://127.0.0.1:8000/api/contest/my/problems/${id}`, {
+        const response = await axios.get(`/contest/my/problems/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -168,7 +168,7 @@ export default function EditContest() {
   
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/contest/edit/",
+        "/contest/edit/",
         {
           contest_id: id,
           title: formData.title,
@@ -198,7 +198,7 @@ export default function EditContest() {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/problem/all/", {
+      const response = await axios.get("/problem/all/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllProblems(response.data.problems || []);
@@ -222,7 +222,7 @@ export default function EditContest() {
     try {
       // First, add the problem to the contest
       await axios.post(
-        "http://127.0.0.1:8000/api/contest/problem/add",
+        "/contest/problem/add",
         {
           contest_id: id,
           problem_id: problem.id,
@@ -254,7 +254,7 @@ export default function EditContest() {
 
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/contest/problem/remove",
+        "/contest/problem/remove",
         {
           contest_id: id,  // Contest ID from useParams()
           problem_id: problemId,  // Problem ID to be removed

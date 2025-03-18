@@ -13,11 +13,11 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import axios from 'axios'; // Import axios
 import api from '../../api'; // Import your configured axios instance
 import logo from '../img/tp_mini@4x.png'; // Import the new logo image
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import axios from "../../api";
 
 const NavLink = styled(Link)( {
   fontFamily: "'Poppins', sans-serif",
@@ -52,7 +52,7 @@ function Header() {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
-      axios.post('http://127.0.0.1:8000/api/auth/me/', {}, {
+      axios.post('/auth/me/', {}, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(response => {

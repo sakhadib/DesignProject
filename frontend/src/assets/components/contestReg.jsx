@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, Checkbox, FormControlLabel, FormControl, Button, Container } from "@mui/material";
-import axios from "axios"; // Assuming axios is already set up
 import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import axios from "../../api";
 
 
 const ContestRegistration = () => {
@@ -18,7 +18,7 @@ const ContestRegistration = () => {
   useEffect(() => {
     const fetchContestDetails = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/contest/single/${id}`);
+        const response = await axios.get(`/contest/single/${id}`);
         setContest(response.data?.contest[0]); // Store contest details
       } catch (err) {
         console.error("Error fetching contest:", err);
@@ -38,7 +38,7 @@ const ContestRegistration = () => {
 
     try {
       const token = localStorage.getItem("token"); // Get the token from localStorage
-      const response = await axios.post("http://127.0.0.1:8000/api/contest/join/", requestData, {
+      const response = await axios.post("/contest/join/", requestData, {
         headers: {
           Authorization: `Bearer ${token}`, // Send the token with the request
         },

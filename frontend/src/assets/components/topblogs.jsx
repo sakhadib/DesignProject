@@ -11,13 +11,13 @@ import {
     Stack
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { Link } from 'react-router-dom'; // Import Link component
 import megaphoneVideo from '../img/writing.mp4';
+import axios from "../../api";
 
 const ScrollContainer = styled(Box)({
     height: '400px',
@@ -72,7 +72,7 @@ const BlogSection = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/home/top/blogs')
+        axios.get('/home/top/blogs')
             .then(response => {
                 const filteredBlogs = response.data.blogs.filter(blog => blog !== null);
                 setBlogs(filteredBlogs);

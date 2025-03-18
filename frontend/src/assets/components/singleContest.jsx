@@ -1,5 +1,5 @@
 "use client"
-
+import React from "react"
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "../../api"
@@ -27,6 +27,28 @@ import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
 import { CircularProgress } from "@mui/material"
 
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log("Error caught:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please try again later.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
 
 const ContestPage = () => {
   const { id } = useParams()
@@ -239,12 +261,18 @@ const ContestPage = () => {
                             href={`/contest/${id}/problem/${problemData.problem_id}`}
                             style={{ textDecoration: "none", color: "#1976D2", fontWeight: "bold" }}
                           >
-                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                            {problemData.problem?.title || "N/A"}</ReactMarkdown>
+                            <ErrorBoundary>
+                              <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                                {typeof problemData.problem?.title === "string" ? problemData.problem?.title : "N/A"}
+                              </ReactMarkdown>
+                            </ErrorBoundary>
                           </a>
                         ) : (
-                          <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                                              <span style={{ color: "gray" }}>{problemData.problem?.title || "N/A"}</span></ReactMarkdown>
+                          <ErrorBoundary>
+                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                              {typeof problemData.problem?.title === "string" ? problemData.problem?.title : "N/A"}
+                            </ReactMarkdown>
+                          </ErrorBoundary>
                           
                         )}
                       </TableCell>
