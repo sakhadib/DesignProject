@@ -364,6 +364,7 @@ Route::group(
         Route::get('blog/all/{user_id}', [UserPageController::class, 'allBlogsByUser']);
 
         Route::get('problem/all/{user_id}', [UserPageController::class, 'userSubmittedProblems']);
+        Route::get('problem/mini/{user_id}', [UserPageController::class, 'lastFiveProblemsByUser']);
 
         Route::get('contest/mini/{user_id}', [UserPageController::class, 'lastFiveContestByUser']);
         Route::get('contest/all/{user_id}', [UserPageController::class, 'allContestByUser']);

@@ -31,12 +31,16 @@ class UserPageController extends Controller
                               ->distinct()
                               ->count();
 
+        $rating = Rating::where('user_id', $user_id)
+                        ->sum('rating_change');
+
         return response()->json([
             'user' => $user,
             'blog_count' => $blog_count,
             'problem_count' => $problem_count,
             'created_contest_count' => $created_contest_count,
-            'attempted_problems_count' => $attempted_problems_count
+            'attempted_problems_count' => $attempted_problems_count,
+            'rating' => $rating
         ], 200);
     }
 
@@ -184,6 +188,7 @@ class UserPageController extends Controller
             ], 404);
         }
         $blogs = Blog::where('user_id', $user_id)
+                 ->withCount(['comments', 'votes', 'upVotes', 'downVotes'])
                  ->orderBy('created_at', 'desc')
                  ->take(5)
                  ->get(['id', 'title', 'created_at']);
@@ -202,12 +207,32 @@ class UserPageController extends Controller
             ], 404);
         }
         $blogs = Blog::where('user_id', $user_id)
+                 ->withCount(['comments', 'votes', 'upVotes', 'downVotes'])
                  ->orderBy('created_at', 'desc')
                  ->get(['id', 'title', 'content', 'category', 'created_at']);
         return response()->json([
             'user' => $user,
             'blogs' => $blogs
         ], 200);
+    }
+
+    public function lastFiveProblemsByUser($user_id)
+    {
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response()->json([
+                'error' => 'User not found'
+            ], 404);
+        }
+        $problems = Problem::where('user_id', $user_id)
+                           ->orderBy('created_at', 'desc')
+                           ->take(5)
+                           ->get(['id', 'title', 'tags', 'status']);
+        return response()->json([
+            'user' => $user,
+            'problems' => $problems
+        ], 200);
+
     }
 
     public function userSubmittedProblems($user_id){
