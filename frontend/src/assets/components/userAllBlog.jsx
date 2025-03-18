@@ -223,7 +223,7 @@ const UserBlogsPage = () => {
 
                     {/* Stats */}
                     <Typography variant="body2" color="text.secondary">
-                      Comments: {blog.comments_count || 4} | Votes: {blog.votes_count || 0}
+                      Comments: {blog.comments_count} | Votes: {blog.votes_count}
                     </Typography>
                   </CardContent>
                 </CardActionArea>

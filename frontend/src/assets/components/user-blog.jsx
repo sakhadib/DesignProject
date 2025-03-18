@@ -131,7 +131,7 @@ const UserBlogs = () => {
 
                       <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-start" }}>
                         <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
-                          Comments: 4 | Votes: 0
+                          Comments: {blog.comments_count} | Votes: {blog.votes_count}
                         </Typography>
                       </CardActions>
                     </Card>
