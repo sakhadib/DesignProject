@@ -50,7 +50,7 @@ export default function AddProblem() {
       }
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/problem/create/",
+        "/problem/create/",
         requestBody,
         {
           headers: {

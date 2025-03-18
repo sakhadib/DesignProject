@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, Container, Grid } from '@mui/material';
 import { Person, EmojiEvents, Functions } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import axios from 'axios'; // Import axios to handle HTTP requests
+import axios from "../../api";
 
 const StyledIcon = styled(Box)(({ theme }) => ({
   '& .MuiSvgIcon-root': {
@@ -89,7 +89,7 @@ const CountSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/common/count');
+        const response = await axios.get('/common/count');
         setCounts({
           userCount: response.data.user_count,
           publicContestCount: response.data.public_contest_count,

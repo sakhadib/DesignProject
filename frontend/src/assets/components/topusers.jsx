@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Crown } from 'lucide-react';
 import { Avatar, Box, Card, Typography, Container, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import axios from 'axios';
 import megaphoneVideo from '../img/ranking.mp4'; // Video file
+import axios from "../../api";
 
 // Styled Components
 const PodiumCard = styled(Card)(({ theme }) => ({
@@ -54,7 +54,7 @@ const LeaderboardPodium = () => {
 
   // Fetch leaderboard users from the API
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/home/top/users')
+    axios.get('/home/top/users')
       .then(response => {
         setUsers(response.data.users);
       })
