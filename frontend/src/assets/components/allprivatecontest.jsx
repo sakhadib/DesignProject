@@ -239,7 +239,7 @@ export default function AllContests() {
                   })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={12} align="center">
                     No contest available now
                   </TableCell>
                 </TableRow>
@@ -263,10 +263,10 @@ export default function AllContests() {
   
 
   return (
-    <Box sx={{ width: "95%", p: 3 }}>
+    <Box sx={{ width: "96%", p: 3 }}>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
-          <Box sx={{ width: "95%", p: 3 }}>
+        <Grid item xs={12} md={12}>
+          <Box sx={{ width: "97%", p: 3 }}>
             {/* Create Contest Button */}
                   <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
