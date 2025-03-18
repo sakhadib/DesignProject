@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import axios from "../../api"
+import axios from "axios"
 import {
   Table,
   TableBody,
@@ -13,14 +13,14 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Avatar,
   Container,
+  Grid,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(({ theme, tableType }) => ({
   "&.MuiTableCell-head": {
-    backgroundColor: "#6b21a8", // Deep purple color
+    backgroundColor: tableType === "contribution" ? "#0f766e" : "#6b21a8",
     color: theme.palette.common.white,
     fontWeight: "bold",
     fontSize: "1rem",
@@ -28,11 +28,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }))
 
-const StyledTableRow = styled(TableRow)(({ theme, rank }) => ({
+const StyledTableRow = styled(TableRow)(({ rank, tableType }) => ({
   position: "relative",
-  backgroundColor: rank <= 3 ? "rgba(107, 33, 168, 0.04)" : "transparent",
+  backgroundColor:
+    rank <= 3
+      ? tableType === "contribution"
+        ? "rgba(15, 118, 110, 0.04)"
+        : "rgba(107, 33, 168, 0.04)"
+      : "transparent",
   "&:hover": {
-    backgroundColor: "rgba(107, 33, 168, 0.08) !important",
+    backgroundColor:
+      tableType === "contribution" ? "rgba(15, 118, 110, 0.08) !important" : "rgba(107, 33, 168, 0.08) !important",
   },
   "& td": {
     padding: "16px 24px",
@@ -40,35 +46,9 @@ const StyledTableRow = styled(TableRow)(({ theme, rank }) => ({
   },
 }))
 
-const RankBadge = styled(Box)(({ rank }) => ({
-  width: "32px",
-  height: "32px",
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: "bold",
-  color: "#fff",
-  backgroundColor:
-    rank === 1
-      ? "#fbbf24" // Gold
-      : rank === 2
-        ? "#94a3b8" // Silver
-        : rank === 3
-          ? "#d97706" // Bronze
-          : "#6b21a8", // Default purple
-}))
-
-const StyledAvatar = styled(Avatar)(({ rank }) => ({
-  width: 40,
-  height: 40,
-  marginRight: 16,
-  border: rank <= 3 ? "2px solid" : "none",
-  borderColor: rank === 1 ? "#fbbf24" : rank === 2 ? "#94a3b8" : rank === 3 ? "#d97706" : "transparent",
-}))
-
 export default function Leaderboard() {
-  const [users, setUsers] = useState([])
+  const [ratingUsers, setRatingUsers] = useState([])
+  const [contributionUsers, setContributionUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -76,8 +56,23 @@ export default function Leaderboard() {
     const fetchLeaderboard = async () => {
       try {
         setLoading(true)
-        const response = await axios.get("/rating/total")
-        setUsers(response.data.users)
+        const response = await axios.get("http://127.0.0.1:8000/api/rating/total")
+
+        const allUsers = response.data.users
+
+        // Sort users by rating for the main leaderboard
+        const sortedRatingUsers = [...allUsers].sort((a, b) => b.rating - a.rating)
+
+        // Sort users by blog count (desc), then by createdAt (asc)
+        const sortedContributionUsers = [...allUsers].sort((a, b) => {
+          if ((<b className="blog_count"></b> || 0) !== (a.blog_count || 0)) {
+            return (b.blog_count || 0) - (a.blog_count || 0) // Higher blogCount first
+          }
+          return new Date(a.createdAt) - new Date(b.createdAt) // If blogCount is the same, older accounts first
+        })
+
+        setRatingUsers(sortedRatingUsers)
+        setContributionUsers(sortedContributionUsers)
         setLoading(false)
       } catch (err) {
         setError(err.message)
@@ -88,92 +83,95 @@ export default function Leaderboard() {
     fetchLeaderboard()
   }, [])
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
-        <CircularProgress sx={{ color: "#6b21a8" }} size={48} />
-      </Box>
-    )
-  }
-
-  if (error) {
-    return (
-      <Typography color="error" variant="h6" sx={{ textAlign: "center", my: 8 }}>
-        Error: {error}
-      </Typography>
-    )
-  }
-
   return (
     <Container maxWidth="xl" sx={{ py: 6 }}>
-      <Box sx={{ mb: 6, textAlign: "center" }}>
-        <Typography
-          variant="h3"
-          sx={{
-            color: "#6b21a8",
-            fontWeight: 700,
-            mb: 2,
-          }}
-        >
-          Global Leaderboard
-        </Typography>
-        <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
-          Top performers ranked by rating
-        </Typography>
-      </Box>
+      <Grid container spacing={4}>
+        {/* Global Leaderboard - 70% Width */}
+        <Grid item xs={12} md={8}> 
+          <Box sx={{ mb: 4, textAlign: "center" }}>
+            <Typography variant="h4" sx={{ color: "#6b21a8", fontWeight: 700, mb: 2 }}>
+              Global Leaderboard
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
+              Top performers ranked by rating
+            </Typography>
+          </Box>
 
-      <TableContainer
-        component={Paper}
-        sx={{
-          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-          borderRadius: 2,
-          overflow: "hidden",
-        }}
-      >
-        <Table sx={{ minWidth: 1000}}>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Rank</StyledTableCell>
-              <StyledTableCell>Player</StyledTableCell>
-              <StyledTableCell align="right">Rating</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user, index) => (
-              <StyledTableRow key={user.id} rank={index + 1}>
-                <TableCell>
-                  <RankBadge rank={index + 1}>{index + 1}</RankBadge>
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <StyledAvatar rank={index + 1}>{user.username.charAt(0).toUpperCase()}</StyledAvatar>
-                    <Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        {user.username}
-                      </Typography>
-                      {index < 3 && (
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                          {index === 0 ? "🏆 Champion" : index === 1 ? "🥈 Runner-up" : "🥉 Third Place"}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell
-                  align="right"
-                  sx={{
-                    fontWeight: 600,
-                    color: index < 3 ? "#6b21a8" : "inherit",
-                  }}
-                >
-                  {user.rating.toLocaleString()}
-                </TableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+              <CircularProgress sx={{ color: "#6b21a8" }} size={48} />
+            </Box>
+          ) : error ? (
+            <Typography color="error" variant="h6" sx={{ textAlign: "center", my: 8 }}>
+              Error: {error}
+            </Typography>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell tableType="rating">Rank</StyledTableCell>
+                    <StyledTableCell tableType="rating">User</StyledTableCell>
+                    <StyledTableCell align="right" tableType="rating">
+                      Rating
+                    </StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ratingUsers.map((user, index) => (
+                    <StyledTableRow key={user.id} rank={index + 1} tableType="rating">
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell align="right">{user.rating.toLocaleString()}</TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Grid>
+
+        {/* Contribution Leaderboard - 30% Width */}
+        <Grid item xs={12} md={4}> 
+          <Box sx={{ mb: 4, textAlign: "center" }}>
+            <Typography variant="h4" sx={{ color: "#0f766e", fontWeight: 700, mb: 2 }}>
+              Contribution Board
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
+              Top contributors ranked by blog count 
+            </Typography>
+          </Box>
+
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+              <CircularProgress sx={{ color: "#0f766e" }} size={48} />
+            </Box>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell tableType="contribution">Rank</StyledTableCell>
+                    <StyledTableCell tableType="contribution">Contributor</StyledTableCell>
+                    <StyledTableCell align="right" tableType="contribution">
+                      Blogs
+                    </StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {contributionUsers.map((user, index) => (
+                    <StyledTableRow key={user.id} rank={index + 1} tableType="contribution">
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell align="right">{user.blog_count || 0}</TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Grid>
+      </Grid>
     </Container>
   )
 }
-
