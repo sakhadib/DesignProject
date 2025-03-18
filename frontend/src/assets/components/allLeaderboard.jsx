@@ -64,11 +64,16 @@ export default function Leaderboard() {
         const sortedRatingUsers = [...allUsers].sort((a, b) => b.rating - a.rating)
 
         // Sort users by blog count (desc), then by createdAt (asc)
-        const sortedContributionUsers = [...allUsers].sort((a, b) => {
-          if ((<b className="blog_count"></b> || 0) !== (a.blog_count || 0)) {
-            return (b.blog_count || 0) - (a.blog_count || 0) // Higher blogCount first
+        const sortedContributionUsers = [...allUsers]
+        .filter(user => user.blog_count && user.blog_count > 0) // ✅ Remove blogCount === 0 users
+        .sort((a, b) => {
+          const blogA = Number(a.blog_count)
+          const blogB = Number(b.blog_count)
+
+          if (blogA !== blogB) {
+            return blogB - blogA // Higher blogCount first
           }
-          return new Date(a.createdAt) - new Date(b.createdAt) // If blogCount is the same, older accounts first
+          return new Date(a.createdAt) - new Date(b.createdAt) // Older accounts first if blogCount is tied
         })
 
         setRatingUsers(sortedRatingUsers)
