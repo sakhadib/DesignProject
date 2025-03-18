@@ -29,7 +29,7 @@ import axios from "../../api";
 const AllProblems = () => {
   const [problems, setProblems] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("id");
   const [searchTerm, setSearchTerm] = useState("");
@@ -245,7 +245,7 @@ const AllProblems = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={filteredAndSortedProblems.length}
           rowsPerPage={rowsPerPage}
