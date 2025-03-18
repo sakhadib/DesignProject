@@ -350,7 +350,7 @@ const BlogPostPage = () => {
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            secondary={
+                                            primary={
                                                 <Box display="flex" alignItems="center" justifyContent="space-between">
                                                     <Typography variant="body2" color="text.primary">
                                                         {comment.user?.username || 'Unknown User'}
@@ -367,7 +367,7 @@ const BlogPostPage = () => {
                                                     )}
                                                 </Box>
                                             }
-                                            primary={
+                                            secondary={
                                                 <>
                                                     <Typography component="span" variant="body2" color="text.primary">
                                                         {comment.content}

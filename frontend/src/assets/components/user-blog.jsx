@@ -113,6 +113,9 @@ const UserBlogs = () => {
                         >
                           {blog.title}
                         </Typography>
+                        <Typography variant="body1" color="text.primary" sx={{ mb: 2 }}>
+                          {blog.content?.substring(0, 50) }
+                        </Typography>
 
                         <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
                           <Avatar sx={{ bgcolor: "#673ab7", width: 36, height: 36, mr: 1.5 }}>

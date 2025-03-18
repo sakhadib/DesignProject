@@ -178,7 +178,7 @@ const UserBlogsPage = () => {
                   <CardContent sx={{ p: 3 }}>
                     {/* Category label */}
                     <Typography variant="body2" component="div" sx={{ mb: 0.5, color: "text.secondary" }}>
-                      Test
+                      {blog.category}
                     </Typography>
 
                     {/* Blog title */}
@@ -213,7 +213,7 @@ const UserBlogsPage = () => {
                       </Avatar>
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: "medium" }}>
-                          {user?.username || "sakhadib"}
+                          {user?.username}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {formatDate(blog.created_at)}
