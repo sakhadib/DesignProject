@@ -1,0 +1,836 @@
+
+--- Start of commit_info_mainrepo.txt ---
+'d14c5a2 - Add user rating to user details response in UserPageController (sakhadib, Tue Mar 18 14:51:18 2025 +0600)'
+'de6ec9a - Optimize user retrieval in LeaderBoardController to include blog count (sakhadib, Tue Mar 18 14:47:44 2025 +0600)'
+'f9e1840 - Add endpoint to retrieve last five problems submitted by a user (sakhadib, Tue Mar 18 14:44:19 2025 +0600)'
+'410a199 - Add comment and vote counts to user blog queries (sakhadib, Tue Mar 18 14:35:58 2025 +0600)'
+'10a4f9e - Add contest validation and publish problems in RatingCalculationController (sakhadib, Tue Mar 18 14:33:00 2025 +0600)'
+'dfcd137 - Add helper text for description input to guide equation formatting (tahsin11rayshad, Mon Mar 17 05:51:15 2025 +0600)'
+'3026ac1 - Refactor AddProblem component: update state management, replace 'tags' with 'topics', and enhance form submission logic (tahsin11rayshad, Mon Mar 17 03:56:10 2025 +0600)'
+'1df8eb3 - profile page bug fixed and modified. some link added (takiafarhin, Mon Mar 17 03:37:04 2025 +0600)'
+'f6a1420 - Remove unused tags response from editProblem method in ProblemController (sakhadib, Mon Mar 17 03:31:26 2025 +0600)'
+'1489ffd - Update editProblem method to replace 'tags' with 'topics' and 'target'; enhance problem editing functionality (sakhadib, Mon Mar 17 03:25:28 2025 +0600)'
+'f654299 - Update ProblemController to replace 'tags' with 'topics' and 'target'; enhance problem creation and editing functionality (sakhadib, Mon Mar 17 03:21:33 2025 +0600)'
+'4cd25e7 - Add editProblem endpoint and update problem route for admin editing functionality (sakhadib, Mon Mar 17 01:51:19 2025 +0600)'
+'7568d16 - Enhance UI consistency by applying Poppins font family across components; adjust footer layout and image dimensions (tahsin11rayshad, Mon Mar 17 01:49:17 2025 +0600)'
+'0a8b8cb - Refactor footer component for improved layout and styling; update video visibility threshold in blog section (tahsin11rayshad, Mon Mar 17 00:50:24 2025 +0600)'
+'6050743 - Add participant and problem count to user contests retrieval (sakhadib, Sun Mar 16 22:21:20 2025 +0600)'
+'70d7e2f - Fix contest retrieval by updating query to use correct contest ID field (sakhadib, Sun Mar 16 22:16:37 2025 +0600)'
+'dbec0e4 - Optimize contest retrieval by eager loading user data for upcoming and past contests (sakhadib, Sun Mar 16 22:15:07 2025 +0600)'
+'2226792 - all private contest (tahsin11rayshad, Sun Mar 16 21:39:41 2025 +0600)'
+'03f1fd5 - Refactor contest routes to use authenticated user context (sakhadib, Sun Mar 16 21:37:33 2025 +0600)'
+'291a50f - submission history title fixed (takiafarhin, Sun Mar 16 16:53:44 2025 +0600)'
+'d736853 - footer year dynamic (takiafarhin, Sun Mar 16 16:50:12 2025 +0600)'
+'b8177dd - team section updated with link to github (takiafarhin, Sun Mar 16 16:48:10 2025 +0600)'
+'a4a8aa0 - Add endpoints for upcoming and past registered private contests (sakhadib, Sun Mar 16 16:45:56 2025 +0600)'
+'b94b71b - all contest page (tahsin11rayshad, Sun Mar 16 16:32:45 2025 +0600)'
+'502de40 - user single submission table and userblog page issue solved (takiafarhin, Sun Mar 16 16:14:09 2025 +0600)'
+'4223424 - Update private contest routes and header links for improved navigation (tahsin11rayshad, Sun Mar 16 16:11:46 2025 +0600)'
+'eaea859 - Update myVote method to handle unauthenticated users and comment out unused user_id variable (sakhadib, Sun Mar 16 16:04:44 2025 +0600)'
+'e325992 - Add AllPrivateContests page and update header for private contest navigation (tahsin11rayshad, Sun Mar 16 16:02:19 2025 +0600)'
+'89d1cd1 - Fix rating assignment during signup to use rating_change instead of rating (sakhadib, Sun Mar 16 15:15:49 2025 +0600)'
+'4101008 - Add ranking video asset and enhance header and blog components with improved styling and user data fetching (tahsin11rayshad, Sun Mar 16 03:13:30 2025 +0600)'
+'c93bbac - Add initial rating assignment for new users during signup (sakhadib, Sun Mar 16 03:01:29 2025 +0600)'
+'5452c12 - Add myUnsolvedProblems method to ProblemController and route for fetching unsolved problems (sakhadib, Sun Mar 16 02:49:50 2025 +0600)'
+'d4e1d0b - Remove total upvotes assignment from TopThreeBlogByUpvotes and add commented-out method for viewing unsolved problems (sakhadib, Sun Mar 16 01:24:47 2025 +0600)'
+'637e552 - Add TopBlogs component and video asset; update TopUsers styling (tahsin11rayshad, Sun Mar 16 01:21:44 2025 +0600)'
+'0c91b46 - Refactor leaderboard functionality to calculate total ratings based on rating changes and update API route for total leaderboard (sakhadib, Sun Mar 16 01:17:32 2025 +0600)'
+'1e4e96b - Enhance leaderboard functionality by adding total rating calculation and update TopThreeBlogByUpvotes to include blog content (sakhadib, Sun Mar 16 01:12:54 2025 +0600)'
+'4d2288a - Add Top Blogs section and update dependencies; adjust IntersectionObserver threshold (tahsin11rayshad, Sat Mar 15 23:39:52 2025 +0600)'
+'4938047 - homepage (tahsin11rayshad, Sat Mar 15 21:47:41 2025 +0600)'
+'63e3f0a - submission of a single user count table added in individual prob page (takiafarhin, Sat Mar 15 20:47:17 2025 +0600)'
+'26dffe6 - chatbot complete (takiafarhin, Sat Mar 15 20:15:32 2025 +0600)'
+'d804a92 - notice section in home (tahsin11rayshad, Sat Mar 15 16:54:56 2025 +0600)'
+'a3617fd - chatbot (takiafarhin, Fri Mar 14 03:58:36 2025 +0600)'
+'2c594d5 - user all submission page done (takiafarhin, Fri Mar 14 01:29:21 2025 +0600)'
+'ecc054b - logo updated (tahsin11rayshad, Fri Mar 14 01:11:56 2025 +0600)'
+'f4b9ee0 - profile page updated (takiafarhin, Fri Mar 14 01:01:16 2025 +0600)'
+'b670c16 - profile page done (takiafarhin, Thu Mar 13 23:41:12 2025 +0600)'
+'a677e64 - Include category in the blog response for all blogs by user (sakhadib, Thu Mar 13 22:08:22 2025 +0600)'
+'039a1f0 - Include blog content in the response for all blogs by user (sakhadib, Thu Mar 13 21:11:13 2025 +0600)'
+'5f143f0 - pull (takiafarhin, Thu Mar 13 14:40:02 2025 +0600)'
+'20397f6 - private contest page (tahsin11rayshad, Thu Mar 13 14:33:30 2025 +0600)'
+'0dba5f4 - Add chat export functionality with PDF generation and update routes (sakhadib, Wed Mar 12 20:46:21 2025 +0600)'
+'e5fab79 - priofile page updated (takiafarhin, Wed Mar 12 19:52:58 2025 +0600)'
+'d05c8d5 - Implement ChatController with send and getHistory methods, and update Chat model for relationships (sakhadib, Wed Mar 12 17:53:04 2025 +0600)'
+'4a7a01f - Add Chat model and migration for chats table with user and problem references (sakhadib, Wed Mar 12 16:17:55 2025 +0600)'
+'91dc85f - heat map added (takiafarhin, Tue Mar 11 02:44:28 2025 +0600)'
+'b91ab5c - Update leaderboard API endpoint and enhance form labels in user contest creation (tahsin11rayshad, Tue Mar 11 01:27:16 2025 +0600)'
+'1e761dd - pull (takiafarhin, Mon Mar 10 16:20:14 2025 +0600)'
+'94eb65c - Add user statistics to UserPageController including blog, problem, contest counts, and attempted problems (sakhadib, Mon Mar 10 16:18:48 2025 +0600)'
+'fbe6a9e - My contest table in all contest page (tahsin11rayshad, Mon Mar 10 09:09:22 2025 +0600)'
+'f815e20 - logo added (sakhadib, Sun Mar 9 16:46:27 2025 +0600)'
+'6b7e044 - Add endpoints to HomePageController for top problems by submissions and top users by rating (sakhadib, Sun Mar 9 03:30:57 2025 +0600)'
+'dc1bd8e - Add HomePageController with endpoints for general counts, latest notices, and top blogs by upvotes (sakhadib, Sun Mar 9 03:15:52 2025 +0600)'
+'d7d03d6 - Add blog and contest retrieval endpoints to UserPageController (sakhadib, Sun Mar 9 02:54:37 2025 +0600)'
+'5955a1f - Add user-related endpoints to UserPageController and enhance Submission model with shortProblem relation (sakhadib, Sun Mar 9 02:30:26 2025 +0600)'
+'72d0804 - Add UserPageController with user details, rating, and submission endpoints (sakhadib, Sun Mar 9 02:30:19 2025 +0600)'
+'3e9406c - Add rating retrieval and history endpoints to RatingController (sakhadib, Sat Mar 8 15:24:18 2025 +0600)'
+'2cce02e - Add rating calculation functionality and related models (sakhadib, Sat Mar 8 14:58:05 2025 +0600)'
+'7753e9b - leaderboard button design fixed (takiafarhin, Sat Mar 8 01:56:24 2025 +0600)'
+'8823979 - added color to the leader board (takiafarhin, Sat Mar 8 01:48:11 2025 +0600)'
+'eb0a073 - Restrict problem management in contests to admin users (sakhadib, Sat Mar 8 01:18:16 2025 +0600)'
+'9b9f895 -  markdown issue solved (takiafarhin, Sat Mar 8 00:51:12 2025 +0600)'
+'c2a1a9f - my contest tab added in all contest page (tahsin11rayshad, Fri Mar 7 23:58:44 2025 +0600)'
+'8bcdf2e - Refactor myCreatedContests method to include user information in response and optimize query (sakhadib, Fri Mar 7 23:54:47 2025 +0600)'
+'f54823d - Rename 'creator' to 'user' in myCreatedContests response for clarity (sakhadib, Fri Mar 7 23:51:35 2025 +0600)'
+'59c8e16 - adding My Contest in all contest (tahsin11rayshad, Fri Mar 7 23:49:48 2025 +0600)'
+'127fdaa - Add endpoint to retrieve problems for user-created contests (sakhadib, Fri Mar 7 23:48:36 2025 +0600)'
+'ad89eec - private contest (tahsin11rayshad, Fri Mar 7 23:43:33 2025 +0600)'
+'fafef6e - Add functionality to manage problems in user-created contests (sakhadib, Fri Mar 7 23:42:36 2025 +0600)'
+'cf881d7 - Refactor LeaderBoardController to improve submission data retrieval and include submission count in responses (sakhadib, Fri Mar 7 13:20:45 2025 +0600)'
+'fa4fb35 - pull (takiafarhin, Fri Mar 7 11:30:48 2025 +0600)'
+'10813dd - leadership page done. (takiafarhin, Fri Mar 7 04:21:13 2025 +0600)'
+'d267de0 - private contest create and view done (tahsin11rayshad, Fri Mar 7 03:06:39 2025 +0600)'
+'8f48e85 - single problem api update (takiafarhin, Fri Mar 7 01:52:57 2025 +0600)'
+'9145f83 - Add totalPenaltyOfAnUser method to LeaderBoardController and update API routes (sakhadib, Fri Mar 7 01:17:26 2025 +0600)'
+'aca0dd7 - backend contest controller (tahsin11rayshad, Thu Mar 6 23:32:50 2025 +0600)'
+'e5b3937 - Add LeaderBoardController and RatingController; update API routes for leaderboard functionality (sakhadib, Thu Mar 6 20:51:50 2025 +0600)'
+'60ec7fc - Add VSCode settings and refactor AuthController and routes for signup (sakhadib, Thu Mar 6 19:42:42 2025 +0600)'
+'904d4cc - contest problem view done. (takiafarhin, Thu Feb 27 23:49:18 2025 +0600)'
+'62e846b - comntest page and contest registration page done (takiafarhin, Thu Feb 27 11:40:49 2025 +0600)'
+'a3a0567 - single contest page updated (takiafarhin, Wed Feb 26 21:49:15 2025 +0600)'
+'ebb74aa - updates (takiafarhin, Wed Feb 26 19:58:55 2025 +0600)'
+'06fb7a1 - added time in announcement (tahsin11rayshad, Mon Feb 24 12:39:42 2025 +0600)'
+'59cdbb7 - blogdisplay modified (tahsin11rayshad, Mon Feb 24 11:47:09 2025 +0600)'
+'1b45fc2 - refactor: enhance contest page layout and optimize performance (tahsin11rayshad, Mon Feb 24 00:22:37 2025 +0600)'
+'6ab253a - refactor: clean up contest components and improve API call handling (tahsin11rayshad, Sun Feb 23 23:32:18 2025 +0600)'
+'aa7573e - single contest page (takiafarhin, Sun Feb 23 19:36:43 2025 +0600)'
+'427cd10 -  flip timer  updated (takiafarhin, Sun Feb 23 19:16:58 2025 +0600)'
+'cd77ce5 -  flip timer (takiafarhin, Sun Feb 23 19:15:16 2025 +0600)'
+'696c747 - flip timer and single contest page (takiafarhin, Sun Feb 23 19:06:47 2025 +0600)'
+'cdc48aa - allcontest page modified (tahsin11rayshad, Sun Feb 23 18:57:36 2025 +0600)'
+'59b3842 - refactor: remove unnecessary condition from getSingleContest method in ContestGetController (sakhadib, Sun Feb 23 18:55:59 2025 +0600)'
+'1e2ac04 - contest page (takiafarhin, Sat Feb 22 20:58:17 2025 +0600)'
+'48b74b6 - all contest page updated (takiafarhin, Wed Feb 19 15:11:10 2025 +0600)'
+'91ca16d - feat: add total submission count to getStatByProblemTag method in DashboardController (sakhadib, Tue Feb 18 00:39:18 2025 +0600)'
+'8f3c9fb - feat: add docblock for getStatByProblemTag method in DashboardController (sakhadib, Mon Feb 17 21:33:50 2025 +0600)'
+'5c3761f - feat: add getStatByProblemTag method and route to DashboardController for submission counts by problem tags (sakhadib, Mon Feb 17 21:33:30 2025 +0600)'
+'a23774c - feat: add submission count endpoints for in and out of contests in DashboardController (sakhadib, Mon Feb 17 20:33:54 2025 +0600)'
+'bca9dba - feat: add getSingleContest method and route for admin contest management (sakhadib, Mon Feb 17 19:39:49 2025 +0600)'
+'49e6d65 - feat: add makeProblemStateToinContest method and route for admin problem management (sakhadib, Mon Feb 17 19:27:56 2025 +0600)'
+'e03bb85 - feat: add commonCountValues method to DashboardController and related routes (sakhadib, Mon Feb 17 19:16:45 2025 +0600)'
+'4e32d6e - feat: add DashboardController for future dashboard functionalities (sakhadib, Mon Feb 17 18:45:10 2025 +0600)'
+'4583678 - feat: add endpoint to retrieve problems of a contest for admin users (sakhadib, Fri Feb 14 20:53:14 2025 +0600)'
+'331987a - feat: add endpoints to retrieve user details by user ID and username (sakhadib, Fri Feb 14 16:00:53 2025 +0600)'
+'10a0923 - feat: add UserController with endpoint to retrieve all users (sakhadib, Fri Feb 14 04:29:21 2025 +0600)'
+'54c9ca0 - feat: add endpoint to retrieve submissions for a problem in a contest (sakhadib, Fri Feb 14 03:47:01 2025 +0600)'
+'6cffb86 - feat: add endpoints to retrieve submissions for a user and problem in a contest (sakhadib, Fri Feb 14 03:39:30 2025 +0600)'
+'e2009b8 - feat: add endpoint to retrieve submissions for a user in a contest (sakhadib, Fri Feb 14 02:39:28 2025 +0600)'
+'cd7f00c - feat: update getSubmissionsForProblem method to group submissions by user (sakhadib, Fri Feb 14 02:15:10 2025 +0600)'
+'a084ce1 - all contest page (takiafarhin, Fri Feb 14 01:40:25 2025 +0600)'
+'fe8bfbb - feat: enhance getSubmissionsForUser method to group submissions by problem (sakhadib, Fri Feb 14 01:17:21 2025 +0600)'
+'d0e0fd0 - feat: add endpoint to retrieve submissions for a contest and enhance related models (sakhadib, Fri Feb 14 01:01:53 2025 +0600)'
+'afcbf62 - feat: add contest relationship to Submission model (sakhadib, Fri Feb 14 00:50:40 2025 +0600)'
+'8fa32fb - pull (takiafarhin, Fri Feb 14 00:44:51 2025 +0600)'
+'75abc43 - feat: add endpoint to retrieve all submissions for a user (sakhadib, Fri Feb 14 00:34:03 2025 +0600)'
+'8135418 - refactor: rename getSubmissions method and improve response handling for submissions (sakhadib, Fri Feb 14 00:26:14 2025 +0600)'
+'efb7fc6 - fix: update contest start time condition to properly check if contest has started (sakhadib, Fri Feb 14 00:04:35 2025 +0600)'
+'9349382 - remove unused backend files and migrations (sakhadib, Fri Feb 14 00:03:26 2025 +0600)'
+'94f9e74 - update viewAllProblems method to include problem status in the response (sakhadib, Thu Feb 13 23:53:41 2025 +0600)'
+'9468ff8 - update viewApprovedProblems method to include problem description in the response (sakhadib, Thu Feb 13 22:48:55 2025 +0600)'
+'7cf0fd3 - update contest retrieval methods to filter by admin-created contests and add new endpoints for contest problems and participant registration status (sakhadib, Thu Feb 13 21:41:54 2025 +0600)'
+'534dda4 - push (takiafarhin, Thu Feb 13 21:11:28 2025 +0600)'
+'0c28cc7 - pull (takiafarhin, Thu Feb 13 20:35:19 2025 +0600)'
+'90a9002 - filter contests to include only user-created types and enhance user relationship loading (sakhadib, Thu Feb 13 20:22:35 2025 +0600)'
+'1b24d63 - pull (tahsin11rayshad, Thu Feb 13 20:18:02 2025 +0600)'
+'9ac8f33 - add future contests retrieval method and enhance contest relationships with counts (sakhadib, Thu Feb 13 20:09:22 2025 +0600)'
+'fb690c8 - add participant retrieval methods and update contest routes for consistency (sakhadib, Thu Feb 13 19:42:03 2025 +0600)'
+'7585198 - pull (takiafarhin, Thu Feb 13 14:20:41 2025 +0600)'
+'e84cea2 - add submissions relationship to Contest model and update contest retrieval to include submission count (sakhadib, Thu Feb 13 13:30:43 2025 +0600)'
+'e8b6deb - add time conversion methods and improve error handling in submission process (sakhadib, Thu Feb 13 13:05:07 2025 +0600)'
+'3625465 - implement contest retrieval endpoints in ContestGetController (sakhadib, Thu Feb 13 03:54:19 2025 +0600)'
+'dfa7aee - refactor: update contest route methods for consistency (sakhadib, Thu Feb 13 03:14:54 2025 +0600)'
+'c66b554 - pull (takiafarhin, Wed Feb 12 23:17:38 2025 +0600)'
+'0bd47ff - rayshad pocha (sakhadib, Wed Feb 12 23:06:57 2025 +0600)'
+'94a7475 - Admin controler (tahsin11rayshad, Wed Feb 12 23:00:53 2025 +0600)'
+'ec0fa66 - feat: add user management endpoints for admin (sakhadib, Wed Feb 12 20:45:44 2025 +0600)'
+'2039467 - login disabled (sakhadib, Tue Feb 11 16:04:40 2025 +0600)'
+'ea1d9fa - refactor: remove admin permission check for problem retrieval (sakhadib, Tue Feb 11 16:01:37 2025 +0600)'
+'a9408f7 - single problem for admin (sakhadib, Tue Feb 11 15:43:05 2025 +0600)'
+'23f412e - refactor: simplify tag handling in problem retrieval methods (sakhadib, Tue Feb 11 15:40:34 2025 +0600)'
+'e6f87df - tag decode (sakhadib, Tue Feb 11 15:34:51 2025 +0600)'
+'34cda40 - add getSingleProblem API to retrieve problem details with admin permission check (sakhadib, Tue Feb 11 15:29:36 2025 +0600)'
+'361c1e7 - saved approve api (sakhadib, Sun Feb 9 22:02:23 2025 +0600)'
+'cefa631 - added pending problem API (sakhadib, Sun Feb 9 21:58:50 2025 +0600)'
+'c8686a4 - Added approve state to problem (sakhadib, Sun Feb 9 21:48:14 2025 +0600)'
+'3f3571c - fixed username on blog comment (tahsin11rayshad, Sun Feb 9 21:36:43 2025 +0600)'
+'7947235 - title change (takiafarhin, Sun Feb 9 20:54:33 2025 +0600)'
+'d0a3d81 - Refactor createComment method to return user details with the comment response (sakhadib, Sun Feb 9 20:26:12 2025 +0600)'
+'85dde10 - blog fixing (tahsin11rayshad, Sun Feb 9 20:18:13 2025 +0600)'
+'078328d - Enhance comment response to include user details and clean up unused code in ContestController and api routes (sakhadib, Sun Feb 9 20:17:41 2025 +0600)'
+'2f77842 - Refactor API routes to separate authenticated and unauthenticated access (sakhadib, Sun Feb 9 20:01:12 2025 +0600)'
+'05a1f70 - pull (sakhadib, Mon Feb 3 01:54:55 2025 +0600)'
+'e5fb1c4 - user created contest page updated (takiafarhin, Tue Jan 28 15:53:24 2025 +0600)'
+'1e8c339 - user contest create page done and all contest page modified (takiafarhin, Sun Jan 26 23:57:35 2025 +0600)'
+'0f8d9ba - pull (takiafarhin, Sat Jan 25 16:14:40 2025 +0600)'
+'1e0c805 - pull (takiafarhin, Thu Jan 23 21:56:10 2025 +0600)'
+'c83d294 - user object added on create comment serializer (sakhadib, Thu Jan 23 13:09:35 2025 +0600)'
+'d6e9d95 - header updated (tahsin11rayshad, Wed Jan 22 23:57:37 2025 +0600)'
+'e8db6b7 - expand collapse added to bloghome (tahsin11rayshad, Wed Jan 22 23:15:32 2025 +0600)'
+'c8cc988 - blogwrite (tahsin11rayshad, Wed Jan 22 21:10:15 2025 +0600)'
+'128cb9a - fix in comment api (sakhadib, Wed Jan 22 21:02:01 2025 +0600)'
+'85a5cef - indivprob markdown (tahsin11rayshad, Wed Jan 22 20:26:19 2025 +0600)'
+'33cb733 - all problem design update (tahsin11rayshad, Wed Jan 22 18:39:42 2025 +0600)'
+'4ec6fa6 - all problem fixed (tahsin11rayshad, Wed Jan 22 18:36:21 2025 +0600)'
+'73a5447 - fix in blog and problem apis (sakhadib, Wed Jan 22 12:51:00 2025 +0600)'
+'2b13bd0 - all announcement api page done (takiafarhin, Mon Jan 20 23:26:50 2025 +0600)'
+'4a89179 - pulling (tahsin11rayshad, Thu Jan 16 00:28:26 2025 +0600)'
+'281c8c6 - pull update (takiafarhin, Tue Jan 14 00:44:55 2025 +0600)'
+'466daf5 - Contest Controllers soft done (sakhadib, Sun Jan 12 01:35:04 2025 +0600)'
+'3623f47 - Contest Controllers Done (sakhadib, Sat Jan 11 01:08:19 2025 +0600)'
+'9821ca6 - Contest Class and Models (sakhadib, Fri Jan 10 23:49:58 2025 +0600)'
+'e570b75 - Notice Done (sakhadib, Fri Jan 10 16:12:42 2025 +0600)'
+'65bddf9 - Admin Status and Upgrade Added (sakhadib, Fri Jan 10 13:53:37 2025 +0600)'
+'b4f2cec - Answer Submission AI integrated (sakhadib, Thu Jan 9 02:30:24 2025 +0600)'
+'c5e612d - problems finished (sakhadib, Wed Jan 8 21:33:38 2025 +0600)'
+'3f505ca - 2nd day (sakhadib, Wed Jan 8 20:14:41 2025 +0600)'
+'600e5e3 - Blog Done (sakhadib, Wed Jan 8 01:38:31 2025 +0600)'
+'e036da7 - Blogging backend (sakhadib, Tue Jan 7 23:35:42 2025 +0600)'
+'7d7225c - Backend V3 (sakhadib, Tue Jan 7 20:27:45 2025 +0600)'
+'c913e97 - all contest list done (takiafarhin, Wed Dec 18 16:12:21 2024 +0600)'
+'b251aa2 - contest registration page updated (takiafarhin, Mon Dec 16 23:15:53 2024 +0600)'
+'e5f401e - contest registration page (takiafarhin, Mon Dec 16 23:07:01 2024 +0600)'
+'4ab1ed9 - check (takiafarhin, Sun Dec 15 22:53:53 2024 +0600)'
+'eda0bd2 - privacy policy final (takiafarhin, Thu Dec 12 14:56:42 2024 +0600)'
+'6428733 - privacy policy (takiafarhin, Thu Dec 12 14:46:21 2024 +0600)'
+'a03b5b2 - privacy policy (takiafarhin, Thu Dec 12 14:23:36 2024 +0600)'
+'52565e6 - check (takiafarhin, Thu Dec 12 12:59:09 2024 +0600)'
+'bebe523 - laravel test (sakhadib, Sat Nov 23 00:36:29 2024 +0600)'
+'83a077a - urls (sakhadib, Tue Nov 19 18:58:00 2024 +0600)'
+'f8fa240 - split window added to the individual problem page. (takiafarhin, Sun Nov 17 14:18:01 2024 +0600)'
+'453cf90 - individual problem page updated (takiafarhin, Sun Nov 17 11:36:37 2024 +0600)'
+'e41c312 - about page done (takiafarhin, Tue Nov 12 22:43:39 2024 +0600)'
+'0df4f1b - about page updated (takiafarhin, Tue Nov 12 22:31:52 2024 +0600)'
+'cceeeef - about page (takiafarhin, Tue Nov 12 15:11:29 2024 +0600)'
+'c6ed9da - add question page done (takiafarhin, Mon Nov 11 21:32:15 2024 +0600)'
+'b96897c - slides (sakhadib, Wed Nov 6 12:21:17 2024 +0600)'
+'38f68c6 - writing blog done (tahsin11rayshad, Wed Nov 6 03:56:30 2024 +0600)'
+'d23de22 - blog voting (tahsin11rayshad, Wed Nov 6 01:34:36 2024 +0600)'
+'8371125 - new (sakhadib, Wed Nov 6 01:28:27 2024 +0600)'
+'89bae2c - comment deleted (sakhadib, Wed Nov 6 01:24:51 2024 +0600)'
+'ad4d2f7 - blog voting (tahsin11rayshad, Wed Nov 6 01:03:16 2024 +0600)'
+'ea61fc2 - fixed vote (sakhadib, Wed Nov 6 01:02:28 2024 +0600)'
+'bc2eb60 - blog comment (tahsin11rayshad, Wed Nov 6 00:51:52 2024 +0600)'
+'241abf5 - added username in votes (sakhadib, Wed Nov 6 00:50:45 2024 +0600)'
+'fcd34e7 - blog work (tahsin11rayshad, Tue Nov 5 23:44:18 2024 +0600)'
+'9f2bfc1 - added api for getting current user (sakhadib, Tue Nov 5 22:38:45 2024 +0600)'
+'a2a3682 - added api for all category (sakhadib, Tue Nov 5 20:28:11 2024 +0600)'
+'f788228 - ignoring un important files (sakhadib, Tue Nov 5 20:01:49 2024 +0600)'
+'222b660 - conflict merge (sakhadib, Tue Nov 5 20:00:24 2024 +0600)'
+'023611a - pulling (sakhadib, Tue Nov 5 19:55:57 2024 +0600)'
+'663162a - fix (tahsin11rayshad, Tue Nov 5 19:07:22 2024 +0600)'
+'c24fb5a -  individual paage done (takiafarhin, Tue Nov 5 18:46:51 2024 +0600)'
+'f83383b -  individual problem page done (takiafarhin, Tue Nov 5 15:33:45 2024 +0600)'
+'7e78c9c - all problem page done (takiafarhin, Tue Nov 5 00:07:50 2024 +0600)'
+'9340396 - homepage frontned (tahsin11rayshad, Mon Nov 4 19:23:18 2024 +0600)'
+'b58c2a1 - backend work on contest and problems (sakhadib, Sun Nov 3 21:01:56 2024 +0600)'
+'3811b77 - blog post (tahsin11rayshad, Sat Oct 19 22:20:24 2024 +0600)'
+'96a6ca8 - blogpart in progress (tahsin11rayshad, Sat Oct 19 16:21:50 2024 +0600)'
+'710ef13 - Refactor serializers and views for better code organization (sakhadib, Sat Oct 19 16:17:38 2024 +0600)'
+'4f42815 - blog part kaj choltese (sakhadib, Sat Oct 19 15:26:50 2024 +0600)'
+'bc84566 - signup signin design (tahsin11rayshad, Sat Oct 19 10:17:27 2024 +0600)'
+'a72b42e - blog semi done (sakhadib, Fri Oct 18 18:35:18 2024 +0600)'
+'aa8c6ee - repo start (sakhadib, Fri Oct 18 14:05:30 2024 +0600)'
+
+--- End of commit_info_mainrepo.txt ---
+
+
+--- Start of file_list_mainrepo.txt ---
+File listing for directory: F:\DPTEST_
+.gitignore
+backendV3/
+    .editorconfig
+    .env
+    .env.example
+    .gitattributes
+    .gitignore
+    app/
+        Console/
+            Kernel.php
+        Exceptions/
+            Handler.php
+        Http/
+            Controllers/
+                Admin_controller.php
+                AuthController.php
+                BlogController.php
+                ChatController.php
+                CommentController.php
+                ContestController.php
+                ContestGetController.php
+                Controller.php
+                DashboardController.php
+                HomePageController.php
+                LeaderBoardController.php
+                NoticeController.php
+                ProblemController.php
+                RatingCalculationController.php
+                RatingController.php
+                SubmissionController.php
+                UserController.php
+                UserPageController.php
+                VoteController.php
+            Kernel.php
+            Middleware/
+                Authenticate.php
+                EncryptCookies.php
+                PreventRequestsDuringMaintenance.php
+                RedirectIfAuthenticated.php
+                TrimStrings.php
+                TrustHosts.php
+                TrustProxies.php
+                ValidateSignature.php
+                VerifyCsrfToken.php
+        Models/
+            Admin.php
+            Blog.php
+            Chat.php
+            Comment.php
+            Contest.php
+            ContestParticipant.php
+            ContestProblem.php
+            Notice.php
+            Problem.php
+            Rating.php
+            Submission.php
+            User.php
+            Vote.php
+        Providers/
+            AppServiceProvider.php
+            AuthServiceProvider.php
+            BroadcastServiceProvider.php
+            EventServiceProvider.php
+            RouteServiceProvider.php
+    artisan
+    bootstrap/
+        app.php
+        cache/
+            .gitignore
+            packages.php
+            services.php
+    composer.json
+    composer.lock
+    config/
+        app.php
+        auth.php
+        broadcasting.php
+        cache.php
+        cors.php
+        database.php
+        filesystems.php
+        hashing.php
+        jwt.php
+        logging.php
+        mail.php
+        queue.php
+        sanctum.php
+        services.php
+        session.php
+        view.php
+    database/
+        .gitignore
+        factories/
+            UserFactory.php
+        migrations/
+            2014_10_12_000000_create_users_table.php
+            2014_10_12_100000_create_password_reset_tokens_table.php
+            2019_08_19_000000_create_failed_jobs_table.php
+            2019_12_14_000001_create_personal_access_tokens_table.php
+            2025_01_07_140846_create_blogs_table.php
+            2025_01_07_153711_create_comments_table.php
+            2025_01_07_173330_create_votes_table.php
+            2025_01_08_141824_create_problems_table.php
+            2025_01_08_191756_create_submissions_table.php
+            2025_01_10_073358_create_admins_table.php
+            2025_01_10_093625_create_notices_table.php
+            2025_01_10_174021_create_contests_table.php
+            2025_01_10_174512_create_contest_problems_table.php
+            2025_01_10_174747_create_contest_participants_table.php
+            2025_01_11_205835_add_contest_id_to_submissions_table.php
+            2025_03_08_074508_create_ratings_table.php
+            2025_03_12_101351_create_chats_table.php
+        seeders/
+            DatabaseSeeder.php
+    package.json
+    phpunit.xml
+    ppt.md
+    public/
+        .htaccess
+        favicon.ico
+        index.php
+        robots.txt
+    README.md
+    resources/
+        css/
+            app.css
+        js/
+            app.js
+            bootstrap.js
+        views/
+            chat_export.blade.php
+            welcome.blade.php
+    routes/
+        api.php
+        channels.php
+        console.php
+        web.php
+    storage/
+        app/
+            .gitignore
+            public/
+                .gitignore
+        framework/
+            .gitignore
+            cache/
+                .gitignore
+                data/
+                    .gitignore
+                    52/
+                        ac/
+                            52acebe9de48b9434598fa65d2ec8d0e111e90b0
+                    70/
+                        d5/
+                            70d5789fb8fa04f157e2f175d8e9158bc3d2b5c6
+                    84/
+                        93/
+                            84936d4589af19da2848b03bb397861f1a58122e
+                    aa/
+                        55/
+                            aa55bc11003569771d7e3a092e3a751da2da1ab0
+                    c0/
+                        71/
+                            c071422490d526a8aada046adf3a9c9fa0593468
+                    eb/
+                        4e/
+                            eb4ead0d64ec21098cc1f63bfe723d92869dbb67
+                    ec/
+                        c4/
+                            ecc49f49f4da6b940dcde13f0571e79c299871e6
+                    ee/
+                        48/
+                            ee48208f2d1fa15e45f5eb8e9a74eaa193551c5c
+            sessions/
+                .gitignore
+                29q9ZD9G7V0N2EgotCJqMKWRIQg8N6blke53GEwU
+                4ChP8QPqywsm6OCCChOP9OFHwzgY4uOCLqU2Nt4N
+                bSNAXNaBqENLqgrvjSoPgwC2RnHUxkvGuBbHhy42
+                Df9mQDnyd9z2Iz2UKEDLQv4dGTFZkCJa9tX9xxm7
+                ppGAoyEbBuzhvTwHwlMMbx7l5LH4Skgso6xjljhD
+                RfC2L78InuMY0aGO7ntpaYWKL3mj7ho91aB9DskR
+            testing/
+                .gitignore
+            views/
+                .gitignore
+                0d37045b5060359b4b09933c7fbfee32.php
+                4b8e637b38afb4d25c7fdef2501adfda.php
+                52fb6e1908bb6dbe98ddef047e645696.php
+                b39e7de1be4a72a877a45e2e4646aba4.php
+        logs/
+            .gitignore
+            laravel.log
+    tests/
+        CreatesApplication.php
+        Feature/
+            ExampleTest.php
+        TestCase.php
+        Unit/
+            ExampleTest.php
+    vite.config.js
+commit-log.py
+commit_info.txt
+dump/
+    aboutpic.png
+    all_blog_data.json
+    award.png
+    DP_progress.pdf
+    DP_progress.pptx
+    growth.png
+    idea.png
+    IMG_20240327_003838.jpg
+    innovation.png
+    logo.ai
+    logo.png
+    shuvro.jpg
+    tahsinfaltu.jpg
+    team.png
+    teamwork.png
+file_list.py
+file_list.txt
+frontend/
+    .env
+    .gitignore
+    data/
+        all_blog_data.json
+    eslint.config.js
+    index.html
+    package-lock.json
+    package.json
+    public/
+        logo.png
+        vite.svg
+    README.md
+    src/
+        api.js
+        App.jsx
+        assets/
+            components/
+                About.jsx
+                addProblem.jsx
+                AllContest.jsx
+                allprivatecontest.jsx
+                allProblem.jsx
+                AnnouncementPage.jsx
+                blogdisplay.jsx
+                bloghome.jsx
+                blogwrite.jsx
+                comment.jsx
+                contestProbView.jsx
+                contestReg.jsx
+                flip-timer.jsx
+                footer.jsx
+                header.jsx
+                heatmap.jsx
+                hero-section.jsx
+                individualproblem.jsx
+                landing.jsx
+                leaderBoard.jsx
+                notice-section.jsx
+                privacy.jsx
+                privatecontest.jsx
+                ProblemTable.jsx
+                profile.jsx
+                protectedroute.jsx
+                ratingGraph.jsx
+                signin.jsx
+                signup.jsx
+                singleContest.jsx
+                stats.jsx
+                topblogs.jsx
+                topusers.jsx
+                user-blog.jsx
+                user-submission.jsx
+                userAllBlog.jsx
+                userAllSubmission.jsx
+                userContestCreate.jsx
+                userContestedit.jsx
+                userContestView.jsx
+                usercreatedProb.jsx
+                usersingleSub.jsx
+            css/
+                font.css
+            img/
+                aboutpic.png
+                award.png
+                growth.png
+                idea.png
+                innovation.png
+                logo.png
+                megaphone.gif
+                megaphone.mp4
+                ranking.mp4
+                shuvro.jpg
+                tahsinfaltu.jpg
+                takia.jpg
+                team.png
+                teamwork.png
+                tp_mini.svg
+                tp_mini@4x.png
+                writing.mp4
+            pages/
+                About.jsx
+                addProblem.jsx
+                AllContest.jsx
+                AllPrivateContests.jsx
+                allProblem.jsx
+                AnnouncementPage.jsx
+                BlogDisplay.jsx
+                BlogHome.jsx
+                Blogwrite.jsx
+                contestProbView.jsx
+                contestReg.jsx
+                Home.jsx
+                individualproblem.jsx
+                leaderBoard.jsx
+                privacy.jsx
+                profile.jsx
+                Signin.jsx
+                Signup.jsx
+                singleContest.jsx
+                userAllBlog.jsx
+                userAllSubmission.jsx
+                userContestCreate.jsx
+                userContestEdit.jsx
+                userContestView.jsx
+                UserCreateProb.jsx
+            react.svg
+        components/
+        constants.js
+        main.jsx
+        pages/
+        styles/
+    vite.config.js
+Logo/
+    black_full@4x.png
+    black_ls@4x.png
+    black_mini@4x.png
+    logo.ai
+    SVG/
+        tp_black_ls.svg
+        tp_full_black.svg
+        tp_full_white.svg
+        tp_mini.svg
+        tp_white_ls.svg
+    tp_black_ls@4x.png
+    tp_full_black@4x.png
+    tp_full_white@4x.png
+    tp_mini@4x.png
+    tp_white_ls@4x.png
+    white_full@4x.png
+    white_ls@4x.png
+    white_mini@4x.png
+package-lock.json
+src/
+    assets/
+        components/
+            ContestAll.jsx
+
+--- End of file_list_mainrepo.txt ---
+
+
+--- Start of file_list_AdminRepo.txt ---
+File listing for directory: F:\DPTEST_ADMIN
+.env
+.eslintrc
+.gitignore
+.prettierrc
+CODE_OF_CONDUCT.md
+commit-log.py
+favicon.svg
+file_list.py
+file_list.txt
+index.html
+jsconfig.json
+package-lock.json
+package.json
+README.md
+src/
+    api/
+        menu.js
+    App.jsx
+    assets/
+        images/
+            auth/
+                AuthBackground.jsx
+            icons/
+                facebook.svg
+                google.svg
+                twitter.svg
+            logo/
+                logo.png
+            users/
+                avatar-1.png
+                avatar-2.png
+                avatar-3.png
+                avatar-4.png
+                avatar-5.png
+                avatar-group.png
+        third-party/
+            apex-chart.css
+    components/
+        @extended/
+            AnimateButton.jsx
+            Avatar.jsx
+            Breadcrumbs.jsx
+            Dot.jsx
+            Transitions.jsx
+        cards/
+            AuthFooter.jsx
+            statistics/
+                AnalyticEcommerce.jsx
+        Loadable.jsx
+        Loader.jsx
+        logo/
+            index.jsx
+            LogoMain.jsx
+        MainCard.jsx
+        privateroute.jsx
+        ScrollTop.jsx
+        third-party/
+            SimpleBar.jsx
+    config.js
+    contexts/
+        auth-reducer/
+            actions.js
+            auth.js
+    index.jsx
+    layout/
+        Dashboard/
+            Drawer/
+                DrawerContent/
+                    index.jsx
+                    NavCard.jsx
+                    Navigation/
+                        index.jsx
+                        NavGroup.jsx
+                        NavItem.jsx
+                DrawerHeader/
+                    DrawerHeaderStyled.js
+                    index.jsx
+                index.jsx
+                MiniDrawerStyled.js
+            Header/
+                AppBarStyled.jsx
+                HeaderContent/
+                    index.jsx
+                    MobileSection.jsx
+                    Notification.jsx
+                    Profile/
+                        index.jsx
+                        ProfileTab.jsx
+                        SettingTab.jsx
+                    Search.jsx
+                index.jsx
+            index.jsx
+        MinimalLayout/
+            index.jsx
+    menu-items/
+        dashboard.jsx
+        index.jsx
+        page.jsx
+        support.jsx
+        utilities.jsx
+    pages/
+        announcements/
+            announcementtable.jsx
+            Edit/
+                EditAnnouncement.jsx
+                index.jsx
+            index.jsx
+            New/
+                index.jsx
+                WriteAnnouncement.jsx
+        authentication/
+            auth-forms/
+                AuthLogin.jsx
+                AuthRegister.jsx
+                FirebaseSocial.jsx
+            AuthCard.jsx
+            AuthWrapper.jsx
+            login.jsx
+            register.jsx
+        component-overview/
+            color.jsx
+            ComponentSkeleton.jsx
+            ComponentWrapper.js
+            shadows.jsx
+            typography.jsx
+        contests/
+            activecontest.jsx
+            EditContest/
+                editcontest.jsx
+                index.jsx
+            index.jsx
+            IndivContest/
+                index.jsx
+                indivContest.jsx
+            New/
+                ContestCreate.jsx
+                index.jsx
+            previouscontest.jsx
+            upcomingcontest.jsx
+        dashboard/
+            IncomeAreaChart.jsx
+            index.jsx
+            MonthlyBarChart.jsx
+            OrdersTable.jsx
+            ReportAreaChart.jsx
+            SaleReportCard.jsx
+            SalesChart.jsx
+            UniqueVisitorCard.jsx
+        extra-pages/
+            sample-page.jsx
+        login/
+            index.jsx
+            login.jsx
+        problems/
+            edit/
+                index.jsx
+            index.jsx
+            indivprob/
+                index.jsx
+                ProblemLayout.jsx
+            ProblemTable.jsx
+            problemTableData.jsx
+            publishedprob.jsx
+        users/
+            index.jsx
+            mrAdmin/
+                index.jsx
+                mradmin.jsx
+            userdata.jsx
+    reportWebVitals.js
+    routes/
+        index.jsx
+        LoginRoutes.jsx
+        MainRoutes.jsx
+    themes/
+        index.jsx
+        overrides/
+            Badge.js
+            Button.js
+            CardContent.js
+            Checkbox.jsx
+            Chip.js
+            IconButton.js
+            index.js
+            InputLabel.js
+            LinearProgress.js
+            Link.js
+            ListItemIcon.jsx
+            OutlinedInput.js
+            Tab.js
+            TableCell.js
+            Tabs.js
+            Typography.js
+        palette.js
+        shadows.jsx
+        theme/
+            index.js
+        typography.js
+    utils/
+        getColors.js
+        getShadow.js
+        password-strength.js
+        password-validation.js
+    vite-env.d.js
+tsconfig.node.json
+vite.config.mjs
+yarn.lock
+
+--- End of file_list_AdminRepo.txt ---
+
+
+--- Start of commit_info_AdminRepo.txt ---
+'d26036b - feat: refactor routing structure by removing commented code; add edit problem route to main routes (tahsin11rayshad, Mon Mar 17 05:50:48 2025 +0600)'
+'91e3c4d - feat: add rating calculation functionality and improve contest details fetching; handle authorization and error states (tahsin11rayshad, Sun Mar 16 03:37:11 2025 +0600)'
+'1eff389 - feat: update admin dashboard branding and terminology; change title and user role, enhance notes section with LaTeX support (tahsin11rayshad, Fri Mar 7 22:58:30 2025 +0600)'
+'32b8249 - feat: enhance contest details page with improved time formatting and error handling; add 12-hour format option for start and end times (tahsin11rayshad, Fri Mar 7 02:02:10 2025 +0600)'
+'57ba613 - fix: update base URL in environment and Vite config; adjust API endpoints for contest management (tahsin11rayshad, Thu Feb 27 00:57:23 2025 +0600)'
+'cdf56d2 - feat: enhance announcements table with timezone formatting and switch to axios for API calls; update user data table styles (tahsin11rayshad, Wed Feb 26 21:34:51 2025 +0600)'
+'288993d - feat: implement tag-based statistics chart and update unique visitor label (tahsin11rayshad, Tue Feb 18 01:05:21 2025 +0600)'
+'65ad336 - refactor: update logo alt text, adjust profile background color, and enhance income area chart data fetching (tahsin11rayshad, Tue Feb 18 00:33:55 2025 +0600)'
+'d8c3fe7 - active and previous contest table added (tahsin11rayshad, Sat Feb 15 21:56:41 2025 +0600)'
+'47cb986 - admin contest done (tahsin11rayshad, Sat Feb 15 21:02:53 2025 +0600)'
+'c96142a - contest working (tahsin11rayshad, Sat Feb 15 00:42:32 2025 +0600)'
+'45e87a1 - user panel added (tahsin11rayshad, Thu Feb 13 01:35:10 2025 +0600)'
+'99c0b4e - announcement admin done (tahsin11rayshad, Wed Feb 12 14:18:02 2025 +0600)'
+'8589d60 - problem fetching with authorizer (tahsin11rayshad, Wed Feb 12 00:10:19 2025 +0600)'
+'bbfd3ed - login done (tahsin11rayshad, Tue Feb 11 22:28:15 2025 +0600)'
+'f22382c - admin problem page linked (tahsin11rayshad, Tue Feb 11 14:27:43 2025 +0600)'
+'149d1da - updated problem page (tahsin11rayshad, Tue Feb 11 13:40:01 2025 +0600)'
+'6e00d35 - Update README.md (Tahsin Islam, Tue Feb 11 12:11:56 2025 +0600)'
+'fee1b58 - pushing (tahsin11rayshad, Tue Feb 11 12:08:50 2025 +0600)'
+
+--- End of commit_info_AdminRepo.txt ---
+
