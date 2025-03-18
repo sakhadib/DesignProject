@@ -57,7 +57,7 @@ class Problem extends Model
 
     public function unpublish()
     {
-        $this->status = 'unpublished';
+        $this->status = 'pending';
         $this->save();
     }
 
