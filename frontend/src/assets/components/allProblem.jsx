@@ -18,6 +18,10 @@ import {
   Box,
   Collapse,
 } from "@mui/material";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api";
@@ -229,7 +233,9 @@ const AllProblems = () => {
                     }}
                   >
                     <TableCell>{problem.id}</TableCell>
-                    <TableCell>{problem.title}</TableCell>
+                    <TableCell><ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                    {problem.title}
+                                                                        </ReactMarkdown></TableCell>
                     <TableCell>{problem.xp}</TableCell>
                     <TableCell>{problem.tags.target}</TableCell>
                     <TableCell>{problem.tags.topics.join(", ")}</TableCell>

@@ -16,6 +16,8 @@ import Box from '@mui/material/Box';
 import axios from 'axios'; // Import axios
 import api from '../../api'; // Import your configured axios instance
 import logo from '../img/tp_mini@4x.png'; // Import the new logo image
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const NavLink = styled(Link)( {
   fontFamily: "'Poppins', sans-serif",
@@ -34,6 +36,16 @@ function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [contestAnchorEl, setContestAnchorEl] = useState(null);
+
+  // Add contest menu handlers
+  const handleContestMenuOpen = (event) => {
+    setContestAnchorEl(event.currentTarget);
+  };
+  
+  const handleContestMenuClose = () => {
+    setContestAnchorEl(null);
+  };
 
   // Fetch user data from the /api/auth/me endpoint after checking token
   useEffect(() => {
@@ -150,9 +162,45 @@ function Header() {
           <Box display={{ xs: 'none', md: 'flex' }} className="space-x-6">
             <NavLink to="/home">Home</NavLink>
             <NavLink to="/problem/all">Problems</NavLink>
+            <Box
+              onMouseEnter={handleContestMenuOpen}
+              onMouseLeave={handleContestMenuClose}
+              sx={{ position: 'relative' }}
+            >
+              <NavLink
+                to="#"
+                sx={{ cursor: 'pointer' }}
+              >
+                Contest
+              </NavLink>
+              <Menu
+                anchorEl={contestAnchorEl}
+                open={Boolean(contestAnchorEl)}
+                onClose={handleContestMenuClose}
+                MenuListProps={{ onMouseLeave: handleContestMenuClose }}
+                sx={{
+                  '& .MuiPaper-root': {
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                  },
+                }}
+              >
+                <MenuItem 
+                  component={Link} 
+                  to="/contest/all"
+                  onClick={handleContestMenuClose}
+                >
+                  Public Contest
+                </MenuItem>
+                <MenuItem 
+                  component={Link} 
+                  to="/contest/private/all"
+                  onClick={handleContestMenuClose}
+                >
+                  Private Contest
+                </MenuItem>
+              </Menu>
+            </Box>
             <NavLink to="/user/leaderboard">Leaderboard</NavLink>
-            <NavLink to="/contest/all">Contest</NavLink>
-            <NavLink to="/contest/private/all">Private Contest</NavLink>
             <NavLink to="/blog/all">Blogs</NavLink>
             <NavLink to="/announcement/all">Announcements</NavLink>
             <NavLink to="/about">About</NavLink>

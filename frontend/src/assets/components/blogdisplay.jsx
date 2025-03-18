@@ -251,7 +251,7 @@ const BlogPostPage = () => {
                 ) : (
                     <>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="h2" component="h1" gutterBottom sx={{ fontFamily: 'Raleway, Arial, sans-serif', fontWeight: 700, fontSize: '70px' }}>
+                            <Typography variant="h2" component="h1" gutterBottom sx={{ fontFamily: 'Raleway, Arial, sans-serif', fontWeight: 700, fontSize: '40px' }}>
                                 {blogPost.title}
                             </Typography>
                             
@@ -286,7 +286,7 @@ const BlogPostPage = () => {
                                     {blogPost.author?.[0]?.toUpperCase()}
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="subtitle1">{blogPost.author}</Typography>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, cursor: 'pointer', color: "#0F766E" }} onClick={() => navigate(`/profile/${blogPost.user.id}`)}>{blogPost.author}</Typography>
                                         <Typography variant="body2" color="text.secondary">
                                             {new Date(blogPost.created_at).toLocaleDateString()}
                                         </Typography>
@@ -296,7 +296,7 @@ const BlogPostPage = () => {
                         </Box>
                         
                         {/* Rest of the component remains unchanged */}
-<Box sx={{ fontSize: '20px', mb: 4 }}>
+                        <Box sx={{ fontSize: '20px', mb: 4 }}>
                             <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                 {blogPost.content}
                             </ReactMarkdown>
@@ -352,26 +352,27 @@ const BlogPostPage = () => {
                                         <ListItemText
                                             primary={
                                                 <Box display="flex" alignItems="center" justifyContent="space-between">
-                                                    <Typography variant="body2" color="text.primary">
+                                                    <Typography variant="body2" color="#283891" sx={{ fontWeight: 600, cursor: 'pointer' }} onClick={() => navigate(`/profile/${blogPost.user.id}`)}>
                                                         {comment.user?.username || 'Unknown User'}
                                                     </Typography>
                                                     {comment.user?.username === currentUser && (
-                                                        <Box>
-                                                            <IconButton onClick={(e) => handleMenuOpen(e, comment)} color="default">
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                            <IconButton onClick={() => handleDeleteComment(comment.id)} color="error">
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </Box>
+                                                    <Box>
+                                                        <IconButton onClick={(e) => handleMenuOpen(e, comment)} color="default">
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => handleDeleteComment(comment.id)} color="error">
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Box>
                                                     )}
                                                 </Box>
                                             }
                                             secondary={
                                                 <>
-                                                    <Typography component="span" variant="body2" color="text.primary">
+                                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                                         {comment.content}
-                                                    </Typography>
+                                                    </ReactMarkdown>
+                                                    
                                                     <br />
                                                     <Typography variant="caption" color="text.secondary">
                                                         {new Date(comment.created_at).toLocaleString()}
