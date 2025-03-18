@@ -53,7 +53,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/signup" />} />
+        <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/blog/all" element={<BlogHome />} />

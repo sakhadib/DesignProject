@@ -24,6 +24,7 @@ import ReactMarkdown from "react-markdown"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
 import "katex/dist/katex.min.css" // Import KaTeX CSS for math rendering
+import { CircularProgress } from "@mui/material"
 
 
 
@@ -140,9 +141,9 @@ const ContestPage = () => {
 
   if (!contest) {
     return (
-      <Typography variant="h5" align="center">
-        Loading...
-      </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <CircularProgress />
+      </Box>
     )
   }
 
@@ -238,10 +239,13 @@ const ContestPage = () => {
                             href={`/contest/${id}/problem/${problemData.problem_id}`}
                             style={{ textDecoration: "none", color: "#1976D2", fontWeight: "bold" }}
                           >
-                            {problemData.problem?.title || "N/A"}
+                            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                            {problemData.problem?.title || "N/A"}</ReactMarkdown>
                           </a>
                         ) : (
-                          <span style={{ color: "gray" }}>{problemData.problem?.title || "N/A"}</span>
+                          <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                                              <span style={{ color: "gray" }}>{problemData.problem?.title || "N/A"}</span></ReactMarkdown>
+                          
                         )}
                       </TableCell>
 
