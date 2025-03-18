@@ -66,6 +66,24 @@
         setOrderBy(property);
     };
 
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+        setPage(0);
+      };
+    
+      const handleCategoryToggle = (category) => {
+        setSelectedCategories((prev) =>
+          prev.includes(category)
+            ? prev.filter((c) => c !== category)
+            : [...prev, category]
+        );
+        setPage(0);
+      };
+    
+      const handleToggleExpand = () => {
+        setExpanded(!expanded);
+      };
+
     
 
     const categoryCounts = useMemo(() => {
@@ -107,9 +125,10 @@
     const TableHeader = ({ label, property }) => (
         <TableCell
         sx={{
-            backgroundColor: "#1565C0",
-            color: "white",
+            backgroundColor: "white",
+            color: "#1565C0",
             fontWeight: "bold",
+            borderBottom: "2px solid #1565C0",
         }}
         >
         <TableSortLabel
@@ -118,9 +137,9 @@
             onClick={handleRequestSort(property)}
             sx={{
             "& .MuiTableSortLabel-icon": {
-                color: "white !important",
+                color: "#1565C0 !important",
             },
-            color: "white !important",
+            color: "#1565C0 !important",
             }}
         >
             {label}
@@ -130,10 +149,62 @@
 
     return (
         <Container maxWidth="lg" sx={{ mt: 16, mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h4" sx={{fontWeight:"bold"}}>Unsolved Problems</Typography>
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search problems..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          InputProps={{
+            startAdornment: <SearchIcon sx={{ color: "action.active", mr: 1 }} />,
+          }}
+        />
+      </Box>
 
-        <Typography variant="h4" sx={{ mb: 2 }}>
-            Unsolved Problems
-        </Typography>
+      <Box sx={{ mb: 2 }}>
+            <Collapse in={expanded} collapsedSize={40} timeout="auto">
+            <Grid container spacing={1}>
+                {categories.map((category) => (
+                <Grid item key={category}>
+                    <Chip
+                    label={
+                        category === "All Problems"
+                        ? "All Problems"
+                        : `${category} (${categoryCounts[category] || 0})`
+                    }
+                    onClick={() =>
+                        category === "All Problems"
+                        ? setSelectedCategories([])
+                        : handleCategoryToggle(category)
+                    }
+                    color={
+                        selectedCategories.includes(category) ||
+                        (category === "All Problems" &&
+                        selectedCategories.length === 0)
+                        ? "primary"
+                        : "default"
+                    }
+                    variant={
+                        selectedCategories.includes(category) ||
+                        (category === "All Problems" &&
+                        selectedCategories.length === 0)
+                        ? "filled"
+                        : "outlined"
+                    }
+                    sx={{ cursor: "pointer" }}
+                    />
+                </Grid>
+                ))}
+            </Grid>
+            </Collapse>
+            <Box textAlign="center" mt={2}>
+            <Button onClick={handleToggleExpand} variant="text">
+                {expanded ? "Collapse ▲" : "Expand ▼"}
+            </Button>
+            </Box>
+        </Box>
 
 
         <Paper sx={{ width: "100%", mb: 2 }}>
@@ -190,19 +261,19 @@
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
-                backgroundColor: "#1565C0",
-                color: "white",
+                backgroundColor: "white",
+                color: "#1565C0",
                 "& .MuiTablePagination-actions": {
-                color: "white",
+                color: "#1565C0",
                 },
                 "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-                color: "white",
+                color: "#1565C0",
                 },
                 "& .MuiTablePagination-select": {
-                color: "white",
+                color: "#1565C0",
                 },
                 "& .MuiTablePagination-selectIcon": {
-                color: "white",
+                color: "#1565C0",
                 },
             }}
             />

@@ -123,9 +123,10 @@ const AllProblems = () => {
   const TableHeader = ({ label, property }) => (
     <TableCell
       sx={{
-        backgroundColor: "#1565C0",
-        color: "white",
+        backgroundColor: "white",
+        color: "#1565C0",
         fontWeight: "bold",
+        borderBottom: "2px solid #1565C0",
       }}
     >
       <TableSortLabel
@@ -134,9 +135,9 @@ const AllProblems = () => {
         onClick={handleRequestSort(property)}
         sx={{
           "& .MuiTableSortLabel-icon": {
-            color: "white !important",
+            color: "#1565C0 !important",
           },
-          color: "white !important",
+          color: "#1565C0 !important",
         }}
       >
         {label}
@@ -147,7 +148,7 @@ const AllProblems = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h4">All Problems</Typography>
+        <Typography variant="h4" sx={{fontWeight:"bold"}}>All Problems</Typography>
         <TextField
           variant="outlined"
           size="small"
@@ -253,19 +254,19 @@ const AllProblems = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
-            backgroundColor: "#1565C0",
-            color: "white",
+            backgroundColor: "white",
+            color: "#1565C0",
             "& .MuiTablePagination-actions": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-select": {
-              color: "white",
+              color: "#1565C0",
             },
             "& .MuiTablePagination-selectIcon": {
-              color: "white",
+              color: "#1565C0",
             },
           }}
         />
