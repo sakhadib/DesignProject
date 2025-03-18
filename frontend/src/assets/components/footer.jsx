@@ -36,55 +36,6 @@ const Footer = () => {
               Exploring the universe of mathematics through interactive learning
             </Typography>
           </Grid>
-
-          {/* Quick Links Column */}
-          {/* <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold", ml: -5 }}>
-              Quick Links
-            </Typography>
-            <Stack spacing={1} alignItems="left">
-              <Link href="/home" color="inherit" sx={{ fontWeight: "bold", textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-                Home
-              </Link>
-              <Link href="/contest/all" color="inherit" sx={{ fontWeight: "bold", textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-                Contests
-              </Link>
-              <Link href="problem/all" color="inherit" sx={{ fontWeight: "bold", textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-                Problem Sets
-              </Link>
-              <Link href="/announcement/all" color="inherit" sx={{ fontWeight: "bold", textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-                Announcements
-              </Link>
-              <Link href="/about" color="inherit" sx={{ fontWeight: "bold", textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-                About Us
-              </Link>
-            </Stack>
-          </Grid> */}
-
-          {/* Contact Us Column */}
-          {/* <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "left", alignItems: "left" }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
-              Contact Us
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 , color:"#8D256F"}}>
-              <Email fontSize="small" sx={{ mr: 1 }} />
-              <Link href="mailto:info@mathxplorer.com" color="inherit" sx={{ "&:hover": { color: "#e3f2fd" } }}>
-                info@mathxplorer.com
-              </Link>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1, color:"#8D256F" }}>
-              <Phone fontSize="small" sx={{ mr: 1 }} />
-              <Typography variant="body2">(+880) 1554-749897</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "flex-start" ,color:"#8D256F"}}>
-              <LocationOn fontSize="small" sx={{ mr: 1, mt: 0.5 }} />
-              <Typography variant="body2">
-                Islamic University of Technology
-                <br />
-                Board Bazar, Gazipur, Bangladesh.
-              </Typography>
-            </Box>
-          </Grid> */}
         </Grid>
 
         <Divider sx={{ my: 3, borderColor: "rgba(255, 255, 255, 0.2)" }} />

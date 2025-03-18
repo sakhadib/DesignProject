@@ -23,6 +23,10 @@ import {
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+
 
 // Function to get user's local timezone
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -360,7 +364,7 @@ export default function EditContest() {
               problems.map((problem) => (
                 <TableRow key={problem.id}>
                   <TableCell sx={{ textAlign: "center" }}>{problem.id}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{problem.title}</TableCell>
+                  <TableCell sx={{ textAlign: "center" }}></TableCell>
                   <TableCell sx={{ textAlign: "center" }}>{problem.xp}</TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
                     <Button color="error" onClick={() => handleRemoveProblem(problem.id)}>Remove</Button>
