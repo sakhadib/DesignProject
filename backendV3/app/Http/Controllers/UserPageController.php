@@ -31,12 +31,16 @@ class UserPageController extends Controller
                               ->distinct()
                               ->count();
 
+        $rating = Rating::where('user_id', $user_id)
+                        ->sum('rating_change');
+
         return response()->json([
             'user' => $user,
             'blog_count' => $blog_count,
             'problem_count' => $problem_count,
             'created_contest_count' => $created_contest_count,
-            'attempted_problems_count' => $attempted_problems_count
+            'attempted_problems_count' => $attempted_problems_count,
+            'rating' => $rating
         ], 200);
     }
 
