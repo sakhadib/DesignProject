@@ -16,7 +16,8 @@ import {
           sx={{ 
             color: 'primary.main',
             fontSize: { xs: '2.5rem', md: '3.5rem' },
-            mb: 4 
+            mb: 4, 
+            fontFamily: 'Poppins, sans-serif',
           }}
         >
           PRIVACY POLICY
@@ -51,16 +52,16 @@ import {
         </Typography>
 
         <ul style={{ marginLeft: '1.5rem', fontSize: { xs: '2rem', md: '2.5rem' }, color: '#333' }}>
-  <li>
+  <li style={{ fontFamily: 'Poppins, sans-serif'}}>
     <strong>1.1 Account Information</strong>
-    <ul style={{ marginLeft: '1rem' }}>
+    <ul style={{ marginLeft: '1rem', }}>
       <li>Name</li>
       <li>Email address</li>
       <li>Password (securely encrypted)</li>
       <li>Optional profile details (e.g., bio, profile picture)</li>
     </ul>
   </li>
-  <li>
+  <li style={{ fontFamily: 'Poppins, sans-serif'}}>
     <strong>1.2 Activity Data</strong>
     <ul style={{ marginLeft: '1rem' }}>
       <li>Problems attempted and solved</li>
@@ -68,7 +69,7 @@ import {
       <li>XP and ratings</li>
     </ul>
   </li>
-  <li>
+  <li style={{ fontFamily: 'Poppins, sans-serif'}}>
     <strong>1.3 Device and Log Information</strong>
     <ul style={{ marginLeft: '1rem' }}>
       <li>Browser type and settings</li>
@@ -76,7 +77,7 @@ import {
       <li>Log activity timestamps</li>
     </ul>
   </li>
-  <li>
+  <li style={{ fontFamily: 'Poppins, sans-serif'}}>
     <strong>1.4 Optional Data</strong>
     <ul style={{ marginLeft: '1rem' }}>
       <li>Community contributions, such as:</li>
@@ -104,7 +105,7 @@ import {
         We use the collected information to:
         </Typography>
 
-        <ul style={{ marginLeft: '1.5rem' }}>
+        <ul style={{ marginLeft: '1.5rem', fontFamily: 'Poppins, sans-serif' }}>
           <li>Provide and improve platform features.</li>
           <li>Personalize content and user experience.</li>
           <li>Maintain leaderboard rankings, ratings, and XP.</li>
@@ -132,7 +133,7 @@ import {
         </Typography>
 
 
-        <ul style={{marginLeft : '1.5rem'}}>
+        <ul style={{marginLeft : '1.5rem', fontFamily: 'Poppins, sans-serif'}}>
             <li>With trusted third-party service providers (e.g., hosting, analytics) to perform essential services.</li>
             <li>If required by law or to protect our platform’s integrity.</li>
             <li>For collaborative features, such as public leaderboards and blogs, where user contributions may be visible to others.</li>
@@ -154,7 +155,7 @@ import {
         We use cookies and similar technologies to:
         </Typography>
 
-        <ul style={{marginLeft : '1.5rem'}}>
+        <ul style={{marginLeft : '1.5rem', fontFamily: 'Poppins, sans-serif'}}>
             <li>Store user preferences.</li>
             <li>Analyze user interactions and improve functionality.</li>
             <li>Provide targeted content based on activity.</li>
@@ -199,7 +200,7 @@ import {
         </Typography>
 
 
-        <ul style={{marginLeft : '1.5rem'}}>
+        <ul style={{marginLeft : '1.5rem', fontFamily: 'Poppins, sans-serif'}}>
             <li>End-to-end encryption of sensitive information.</li>
             <li>Regular vulnerability assessments.</li>
             <li>Restricted access to personal data.</li>

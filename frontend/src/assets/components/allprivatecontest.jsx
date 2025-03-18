@@ -25,6 +25,7 @@ const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const formatLocalTime = (utcTime) => {
   if (!utcTime) return "Invalid Date";  // Validate that utcTime is provided
   try {
+    // Ensure the time is treated as UTC by appending " UTC"
     const utcDate = new Date(utcTime + " UTC");
     return new Intl.DateTimeFormat(undefined, {
       year: "numeric",
@@ -42,66 +43,61 @@ const formatLocalTime = (utcTime) => {
   }
 };
 
-// =======================|| ALL CONTESTS COMPONENT ||======================= //
-
 export default function AllContests() {
   const [upcomingContests, setUpcomingContests] = useState([]);
   const [previousContests, setPreviousContests] = useState([]);
-  const [activeContests, setActiveContests] = useState([]);
   const [myContests, setMyContests] = useState([]);
   const [isLoadingUpcoming, setIsLoadingUpcoming] = useState(false);
   const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
-  const [isLoadingActive, setIsLoadingActive] = useState(false);
   const [isLoadingMy, setIsLoadingMy] = useState(false);
-  const [activeContest, setActiveContest] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const navigate = useNavigate(); // Initialize useNavigate
 
-  // Fetching upcoming contests
   const fetchUpcomingContests = async () => {
     setIsLoadingUpcoming(true);
     try {
       const response = await axios.get(`/contest/upcoming/private/my`);
-      setUpcomingContests(response.data.contests);
+      const contests = response.data.contests;
+
+      // Log the contests to inspect their time format
+      console.log(contests);
+
+      setUpcomingContests(contests);
     } catch (error) {
       console.error("Error fetching upcoming contests:", error);
     }
     setIsLoadingUpcoming(false);
   };
 
-  // Fetching previous contests
   const fetchPreviousContests = async () => {
     setIsLoadingPrevious(true);
     try {
       const response = await axios.get("/contest/past/private/my");
-      setPreviousContests(response.data.contests);
+      const contests = response.data.contests;
+
+      // Log the contests to inspect their time format
+      console.log(contests);
+
+      setPreviousContests(contests);
     } catch (error) {
       console.error("Error fetching previous contests:", error);
     }
     setIsLoadingPrevious(false);
   };
 
-  // Fetching active contests
-  const fetchActiveContests = async () => {
-    setIsLoadingActive(true);
-    try {
-      const response = await axios.get("/contest/all/active");
-      setActiveContests(response.data.contests);
-    } catch (error) {
-      console.error("Error fetching active contests:", error);
-    }
-    setIsLoadingActive(false);
-  };
-
-  // Fetching my contests
   const fetchMyContests = async () => {
     setIsLoadingMy(true);
     try {
       const response = await axios.post("/contest/all/my");
-      setMyContests(response.data.contests);
+      const contests = response.data.contests;
+
+      // Log the contests to inspect their time format
+      console.log(contests);
+
+      setMyContests(contests);
     } catch (error) {
       console.error("Error fetching my contests:", error);
     }
@@ -110,155 +106,18 @@ export default function AllContests() {
 
   useEffect(() => {
     fetchUpcomingContests();
-    fetchPreviousContests(); 
-    fetchActiveContests();
-    fetchMyContests();   
+    fetchPreviousContests();
+    fetchMyContests();
   }, []);
 
-  // =======================|| HEADS UP SECTION ||======================= //
-
-  const HeadsUp = () => {
-    const buttonStyle = {
-      backgroundColor: "#8d256f",
-      "&:hover": {
-        backgroundColor: "#6d1d55",
-      },
-      fontSize: "0.8rem",
-      padding: "6px 12px",
-    };
-
-    const contest = activeContest || upcomingContests[0];
-
-    return (
-      <Box
-        sx={{
-          p: 2,
-          bgcolor: "white",
-          border: 3,
-          borderColor: "#1E2761",
-          borderRadius: 2,
-          transition: "all 0.3s ease-in-out",
-          "&:hover": {
-            boxShadow: 6,
-            transform: "translateY(-5px)",
-          },
-          maxHeight: "600px",
-          overflowY: "auto",
-        }}
-      >
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{ color: "#8d256f", fontWeight: "bold", textAlign: "center", fontSize: "28px", mb: 1, textShadow: "1px 1px 1px #ababab" }}
-        >
-          Heads Up
-        </Typography>
-        {contest ? (
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5, textAlign: "center", fontSize: "24px", color: "#1E2761" }}>
-              {contest.title}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1, color: "text.secondary", textAlign: "center", fontSize: "0.9rem" }}>
-              {contest.description.substring(0, 80)}...
-            </Typography>
-            <Box sx={{ textAlign: "center", mb: 1 }}>
-              <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Starts: {formatLocalTime(contest.start_time)}
-              </Typography>
-              <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Ends: {formatLocalTime(contest.end_time)}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <Button variant="contained" sx={buttonStyle}>
-                <Link to={`/contest/single/${contest.id}`} style={{ textDecoration: "none", color: "white" }}>
-                  {activeContest ? "Participate" : "Register"}
-                </Link>
-              </Button>
-            </Box>
-          </Box>
-        ) : (
-          <Typography variant="body2" sx={{ mt: 2, color: "text.secondary", textAlign: "center" }}>
-            No contest available at the moment.
-          </Typography>
-        )}
-      </Box>
-    );
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
-  // =======================|| ACTIVE CONTEST SECTION ||======================= //
-
-  const ActiveContest = () => {
-    const buttonStyle = {
-      backgroundColor: "#8d256f",
-      "&:hover": {
-        backgroundColor: "#6d1d55",
-      },
-      fontSize: "0.8rem",
-      padding: "6px 12px",
-    };
-
-    const contest = activeContests[0];
-
-    return (
-      <Box
-        sx={{
-          p: 2,
-          bgcolor: "white",
-          border: 3,
-          borderColor: "#1E2761",
-          borderRadius: 2,
-          mb: 3,
-          transition: "all 0.3s ease-in-out",
-          "&:hover": {
-            boxShadow: 6,
-            transform: "translateY(-5px)",
-          },
-          maxHeight: "600px",
-          overflowY: "auto",
-        }}
-      >
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{ color: "#8d256f", fontWeight: "bold", textAlign: "center", fontSize: "28px", mb: 1, textShadow: "1px 1px 1px #ababab" }}
-        >
-          Active Contest
-        </Typography>
-        {contest ? (
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5, textAlign: "center", fontSize: "24px", color: "#1E2761" }}>
-              {contest.title}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1, color: "text.secondary", textAlign: "center", fontSize: "0.9rem" }}>
-              {contest.description.substring(0, 80)}...
-            </Typography>
-            <Box sx={{ textAlign: "center", mb: 1 }}>
-              <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Starts: {formatLocalTime(contest.start_time)}
-              </Typography>
-              <Typography variant="caption" display="block" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Ends: {formatLocalTime(contest.end_time)}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <Button variant="contained" sx={buttonStyle}>
-                <Link to={`/contest/single/${contest.id}`} style={{ textDecoration: "none", color: "white" }}>
-                  Participate
-                </Link>
-              </Button>
-            </Box>
-          </Box>
-        ) : (
-          <Typography variant="body2" sx={{ mt: 2, color: "text.secondary", textAlign: "center" }}>
-            No contest available at the moment.
-          </Typography>
-        )}
-      </Box>
-    );
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
-
-  // =======================|| CONTEST TABLE SECTION ||======================= //
 
   const ContestTable = ({ contests, type, isLoading }) => {
     if (isLoading) {
@@ -281,13 +140,13 @@ export default function AllContests() {
       setPage(0);
     };
   
+    // Helper function to extract contest data based on structure
     const getContestData = (contest) => {
-      // Handle both the "my contests" structure and the "upcoming/past" structure
+      // Check if the contest is from 'past' or 'upcoming' contests, which have a nested 'contest' field
       if (contest.contest) {
-        // For "upcoming" and "past" contests (nested structure)
-        return contest.contest;
+        return contest.contest; // Return the nested contest object
       }
-      // For "my created contests" (flat structure)
+      // If not nested, return the contest directly (e.g., from 'my created contests')
       return contest;
     };
   
@@ -317,7 +176,7 @@ export default function AllContests() {
                 contests
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((contestData, index) => {
-                    // Get the correct contest object based on the structure
+                    // Get the contest data from the appropriate structure
                     const contest = getContestData(contestData);
   
                     // Check if contest and necessary fields exist
@@ -402,35 +261,42 @@ export default function AllContests() {
     );
   };
   
-  
-  
-  
-  
+
   return (
     <Box sx={{ width: "95%", p: 3 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Box sx={{ width: "95%", p: 3 }}>
-            <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-              <Tab label="Upcoming" />
-              <Tab label="Previous" />
-              <Tab label="My Contests"/>
-            </Tabs>
+            {/* Create Contest Button */}
+                  <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+                      All Private Contests
+                    </Typography>
+                    <Button variant="contained" color="primary" onClick={() => navigate("/contest/create")}>
+                      Create Contest
+                    </Button>
+                  </Box>
 
-            {activeTab === 0 && (
-              <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
-            )}
-            {activeTab === 1 && (
-              <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
-            )}
-            {activeTab === 2 && (
-              <ContestTable contests={myContests} type="My" isLoading={isLoadingMy} />
-            )}
-          </Box>
-        </Grid>
-        
-        <Grid item xs={12} md={4} sx={{ mt: 11 }}>
-          {!activeContests ? <HeadsUp />: <ActiveContest />}
+                  <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
+                    <Tab label="Upcoming" />
+                    <Tab label="Previous" />
+                    <Tab label="My Contests" />
+                  </Tabs>
+
+                  {activeTab === 0 && (
+                    <ContestTable contests={upcomingContests} type="Upcoming" isLoading={isLoadingUpcoming} />
+                  )}
+                  {activeTab === 1 && (
+                    <ContestTable contests={previousContests} type="Previous" isLoading={isLoadingPrevious} />
+                  )}
+                  {activeTab === 2 && (
+                    <ContestTable contests={myContests} type="My" isLoading={isLoadingMy} />
+                  )}
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4} sx={{ mt: 11 }}>
+                  {/* Active Contest Section (Keep as is, or adjust as needed) */}
         </Grid>
       </Grid>
     </Box>

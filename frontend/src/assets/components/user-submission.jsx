@@ -77,7 +77,7 @@ const UserSubmissions = () => {
       {user && (
         <Box mb={4} ml={{ xs: 2, md: 0 }}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#8d256f" }}>
-            {user.username}'s Problems
+            {user.username}'s Submissions
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Viewing all problems attempted by the user
@@ -88,14 +88,13 @@ const UserSubmissions = () => {
       <Paper
         elevation={3}
         sx={{
-          width: "90%",
+          width: "100%",
           overflow: "hidden",
           borderRadius: 2,
           mb: 4,
-          ml: { xs: 2, md: 10 },
         }}
       >
-        <TableContainer sx={{ minWidth: 600, maxHeight: 440, overflowX: "auto" }}>
+        <TableContainer sx={{ minWidth: "100%", maxHeight: 440, overflowX: "auto", alignItems: "left" }}>
           <Table stickyHeader aria-label="problems table">
             <TableHead>
               <TableRow>
@@ -174,15 +173,15 @@ const UserSubmissions = () => {
         )}
       </Paper>
 
-<Box sx={{ display: "flex", justifyContent: "flex-end", mr: { xs: 2, md: 10 }, mb: 3 }}>
-{user?.id && (
-  <Link to={`/user/submission/all/${user.id}`} style={{ textDecoration: "none" }}>
-  <Button variant="contained" color="primary">
-  View All
-  </Button>
-  </Link>
-)}
-</Box>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mr: { xs: 2, md: 10 }, mb: 3 }}>
+        {user?.id && (
+          <Link to={`/user/submission/all/${user.id}`} style={{ textDecoration: "none" }}>
+            <Button variant="contained" color="primary">
+              View All
+            </Button>
+          </Link>
+        )}
+      </Box>
     </Container>
   )
 }

@@ -19,6 +19,7 @@ const Footer = () => {
         pb: 3,
         mt: "auto",
         borderTop: "5px solid rgba(0, 0, 0, 0.12)",
+        fontFamily: "Poppins, sans-serif",
       }}
     >
       <Container maxWidth="xl">
@@ -26,19 +27,19 @@ const Footer = () => {
           {/* Logo Column */}
           <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
             <Box sx={{ mb: 2 }}>
-              <img src={Logo} alt="Logo" width="200" height="150" />
+              <img src={Logo} alt="Logo" width="200" height="200" />
             </Box>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+            <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold" }}>
               MathXplorer
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2, maxWidth: 300, color:"#8D256F" }}>
+            <Typography variant="body2" sx={{ mb: 2, maxWidth: 900, color:"#8D256F", fontSize: "20px" }}>
               Exploring the universe of mathematics through interactive learning
             </Typography>
           </Grid>
 
           {/* Quick Links Column */}
-          <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold", ml: 2 }}>
+          {/* <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold", ml: -5 }}>
               Quick Links
             </Typography>
             <Stack spacing={1} alignItems="left">
@@ -58,10 +59,10 @@ const Footer = () => {
                 About Us
               </Link>
             </Stack>
-          </Grid>
+          </Grid> */}
 
           {/* Contact Us Column */}
-          <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "left", alignItems: "left" }}>
+          {/* <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", justifyContent: "left", alignItems: "left" }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
               Contact Us
             </Typography>
@@ -83,7 +84,7 @@ const Footer = () => {
                 Board Bazar, Gazipur, Bangladesh.
               </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Divider sx={{ my: 3, borderColor: "rgba(255, 255, 255, 0.2)" }} />
@@ -101,11 +102,8 @@ const Footer = () => {
             © {currentYear} MathXplorer. All rights reserved.
           </Typography>
           <Box sx={{ display: "flex", mt: isMobile ? 1 : 0 }}>
-            <Link href="#" color="inherit" sx={{ mx: 1,fontWeight: "bold",  textDecoration: "none", color:"#8D256F",  "&:hover": { color: "#000000" } }}>
+            <Link href="/privacy#" color="inherit" sx={{ mx: 1,fontWeight: "bold",  textDecoration: "none", color:"#8D256F",  "&:hover": { color: "#000000" } }}>
               Privacy Policy
-            </Link>
-            <Link href="#" color="inherit" sx={{ mx: 1, fontWeight: "bold",  textDecoration: "none", color:"#8D256F", "&:hover": { color: "#000000" } }}>
-              Terms of Service
             </Link>
           </Box>
         </Box>
