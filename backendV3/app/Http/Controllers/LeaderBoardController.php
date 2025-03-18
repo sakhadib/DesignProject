@@ -138,7 +138,9 @@ class LeaderBoardController extends Controller
         $users = [];
         foreach($ratings as $rating)
         {
-            $user = User::find($rating->user_id);
+            $user = User::where('id', $rating->user_id)
+                        ->withCount('blog')
+                        ->first(['id', 'username']);
             $user->rating = $rating->total_rating;
 
             $users[] = $user;
