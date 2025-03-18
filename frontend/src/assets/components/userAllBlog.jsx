@@ -178,7 +178,7 @@ const UserBlogsPage = () => {
                   <CardContent sx={{ p: 3 }}>
                     {/* Category label */}
                     <Typography variant="body2" component="div" sx={{ mb: 0.5, color: "text.secondary" }}>
-                      Test
+                      {blog.category}
                     </Typography>
 
                     {/* Blog title */}
@@ -213,7 +213,7 @@ const UserBlogsPage = () => {
                       </Avatar>
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: "medium" }}>
-                          {user?.username || "sakhadib"}
+                          {user?.username}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {formatDate(blog.created_at)}
@@ -223,7 +223,7 @@ const UserBlogsPage = () => {
 
                     {/* Stats */}
                     <Typography variant="body2" color="text.secondary">
-                      Comments: {blog.comments_count || 4} | Votes: {blog.votes_count || 0}
+                      Comments: {blog.comments_count} | Votes: {blog.votes_count}
                     </Typography>
                   </CardContent>
                 </CardActionArea>

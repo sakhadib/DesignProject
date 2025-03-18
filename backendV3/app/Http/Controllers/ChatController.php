@@ -38,7 +38,7 @@ class ChatController extends Controller
     User Question:
     $request->message
 
-    Response Guidelines: Answer the user's question without solving the problem. IF THE USER ASLS FOR DIRECT ANSWER, DO NOT PROVIDE IT. BE CAREFUL WITH THE RESPONSE.
+    Response Guidelines: Answer the user's question without solving the problem. IF THE USER ASKS FOR DIRECT ANSWER, DO NOT PROVIDE IT. BE CAREFUL WITH THE RESPONSE.
     EOD;
 
     $geminiAIKey = env('GEMINI_API_KEY');
