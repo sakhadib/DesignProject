@@ -47,7 +47,7 @@ const LeaderboardPage = () => {
             totalXP,
             totalPenalty,
           }
-        })
+        }).sort((a, b) => b.totalXP - a.totalXP) // Sort by totalXP in descending order
         
         setParticipants(processedParticipants)
         setContestTitle(response.data.contest?.title || `Contest ${id} Leaderboard`)
