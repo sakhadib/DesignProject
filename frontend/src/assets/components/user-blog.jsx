@@ -18,6 +18,10 @@ import {
 } from "@mui/material"
 import { format } from "date-fns"
 import axios from "../../api" // Ensure axios is properly configured
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const UserBlogs = () => {
   const [blogs, setBlogs] = useState([])
@@ -114,7 +118,9 @@ const UserBlogs = () => {
                           {blog.title}
                         </Typography>
                         <Typography variant="body1" color="text.primary" sx={{ mb: 2 }}>
-                          {blog.content?.substring(0, 50) }
+                          <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                          {blog.content?.substring(0, 50) }</ReactMarkdown>
+                          
                         </Typography>
 
                         <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
