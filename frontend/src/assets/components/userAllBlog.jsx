@@ -21,6 +21,10 @@ import { Person as PersonIcon, Search as SearchIcon, Add as AddIcon, NoEncryptio
 import { format } from "date-fns"
 import { alpha } from "@mui/material/styles"
 import axios from "../../api"
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const UserBlogsPage = () => {
   const [blogs, setBlogs] = useState([])
@@ -196,7 +200,9 @@ const UserBlogsPage = () => {
 
                     {/* Blog excerpt */}
                     <Typography variant="body1" color="text.primary" sx={{ mb: 2 }}>
-                      {blog.content?.substring(0, 100) }
+                      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                      {blog.content?.substring(0, 50) }</ReactMarkdown>
+                      
                     </Typography>
 
                     {/* Author info and date */}
