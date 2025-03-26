@@ -10,7 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
 
@@ -33,8 +33,8 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -45,7 +45,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 263.4 70% 50.4%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
@@ -55,6 +55,68 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Animations for the hero section */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reverse-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes draw-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
@@ -69,101 +131,129 @@
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
-}
-
-/* Mathematical patterns for background */
-.math-pattern {
-  background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-/* Animation utilities */
-.animate-in {
-  animation-duration: 300ms;
-  animation-timing-function: ease-out;
-  animation-fill-mode: forwards;
-}
-
-@keyframes slide-in-from-right {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.slide-in-from-right {
-  animation-name: slide-in-from-right;
-}
-
-/* Slow pulse animation for AI button */
-@keyframes pulse-slow {
+@keyframes float-symbol {
   0%,
   100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7);
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(5px, 5px);
   }
   50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(147, 51, 234, 0);
+    transform: translate(0, 10px);
+  }
+  75% {
+    transform: translate(-5px, 5px);
   }
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 3s infinite;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-/* Improved prose styling */
-.prose-lg {
-  font-size: 1.125rem;
-  line-height: 1.8;
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
 }
 
-.prose-lg p {
-  margin-top: 1.3em;
-  margin-bottom: 1.3em;
+.animate-reverse-spin {
+  animation: reverse-spin 20s linear infinite;
 }
 
-.prose-lg pre {
-  margin-top: 1.5em;
-  margin-bottom: 1.5em;
-  border-radius: 0.375rem;
+.animate-ping-slow {
+  animation: ping-slow 3s ease-in-out infinite;
 }
 
-.prose-lg h2 {
-  margin-top: 1.75em;
-  margin-bottom: 0.75em;
+.animate-draw-path {
+  animation: draw-path 3s ease-in-out forwards;
+  animation-delay: 1s;
 }
 
-.prose-lg h3 {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
 }
 
-.prose-lg ul {
-  margin-top: 1.25em;
-  margin-bottom: 1.25em;
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
 }
 
-.prose-lg li {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+/* Math symbols animation */
+.math-symbols .symbol {
+  position: absolute;
+  font-family: "Times New Roman", serif;
+  opacity: 0.1;
+  animation: float-symbol 20s ease-in-out infinite;
 }
 
-/* KaTeX equation styling */
-.katex-display {
-  margin: 1.5em 0 !important;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0.5em 0;
+/* Geometric shapes */
+.geometric-shapes .shape {
+  position: absolute;
+  opacity: 0.1;
+  animation: float 15s ease-in-out infinite;
 }
 
-.katex {
-  font-size: 1.1em;
+.geometric-shapes .circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--primary));
+  top: 10%;
+  left: 10%;
+}
+
+.geometric-shapes .square {
+  width: 80px;
+  height: 80px;
+  border: 2px solid hsl(var(--primary));
+  bottom: 20%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.geometric-shapes .triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 86px solid hsl(var(--primary), 0.2);
+  top: 40%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.geometric-shapes .hexagon {
+  width: 100px;
+  height: 57.7px;
+  background: transparent;
+  border-left: 2px solid hsl(var(--primary));
+  border-right: 2px solid hsl(var(--primary));
+  top: 60%;
+  right: 25%;
+  animation-delay: 3s;
+}
+
+.geometric-shapes .hexagon:before,
+.geometric-shapes .hexagon:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  left: -2px;
+}
+
+.geometric-shapes .hexagon:before {
+  bottom: 100%;
+  border-bottom: 28.9px solid hsl(var(--primary));
+}
+
+.geometric-shapes .hexagon:after {
+  top: 100%;
+  border-top: 28.9px solid hsl(var(--primary));
+}
+
+.geometric-shapes .secondary {
+  border-color: hsl(var(--primary), 0.3);
+  opacity: 0.07;
 }
 
