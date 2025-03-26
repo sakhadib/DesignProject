@@ -139,9 +139,10 @@ class LeaderBoardController extends Controller
         foreach($ratings as $rating)
         {
             $user = User::where('id', $rating->user_id)
-                        ->withCount('blog')
+                        ->withCount(['blog', 'submission'])
                         ->first(['id', 'username']);
             $user->rating = $rating->total_rating;
+            $user->avater = "./placeholder.svg";
 
             $users[] = $user;
         }

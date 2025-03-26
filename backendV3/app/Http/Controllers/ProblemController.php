@@ -109,7 +109,7 @@ class ProblemController extends Controller
     {
         $problem = Problem::find($id);
 
-        if (!$problem) {
+        if (!$problem || $problem->status !== 'published') {
             return response()->json([
                 'message' => 'Problem not found'
             ], 404);
@@ -120,6 +120,40 @@ class ProblemController extends Controller
         $prob_xp = $problem->xp;
         $prob_tags = $problem->tags;
 
+        $difficulty = '';
+        
+        switch($prob_tags['target'])
+        {
+            case 'v0':
+                $difficulty = "Easy";
+                break;
+            case 'v1':
+                $difficulty = "Medium";
+                break;
+            case 'v2':
+                $difficulty = "Hard";
+                break;
+            case 'v3':
+                $difficulty = "Very Hard";
+                break;
+            default:
+                $difficulty = 'Expert';
+        }
+
+        $success_count = Submission::where('problem_id', $id)
+                                   ->where('xp', '>=', ($prob_xp/2))
+                                   ->count();
+        $fail_count = Submission::where('problem_id', $id)
+                                ->where('xp', '<', ($prob_xp/2))
+                                ->count();
+
+        $problem->submissions = $success_count + $fail_count;
+        if ($problem->submissions === 0) {
+            $problem->success_rate = 0;
+        } else {
+            $problem->success_rate = number_format(($success_count / $problem->submissions) * 100, 2, '.', '');
+        }
+
         return response()->json([
             'message' => 'Problem found',
             'problem' => [ 
@@ -127,19 +161,58 @@ class ProblemController extends Controller
                 'title' => $prob_title,
                 'description' => $prob_description,
                 'xp' => $prob_xp,
-                'tags' => $prob_tags
+                'tags' => $prob_tags,
+                'difficulty' => $difficulty,
+                'submissions' => $problem->submissions,
+                'successRate' => $problem->success_rate
             ]
         ]);
     }
 
     public function viewAllProblems()
     {
-        $problems = Problem::where('status', 'published')->get(['id','title', 'xp', 'tags', 'status']);
+        $problems = Problem::where('status', 'published')->get(['id', 'description','title', 'xp', 'tags', 'status']);
 
         if(count($problems) === 0) {
             return response()->json([
                 'message' => 'No problems found'
             ], 404);
+        }
+
+        foreach($problems as $problem) {
+
+            $submission_count_success = Submission::where('problem_id', $problem->id)
+                                                  ->where('xp', '>=', ($problem->xp/2))
+                                                  ->count();
+            $submission_count_fail = Submission::where('problem_id', $problem->id)
+                                               ->where('xp', '<', ($problem->xp/2))
+                                               ->count();
+            
+            $problem->submissions = $submission_count_success + $submission_count_fail;
+            
+            if ($problem->submissions === 0) {
+                $problem->success_rate = 0;
+            } else {
+                $problem->success_rate = number_format(($submission_count_success / $problem->submissions) * 100, 2, '.', '');
+            }
+
+            switch($problem->tags['target'])
+            {
+                case 'v0':
+                    $problem->difficulty = "Easy";
+                    break;
+                case 'v1':
+                    $problem->difficulty = "Medium";
+                    break;
+                case 'v2':
+                    $problem->difficulty = "Hard";
+                    break;
+                case 'v3':
+                    $problem->difficulty = "Very Hard";
+                    break;
+                default:
+                    $problem->difficulty = 'Expert';
+            }
         }
 
         return response()->json([

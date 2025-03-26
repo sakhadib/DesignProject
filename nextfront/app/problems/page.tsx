@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import Link from "next/link"
 import { Search, Trophy, Target, ArrowUpRight, Plus } from "lucide-react"
 
@@ -11,134 +12,50 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Sample problems data
-const problems: {
-  id: number;
-  title: string;
-  description: string;
-  tags: string[];
-  xp: number;
-  target: string;
-  difficulty: "Easy" | "Medium" | "Hard" | "Very Hard" | "Expert";
-  submissions: number;
-  successRate: number;
-}[] = [
-  {
-    id: 1,
-    title: "Prime Number Factorization",
-    description:
-      "Develop an efficient algorithm to find the prime factorization of a given integer n. Your solution should handle large numbers efficiently.",
-    tags: ["Number Theory", "Algorithms", "Prime Numbers"],
-    xp: 150,
-    target: "v2",
-    difficulty: "Medium",
-    submissions: 342,
-    successRate: 68,
-  },
-  {
-    id: 2,
-    title: "Euler's Method for Differential Equations",
-    description:
-      "Implement Euler's method to solve a first-order ordinary differential equation. Compare the numerical solution with the analytical solution when available.",
-    tags: ["Calculus", "Differential Equations", "Numerical Methods"],
-    xp: 200,
-    target: "v3",
-    difficulty: "Hard",
-    submissions: 187,
-    successRate: 52,
-  },
-  {
-    id: 3,
-    title: "Matrix Eigenvalues and Eigenvectors",
-    description:
-      "Write a program to compute the eigenvalues and eigenvectors of a given square matrix using the power iteration method.",
-    tags: ["Linear Algebra", "Matrices", "Numerical Methods"],
-    xp: 180,
-    target: "v3",
-    difficulty: "Hard",
-    submissions: 215,
-    successRate: 47,
-  },
-  {
-    id: 4,
-    title: "Fibonacci Sequence Optimization",
-    description:
-      "Implement an efficient algorithm to compute the nth Fibonacci number. Your solution should work for large values of n (up to 10^6).",
-    tags: ["Algorithms", "Dynamic Programming", "Number Theory"],
-    xp: 100,
-    target: "v1",
-    difficulty: "Easy",
-    submissions: 523,
-    successRate: 85,
-  },
-  {
-    id: 5,
-    title: "Probability of Dice Rolls",
-    description:
-      "Calculate the probability of getting a sum of k when rolling n dice, each with m sides. Implement an efficient solution for large values of n, m, and k.",
-    tags: ["Probability", "Combinatorics", "Dynamic Programming"],
-    xp: 220,
-    target: "v4",
-    difficulty: "Very Hard",
-    submissions: 142,
-    successRate: 38,
-  },
-  {
-    id: 6,
-    title: "Graph Coloring Problem",
-    description:
-      "Implement an algorithm to color the vertices of a graph such that no two adjacent vertices have the same color, using the minimum number of colors possible.",
-    tags: ["Graph Theory", "Algorithms", "NP-Complete"],
-    xp: 250,
-    target: "v5",
-    difficulty: "Expert",
-    submissions: 98,
-    successRate: 29,
-  },
-  {
-    id: 7,
-    title: "Integral Approximation",
-    description:
-      "Implement the trapezoidal rule and Simpson's rule to approximate definite integrals. Compare the accuracy of both methods for various functions.",
-    tags: ["Calculus", "Numerical Integration", "Approximation"],
-    xp: 160,
-    target: "v2",
-    difficulty: "Medium",
-    submissions: 276,
-    successRate: 71,
-  },
-  {
-    id: 8,
-    title: "Polynomial Root Finding",
-    description:
-      "Implement Newton's method to find the roots of a polynomial equation. Your solution should handle cases where the method might not converge.",
-    tags: ["Algebra", "Numerical Methods", "Root Finding"],
-    xp: 190,
-    target: "v3",
-    difficulty: "Hard",
-    submissions: 203,
-    successRate: 55,
-  },
-]
-
-// Extract unique tags and targets
-const allTags = Array.from(new Set(problems.flatMap((problem) => problem.tags)))
-const allTargets = Array.from(new Set(problems.map((problem) => problem.target)))
-const difficulties = ["Easy", "Medium", "Hard", "Very Hard", "Expert"]
+import ReactMarkdown from "react-markdown"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
+import "katex/dist/katex.min.css"
 
 export default function ProblemsPage() {
+  const [problems, setProblems] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("All")
   const [selectedTarget, setSelectedTarget] = useState("All")
   const [selectedDifficulty, setSelectedDifficulty] = useState("All")
+  const [allTags, setAllTags] = useState<string[]>([])
+  const [allTargets, setAllTargets] = useState<string[]>([])
+  const difficulties = ["Easy", "Medium", "Hard", "Very Hard", "Expert"]
+
+  // Fetch problems data from API
+  useEffect(() => {
+    const fetchProblems = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/problem/all/")
+        setProblems(res.data.problems)
+
+        // Extract unique tags and targets
+        const tags = Array.from(
+          new Set(res.data.problems.flatMap((problem: any) => problem.tags.topics as string[]))
+        ) as string[]
+        const targets = Array.from(new Set(res.data.problems.map((problem: any) => problem.tags.target))) as string[]
+
+        setAllTags(tags)
+        setAllTargets(targets)
+      } catch (error) {
+        console.error("Error fetching problems:", error)
+      }
+    }
+    fetchProblems()
+  }, [])
 
   // Filter problems based on search term, active tab, selected target, and difficulty
   const filteredProblems = problems.filter((problem) => {
     const matchesSearch =
       problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       problem.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesTag = activeTab === "All" || problem.tags.includes(activeTab)
-    const matchesTarget = selectedTarget === "All" || problem.target === selectedTarget
+    const matchesTag = activeTab === "All" || problem.tags.topics.includes(activeTab)
+    const matchesTarget = selectedTarget === "All" || problem.tags.target === selectedTarget
     const matchesDifficulty = selectedDifficulty === "All" || problem.difficulty === selectedDifficulty
 
     return matchesSearch && matchesTag && matchesTarget && matchesDifficulty
@@ -152,24 +69,24 @@ export default function ProblemsPage() {
           <p className="text-muted-foreground">Challenge yourself with these mathematical problems</p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-              type="search"
-              placeholder="Search problems..."
-              className="pl-8 w-full sm:w-[250px]"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+                type="search"
+                placeholder="Search problems..."
+                className="pl-8 w-full sm:w-[250px]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <Link href="/problems/add">
               <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Problem
+                <Plus className="h-4 w-4" />
+                Add Problem
               </Button>
             </Link>
-            </div>
+          </div>
         </div>
       </div>
 
@@ -251,10 +168,12 @@ export default function ProblemsPage() {
 
               {filteredProblems.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground">
-                    No problems match your filters. Try adjusting your search criteria.
-                  </p>
-                </div>
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p className="text-muted-foreground">Loading problems...</p>
+                  </div>
+                </div>  
+                             
               )}
             </TabsContent>
 
@@ -282,8 +201,9 @@ export default function ProblemsPage() {
   )
 }
 
-function ProblemCard({ problem }: { problem: { id: number; title: string; description: string; tags: string[]; xp: number; target: string; difficulty: "Easy" | "Medium" | "Hard" | "Very Hard" | "Expert"; submissions: number; successRate: number } }) {
-  // Map difficulty to color
+function ProblemCard({ problem }: { problem: any }) {
+  type Difficulty = "Easy" | "Medium" | "Hard" | "Very Hard" | "Expert";
+  
   const difficultyColor = {
     Easy: "bg-green-500",
     Medium: "bg-yellow-500",
@@ -297,13 +217,13 @@ function ProblemCard({ problem }: { problem: { id: number; title: string; descri
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${difficultyColor[problem.difficulty]}`} />
+            <div className={`w-3 h-3 rounded-full ${difficultyColor[problem.difficulty as Difficulty]}`} />
             <span className="text-sm text-muted-foreground">{problem.difficulty}</span>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="flex items-center gap-1">
               <Target className="h-3 w-3" />
-              {problem.target}
+              {problem.tags.target}
             </Badge>
             <Badge variant="secondary" className="flex items-center gap-1">
               <Trophy className="h-3 w-3" />
@@ -316,9 +236,13 @@ function ProblemCard({ problem }: { problem: { id: number; title: string; descri
         </Link>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground line-clamp-2">{problem.description}</p>
+        <div className="text-muted-foreground line-clamp-2">
+        <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {problem.description}
+        </ReactMarkdown>
+        </div>
         <div className="flex flex-wrap gap-2 mt-3">
-          {problem.tags.map((tag) => (
+          {problem.tags.topics.map((tag: string) => (
             <Badge key={tag} variant="outline" className="text-xs">
               {tag}
             </Badge>
@@ -329,7 +253,7 @@ function ProblemCard({ problem }: { problem: { id: number; title: string; descri
         <div className="flex items-center gap-2">
           <span>{problem.submissions} submissions</span>
           <span>•</span>
-          <span>{problem.successRate}% success rate</span>
+          <span>{problem.success_rate}% success rate</span>
         </div>
         <Link href={`/problems/${problem.id}`}>
           <Button
@@ -345,6 +269,3 @@ function ProblemCard({ problem }: { problem: { id: number; title: string; descri
     </Card>
   )
 }
-
-
-

@@ -486,6 +486,20 @@ EOD;
                                 ->where('user_id', $user_id)
                                 ->get(['id', 'xp', 'contest_id', 'created_at']);
 
+        foreach($submissions as $submission) {
+            switch($submission->xp)
+            {
+                case $submission->xp == $problem->xp:
+                    $submission->status = 'Correct';
+                    break;
+                case $submission->xp == 0:
+                    $submission->status = 'Wrong';
+                    break;
+                default:
+                    $submission->status = 'Partially Correct';
+            }
+        }
+        
         return response()->json([
             'messege' => 'Submissions found',
             'user' => $user,
