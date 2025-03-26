@@ -16,6 +16,8 @@ import {
   BookOpen,
   Filter,
   Search,
+  PlusCircle,
+  Copy,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -32,6 +34,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 // Sample contest data
 const contests: Array<{
@@ -118,6 +121,36 @@ const contests: Array<{
   },
 ]
 
+
+const userCreatedContests = [
+  {
+    contest_id: 11,
+    title: "Linear Algebra Workshop",
+    problem_count: 5,
+    start_time: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    end_time: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+    description: "A focused workshop on linear algebra concepts with practical problems.",
+    difficulty: "Medium",
+    registered_users: 12,
+    is_creator: true,
+    share_link: "https://mathxploter.com/contests/custom-12",
+  },
+  {
+    contest_id: 21,
+    title: "Calculus Mastery Test",
+    problem_count: 8,
+    start_time: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    end_time: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+    description:
+      "Test your calculus skills with this comprehensive set of problems covering differentiation and integration.",
+    difficulty: "Hard",
+    registered_users: 8,
+    is_creator: true,
+    share_link: "https://mathxploter.com/contests/custom-21",
+  },
+]
+
+
 // Helper function to determine contest status
 interface ContestStatusParams {
     startTime: Date
@@ -172,6 +205,7 @@ export default function ContestsPage() {
   const [timeRemaining, setTimeRemaining] = useState<Record<number, TimeRemaining>>({})
   const [registrationOpen, setRegistrationOpen] = useState(false)
   const [selectedContest, setSelectedContest] = useState<Contest | null>(null)
+  const [copiedLink, setCopiedLink] = useState("")
 
   // Filter contests based on status and search term
   const filteredContests = contests.filter((contest) => {
@@ -198,6 +232,15 @@ export default function ContestsPage() {
           updatedTimeRemaining[contest.contest_id] = formatTimeRemaining(new Date(contest.start_time))
         } else if (status === "active") {
           updatedTimeRemaining[contest.contest_id] = formatTimeRemaining(new Date(contest.end_time))
+        }
+      })
+
+      userCreatedContests.forEach((contest) => {
+        const status = getContestStatus({ startTime: contest.start_time, endTime: contest.end_time })
+        if (status === "upcoming") {
+          updatedTimeRemaining[contest.contest_id] = formatTimeRemaining(contest.start_time)
+        } else if (status === "active") {
+          updatedTimeRemaining[contest.contest_id] = formatTimeRemaining(contest.end_time)
         }
       })
 
@@ -230,6 +273,17 @@ const handleRegister = (contest: Contest): void => {
       alert(`You have successfully registered for ${selectedContest.title}!`)
     }
     setRegistrationOpen(false)
+  }
+
+  // Handle link copying
+  interface CopyLinkParams {
+    link: string
+  }
+
+  const handleCopyLink = ({ link }: CopyLinkParams): void => {
+    navigator.clipboard.writeText(link)
+    setCopiedLink(link)
+    setTimeout(() => setCopiedLink(""), 2000)
   }
 
   return (
@@ -266,6 +320,12 @@ const handleRegister = (contest: Contest): void => {
               <SelectItem value="Expert">Expert</SelectItem>
             </SelectContent>
           </Select>
+          <Link href="/contests/create">
+            <Button className="w-full sm:w-auto gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Create Contest
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -283,6 +343,10 @@ const handleRegister = (contest: Contest): void => {
             <Trophy className="h-4 w-4" />
             My Contests
           </TabsTrigger>
+          <TabsTrigger value="created" className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Created by Me
+          </TabsTrigger>
         </TabsList>
 
         {/* Upcoming Contests Tab */}
@@ -297,7 +361,7 @@ const handleRegister = (contest: Contest): void => {
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty]}`} />
+                        <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty as keyof typeof difficultyColor]}`} />
                         <span className="text-sm text-muted-foreground">{contest.difficulty}</span>
                       </div>
                       <Badge variant="outline" className="flex items-center gap-1">
@@ -401,7 +465,7 @@ const handleRegister = (contest: Contest): void => {
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty]}`} />
+                        <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty as keyof typeof difficultyColor]}`} />
                         <span className="text-sm text-muted-foreground">{contest.difficulty}</span>
                       </div>
                       <Badge variant="outline" className="flex items-center gap-1">
@@ -485,7 +549,7 @@ const handleRegister = (contest: Contest): void => {
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty]}`} />
+                          <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty as keyof typeof difficultyColor]}`} />
                           <span className="text-sm text-muted-foreground">{contest.difficulty}</span>
                         </div>
                         {status === "active" && (
@@ -632,6 +696,153 @@ const handleRegister = (contest: Contest): void => {
               <Button className="mt-4" onClick={() => setActiveTab("upcoming")}>
                 View Upcoming Contests
               </Button>
+            </div>
+          )}
+        </TabsContent>
+        {/* Created by Me Tab */}
+        <TabsContent value="created" className="space-y-6">
+          {userCreatedContests.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {userCreatedContests.map((contest) => {
+                const status = getContestStatus({ startTime: contest.start_time, endTime: contest.end_time })
+
+                return (
+                  <Card
+                    key={contest.contest_id}
+                    className={`overflow-hidden transition-all hover:shadow-md group animate-fade-in ${
+                      status === "active" ? "border-primary/50 shadow-md" : ""
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full ${difficultyColor[contest.difficulty as keyof typeof difficultyColor]}`} />
+                          <span className="text-sm text-muted-foreground">{contest.difficulty}</span>
+                        </div>
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                          <PlusCircle className="h-3 w-3 mr-1" />
+                          Created by You
+                        </Badge>
+                      </div>
+                      <Link href={`/contests/${contest.contest_id}`}>
+                        <CardTitle className="text-xl hover:text-primary transition-colors">{contest.title}</CardTitle>
+                      </Link>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{contest.description}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex flex-col gap-2 text-sm">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <span>Starts: {contest.start_time.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <span>Ends: {contest.end_time.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <span>{contest.registered_users} participants</span>
+                          </div>
+                        </div>
+
+                        {/* Share Link */}
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Share Link:</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input value={contest.share_link} readOnly className="text-xs font-mono" />
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => handleCopyLink({ link: contest.share_link })}
+                                    className={
+                                      copiedLink === contest.share_link
+                                        ? "bg-green-500/10 text-green-600 border-green-600/20"
+                                        : ""
+                                    }
+                                  >
+                                    <Copy className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {copiedLink === contest.share_link ? "Copied!" : "Copy link"}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </div>
+
+                        {/* Timer for active or upcoming contests */}
+                        {(status === "active" || status === "upcoming") && timeRemaining[contest.contest_id] && (
+                          <div
+                            className={`rounded-lg p-3 ${status === "active" ? "bg-primary/10 border border-primary/20" : "bg-muted/50"}`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium">
+                                {status === "active" ? "Ends in:" : "Starts in:"}
+                              </span>
+                              <Timer
+                                className={`h-4 w-4 ${status === "active" ? "text-primary animate-pulse" : "text-muted-foreground"}`}
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 gap-2 text-center">
+                              <div className="bg-background rounded p-2">
+                                <div className="text-lg font-bold">{timeRemaining[contest.contest_id].days}</div>
+                                <div className="text-xs text-muted-foreground">Days</div>
+                              </div>
+                              <div className="bg-background rounded p-2">
+                                <div className="text-lg font-bold">{timeRemaining[contest.contest_id].hours}</div>
+                                <div className="text-xs text-muted-foreground">Hours</div>
+                              </div>
+                              <div className="bg-background rounded p-2">
+                                <div className="text-lg font-bold">{timeRemaining[contest.contest_id].minutes}</div>
+                                <div className="text-xs text-muted-foreground">Mins</div>
+                              </div>
+                              <div className="bg-background rounded p-2">
+                                <div className="text-lg font-bold">{timeRemaining[contest.contest_id].seconds}</div>
+                                <div className="text-xs text-muted-foreground">Secs</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between pt-3 border-t">
+                      <Link href={`/contests/${contest.contest_id}`}>
+                        <Button variant="outline" size="sm" className="gap-1">
+                          <BookOpen className="h-4 w-4" />
+                          View Details
+                        </Button>
+                      </Link>
+                      <Link href={`/contests/${contest.contest_id}/edit`}>
+                        <Button variant="secondary" size="sm" className="gap-1">
+                          <PlusCircle className="h-4 w-4" />
+                          Edit Contest
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <PlusCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-xl font-bold mb-2">No Created Contests</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                You haven't created any contests yet. Create your own custom contest to share with others.
+              </p>
+              <Link href="/contests/create">
+                <Button className="mt-4 gap-2">
+                  <PlusCircle className="h-4 w-4" />
+                  Create Contest
+                </Button>
+              </Link>
             </div>
           )}
         </TabsContent>
