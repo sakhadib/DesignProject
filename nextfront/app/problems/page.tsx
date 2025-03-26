@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Search, Trophy, Target, ArrowUpRight } from "lucide-react"
+import { Search, Trophy, Target, ArrowUpRight, Plus } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -152,16 +152,24 @@ export default function ProblemsPage() {
           <p className="text-muted-foreground">Challenge yourself with these mathematical problems</p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
+            <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
               type="search"
               placeholder="Search problems..."
               className="pl-8 w-full sm:w-[250px]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+              />
+            </div>
+            <Link href="/problems/add">
+              <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Problem
+              </Button>
+            </Link>
+            </div>
         </div>
       </div>
 

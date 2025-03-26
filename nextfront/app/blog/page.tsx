@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Search, Filter, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react"
+import { Search, Filter, ThumbsUp, ThumbsDown, MessageSquare, FileText } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -115,6 +115,12 @@ export default function BlogPage() {
             <Filter className="h-4 w-4" />
             <span className="sr-only">Filter</span>
           </Button>
+          <Link href="/blog/write">
+            <Button className="gap-2">
+              <FileText className="h-4 w-4" />
+              Write Blog
+            </Button>
+          </Link>
         </div>
       </div>
 

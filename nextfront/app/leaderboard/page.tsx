@@ -12,16 +12,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // Rating titles and their color mappings
 const ratingTitles = [
-  { min: 400, max: 800, title: "Muggle-born", color: "text-zinc-500" },
-  { min: 800, max: 1200, title: "Squib", color: "text-emerald-600" },
-  { min: 1200, max: 1500, title: "Hogwarts Student", color: "text-blue-600" },
-  { min: 1500, max: 1800, title: "Auror Trainee", color: "text-purple-600" },
-  { min: 1800, max: 2100, title: "Hogwarts Graduate", color: "text-amber-600" },
-  { min: 2100, max: 2500, title: "Order of the Phoenix Member", color: "text-red-600" },
-  { min: 2500, max: 3000, title: "Professor at Hogwarts", color: "text-indigo-600" },
-  { min: 3000, max: 3500, title: "Head of House", color: "text-fuchsia-600" },
-  { min: 3500, max: 4000, title: "Supreme Mugwump", color: "text-amber-500" },
-]
+  { min: 400, max: 800, title: "Numerical Novice", color: "text-zinc-400" },
+  { min: 800, max: 1200, title: "Arithmetic Ace", color: "text-slate-500" },
+  { min: 1200, max: 1500, title: "Algebraic Authority", color: "text-blue-500" },
+  { min: 1500, max: 1800, title: "Geometric Genius", color: "text-emerald-500" },
+  { min: 1800, max: 2100, title: "Calculus Champion", color: "text-purple-500" },
+  { min: 2100, max: 2500, title: "Theorem Titan", color: "text-indigo-600" },
+  { min: 2500, max: 3000, title: "Mathematical Maestro", color: "text-amber-500" },
+  { min: 3000, max: 3500, title: "Euler's Equal", color: "text-orange-500" },
+  { min: 3500, max: 4000, title: "Proof Prodigy", color: "text-red-600" }
+];
 
 // Sample user data
 const users = [
